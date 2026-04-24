@@ -128,14 +128,15 @@ function AdminDashboard() {
     doc.text('ELECTRONICS STORE', 50, 28);
     
     // Invoice label (right side)
+    const orderNum = order.orderNumber || ('VT-' + order.id.slice(-6).toUpperCase());
     doc.setFontSize(22);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.text('INVOICE', pageWidth - 14, 22, { align: 'right' });
-    doc.setFontSize(8);
-    doc.setTextColor(...medGray);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`#${order.id.slice(-8).toUpperCase()}`, pageWidth - 14, 30, { align: 'right' });
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`#${orderNum}`, pageWidth - 14, 30, { align: 'right' });
 
     // ===== ORDER INFO SECTION =====
     const infoY = 52;
@@ -280,7 +281,9 @@ function AdminDashboard() {
     doc.text('Voltech Electronics Store  •  Your trusted electronics partner', 14, footerY + 18);
     doc.text(`Generated on ${new Date().toLocaleString()}`, pageWidth - 14, footerY + 18, { align: 'right' });
     
-    doc.save(`Voltech_Invoice_${order.customerName.replace(/\s+/g, '_')}.pdf`);
+    const orderNum2 = order.orderNumber || ('VT-' + order.id.slice(-6).toUpperCase());
+    const orderDateStr = new Date(order.orderDate).toLocaleDateString('en-GB').replace(/\//g, '-');
+    doc.save(`Voltech_${orderNum2}_${orderDateStr}.pdf`);
   };
 
   const pendingOrdersCount = orders ? orders.filter(o => o.status === 'Pending').length : 0;
@@ -480,6 +483,10 @@ function AdminDashboard() {
                     {order.status === 'Returned' && <RotateCcw size={12} />}
                     {order.status}
                   </span>
+                </div>
+
+                <div className="order-card-number">
+                  #{order.orderNumber || order.id.slice(-6).toUpperCase()}
                 </div>
 
                 <div className="order-card-customer">

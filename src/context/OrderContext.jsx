@@ -34,8 +34,10 @@ export function OrderProvider({ children }) {
 
   const addOrder = async (orderData) => {
     try {
+      const orderNumber = 'VT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
       const newOrder = {
         ...orderData,
+        orderNumber,
         orderDate: new Date().toISOString(),
         status: 'Pending' // default status
       };

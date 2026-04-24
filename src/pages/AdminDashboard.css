@@ -338,6 +338,15 @@
   font-weight: 500;
 }
 
+.order-card-number {
+  padding: 6px 18px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--volt-green);
+  letter-spacing: 1px;
+}
+
 .order-card-time {
   color: var(--text-muted);
   font-size: 0.8rem;
