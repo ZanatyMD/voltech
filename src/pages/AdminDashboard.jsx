@@ -99,28 +99,101 @@ function AdminDashboard() {
 
   const generatePDF = (order) => {
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const green = [126, 200, 67];
+    const darkBg = [18, 18, 22];
+    const lightGray = [245, 245, 247];
+    const medGray = [200, 200, 200];
     
-    // Header
+    // ===== TOP HEADER BAR =====
+    doc.setFillColor(...darkBg);
+    doc.rect(0, 0, pageWidth, 42, 'F');
+    
+    // Green accent line under header
+    doc.setFillColor(...green);
+    doc.rect(0, 42, pageWidth, 2, 'F');
+    
+    // Logo in header (left side)
+    doc.addImage(logoBase64, 'PNG', 12, 4, 34, 34);
+    
+    // Company name in header
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('VOLTECH', 50, 20);
+    doc.setFontSize(9);
+    doc.setTextColor(...green);
+    doc.setFont('helvetica', 'normal');
+    doc.text('ELECTRONICS STORE', 50, 28);
+    
+    // Invoice label (right side)
     doc.setFontSize(22);
-    doc.setTextColor(126, 200, 67); // Volt Green
-    doc.text('Voltech Electronics', 14, 25);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INVOICE', pageWidth - 14, 22, { align: 'right' });
+    doc.setFontSize(8);
+    doc.setTextColor(...medGray);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`#${order.id.slice(-8).toUpperCase()}`, pageWidth - 14, 30, { align: 'right' });
+
+    // ===== ORDER INFO SECTION =====
+    const infoY = 52;
     
-    // Logo (top right)
-    doc.addImage(logoBase64, 'PNG', 150, 2, 45, 45);
+    // Left column - Customer info
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(14, infoY, (pageWidth - 36) / 2, 44, 3, 3, 'F');
     
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Order Invoice', 14, 38);
+    doc.setFontSize(8);
+    doc.setTextColor(130, 130, 130);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CUSTOMER DETAILS', 20, infoY + 10);
     
-    // Order details
     doc.setFontSize(11);
-    doc.text(`Date: ${new Date(order.orderDate).toLocaleString()}`, 14, 50);
-    doc.text(`Customer: ${order.customerName}`, 14, 57);
-    doc.text(`Phone: ${order.customerPhone}`, 14, 64);
-    doc.text(`Status: ${order.status}`, 14, 71);
+    doc.setTextColor(30, 30, 30);
+    doc.setFont('helvetica', 'bold');
+    doc.text(order.customerName, 20, infoY + 19);
     
-    // Table
-    const tableData = order.items.map(item => [
+    doc.setFontSize(9);
+    doc.setTextColor(80, 80, 80);
+    doc.setFont('helvetica', 'normal');
+    doc.text(order.customerPhone, 20, infoY + 27);
+    
+    // Status pill
+    const statusColors = {
+      'Pending': [245, 200, 66],
+      'Completed': green,
+      'Returned': [249, 115, 22]
+    };
+    const statusColor = statusColors[order.status] || green;
+    doc.setFillColor(...statusColor);
+    const statusWidth = doc.getTextWidth(order.status) + 12;
+    doc.roundedRect(20, infoY + 31, statusWidth, 8, 4, 4, 'F');
+    doc.setFontSize(7);
+    doc.setTextColor(order.status === 'Pending' ? 30 : 255, order.status === 'Pending' ? 30 : 255, order.status === 'Pending' ? 30 : 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text(order.status.toUpperCase(), 26, infoY + 36.5);
+    
+    // Right column - Order info
+    const rightX = 14 + (pageWidth - 36) / 2 + 8;
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(rightX, infoY, (pageWidth - 36) / 2, 44, 3, 3, 'F');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(130, 130, 130);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ORDER DETAILS', rightX + 6, infoY + 10);
+    
+    doc.setFontSize(9);
+    doc.setTextColor(80, 80, 80);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Date: ${new Date(order.orderDate).toLocaleDateString()}`, rightX + 6, infoY + 19);
+    doc.text(`Time: ${new Date(order.orderDate).toLocaleTimeString()}`, rightX + 6, infoY + 27);
+    doc.text(`Items: ${order.items.length}`, rightX + 6, infoY + 35);
+    
+    // ===== ITEMS TABLE =====
+    const tableData = order.items.map((item, idx) => [
+      (idx + 1).toString(),
       item.name,
       item.quantity.toString(),
       `EGP ${item.price.toFixed(2)}`,
@@ -128,26 +201,86 @@ function AdminDashboard() {
     ]);
 
     autoTable(doc, {
-      startY: 80,
-      head: [['Product', 'Qty', 'Unit Price', 'Total']],
+      startY: infoY + 52,
+      head: [['#', 'Product', 'Qty', 'Unit Price', 'Total']],
       body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [26, 26, 26], textColor: [126, 200, 67] },
-      styles: { fontSize: 10 }
+      theme: 'plain',
+      headStyles: { 
+        fillColor: [...darkBg], 
+        textColor: [...green],
+        fontSize: 9,
+        fontStyle: 'bold',
+        cellPadding: 6,
+        halign: 'left'
+      },
+      bodyStyles: {
+        fontSize: 9,
+        cellPadding: 6,
+        textColor: [40, 40, 40]
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 252]
+      },
+      columnStyles: {
+        0: { cellWidth: 14, halign: 'center', fontStyle: 'bold', textColor: [...green] },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 20, halign: 'center' },
+        3: { cellWidth: 36, halign: 'right' },
+        4: { cellWidth: 36, halign: 'right', fontStyle: 'bold' }
+      },
+      styles: {
+        lineWidth: 0,
+        overflow: 'linebreak'
+      },
+      didDrawPage: () => {},
+      margin: { left: 14, right: 14 }
     });
     
-    // Total
-    const finalY = doc.lastAutoTable.finalY || 80;
-    doc.setFontSize(14);
-    doc.setTextColor(126, 200, 67); // Volt Green
-    doc.text(`Total Amount: EGP ${order.total.toFixed(2)}`, 14, finalY + 15);
+    // ===== TOTAL BOX =====
+    const finalY = doc.lastAutoTable.finalY || 150;
     
-    // Footer
+    // Subtle line
+    doc.setDrawColor(...medGray);
+    doc.setLineWidth(0.3);
+    doc.line(14, finalY + 4, pageWidth - 14, finalY + 4);
+    
+    // Subtotal row
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Subtotal:', pageWidth - 80, finalY + 14);
+    doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 14, finalY + 14, { align: 'right' });
+    
+    // Total highlight box
+    doc.setFillColor(...green);
+    doc.roundedRect(pageWidth - 100, finalY + 20, 86, 16, 3, 3, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL', pageWidth - 94, finalY + 30.5);
+    doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 18, finalY + 30.5, { align: 'right' });
+    
+    // ===== FOOTER =====
+    const footerY = pageHeight - 30;
+    
+    // Footer line
+    doc.setDrawColor(...medGray);
+    doc.setLineWidth(0.3);
+    doc.line(14, footerY, pageWidth - 14, footerY);
+    
+    // Thank you message
     doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Thank you for shopping with Voltech!', 14, finalY + 30);
+    doc.setTextColor(...green);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Thank you for shopping with Voltech!', 14, footerY + 10);
     
-    doc.save(`Voltech_Order_${order.customerName.replace(/\s+/g, '_')}.pdf`);
+    doc.setFontSize(7);
+    doc.setTextColor(160, 160, 160);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Voltech Electronics Store  •  Your trusted electronics partner', 14, footerY + 18);
+    doc.text(`Generated on ${new Date().toLocaleString()}`, pageWidth - 14, footerY + 18, { align: 'right' });
+    
+    doc.save(`Voltech_Invoice_${order.customerName.replace(/\s+/g, '_')}.pdf`);
   };
 
   const pendingOrdersCount = orders ? orders.filter(o => o.status === 'Pending').length : 0;
