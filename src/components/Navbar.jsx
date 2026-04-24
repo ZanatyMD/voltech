@@ -1,8 +1,8 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { Sun, Moon, Zap, Shield, LogOut, ShoppingCart } from 'lucide-react';
+import { Sun, Moon, Zap, Shield, LogOut, ShoppingCart, MapPin, Home, Package, Info } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar() {
@@ -10,7 +10,20 @@ function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  const handleProductsClick = (e) => {
+    e.preventDefault();
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    } else {
+      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <nav className="navbar" id="navbar">
@@ -27,6 +40,28 @@ function Navbar() {
             <span className="brand-tagline">Electronics Store</span>
           </div>
         </Link>
+
+        {/* Navigation Links (storefront only) */}
+        {!isAdmin && (
+          <div className="navbar-links">
+            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+              <Home size={15} />
+              <span>Home</span>
+            </Link>
+            <a href="#products-section" className="nav-link" onClick={handleProductsClick}>
+              <Package size={15} />
+              <span>Products</span>
+            </a>
+            <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
+              <Info size={15} />
+              <span>About Us</span>
+            </Link>
+            <div className="nav-location">
+              <MapPin size={13} />
+              <span>New Damitta, Egypt</span>
+            </div>
+          </div>
+        )}
 
         <div className="navbar-actions">
           {!isAdmin && (

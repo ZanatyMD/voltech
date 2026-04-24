@@ -37,17 +37,17 @@ function AdminLogin() {
 
         {error && <div className="login-error">{error}</div>}
 
-        <form className="login-form" onSubmit={handleLogin} autoComplete="off">
+        <form className="login-form" onSubmit={handleLogin} autoComplete="on">
           <div className="form-group">
             <label htmlFor="username">USERNAME</label>
             <input
               type="text"
               id="username"
-              name="voltech-user"
+              name="username"
               className="form-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              autoComplete="off"
+              autoComplete="username"
               required
             />
           </div>
@@ -57,11 +57,11 @@ function AdminLogin() {
             <input
               type="password"
               id="password"
-              name="voltech-pass"
+              name="password"
               className="form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
+              autoComplete="current-password"
               required
             />
           </div>

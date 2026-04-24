@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../../context/ProductContext';
 import { useCategories } from '../../context/CategoryContext';
-import { X, Save, Upload, Image as ImageIcon, Clipboard } from 'lucide-react';
+import { X, Save, Upload, Clipboard, Plus, Trash2 } from 'lucide-react';
 import './ProductForm.css';
 
 function ProductForm({ product, onClose }) {
   const { addProduct, updateProduct } = useProducts();
   const { categories } = useCategories();
   const fileInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
   const dropZoneRef = useRef(null);
+  const galleryDropZoneRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isGalleryDragging, setIsGalleryDragging] = useState(false);
+  const [pasteTarget, setPasteTarget] = useState('main'); // 'main' or 'gallery'
   
   const [formData, setFormData] = useState({
     name: '',
@@ -18,6 +22,7 @@ function ProductForm({ product, onClose }) {
     currentPrice: '',
     stock: '',
     imageUrl: '',
+    galleryImages: [],
     description: ''
   });
 
@@ -30,6 +35,7 @@ function ProductForm({ product, onClose }) {
         currentPrice: product.currentPrice,
         stock: product.stock,
         imageUrl: product.imageUrl || '',
+        galleryImages: product.galleryImages || [],
         description: product.description || ''
       });
     }
@@ -46,7 +52,11 @@ function ProductForm({ product, onClose }) {
           e.preventDefault();
           const file = item.getAsFile();
           if (file) {
-            handleImageFile(file);
+            if (pasteTarget === 'gallery') {
+              handleGalleryImageFile(file);
+            } else {
+              handleImageFile(file);
+            }
           }
           break;
         }
@@ -55,7 +65,7 @@ function ProductForm({ product, onClose }) {
 
     document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
-  }, []);
+  }, [pasteTarget]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,9 +82,35 @@ function ProductForm({ product, onClose }) {
     reader.readAsDataURL(file);
   };
 
+  const handleGalleryImageFile = (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setFormData(prev => ({ 
+        ...prev, 
+        galleryImages: [...prev.galleryImages, e.target.result] 
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeGalleryImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     handleImageFile(file);
+  };
+
+  const handleGalleryFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => handleGalleryImageFile(file));
+    e.target.value = '';
   };
 
   const handleDragOver = (e) => {
@@ -95,6 +131,26 @@ function ProductForm({ product, onClose }) {
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     handleImageFile(file);
+  };
+
+  const handleGalleryDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGalleryDragging(true);
+  };
+
+  const handleGalleryDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGalleryDragging(false);
+  };
+
+  const handleGalleryDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGalleryDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(file => handleGalleryImageFile(file));
   };
 
   const handleSubmit = (e) => {
@@ -196,8 +252,9 @@ function ProductForm({ product, onClose }) {
             </div>
           </div>
 
+          {/* Main Product Image */}
           <div className="form-group">
-            <label className="form-label">Product Image</label>
+            <label className="form-label">Main Product Image</label>
             <div 
               className={`drop-zone ${isDragging ? 'dragging' : ''} ${formData.imageUrl ? 'has-image' : ''}`}
               ref={dropZoneRef}
@@ -205,6 +262,8 @@ function ProductForm({ product, onClose }) {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
+              onFocus={() => setPasteTarget('main')}
+              onMouseEnter={() => setPasteTarget('main')}
             >
               {formData.imageUrl ? (
                 <div className="drop-zone-preview">
@@ -230,6 +289,54 @@ function ProductForm({ product, onClose }) {
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+            </div>
+          </div>
+
+          {/* Gallery Images */}
+          <div className="form-group">
+            <label className="form-label">Additional Images (Gallery)</label>
+            
+            {/* Gallery thumbnails */}
+            {formData.galleryImages.length > 0 && (
+              <div className="gallery-thumbnails">
+                {formData.galleryImages.map((img, index) => (
+                  <div className="gallery-thumb" key={index}>
+                    <img src={img} alt={`Gallery ${index + 1}`} />
+                    <button 
+                      type="button" 
+                      className="gallery-thumb-remove" 
+                      onClick={() => removeGalleryImage(index)}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Gallery drop zone */}
+            <div 
+              className={`drop-zone gallery-drop-zone ${isGalleryDragging ? 'dragging' : ''}`}
+              ref={galleryDropZoneRef}
+              onDragOver={handleGalleryDragOver}
+              onDragLeave={handleGalleryDragLeave}
+              onDrop={handleGalleryDrop}
+              onClick={() => galleryInputRef.current?.click()}
+              onFocus={() => setPasteTarget('gallery')}
+              onMouseEnter={() => setPasteTarget('gallery')}
+            >
+              <div className="drop-zone-empty gallery-drop-content">
+                <Plus size={20} />
+                <span>Add more images — drag, paste, or click</span>
+              </div>
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleGalleryFileSelect}
                 style={{ display: 'none' }}
               />
             </div>

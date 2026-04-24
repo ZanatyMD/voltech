@@ -1,5 +1,6 @@
-import { Tag, Package, TrendingDown, ShoppingCart } from 'lucide-react';
+import { Tag, TrendingDown, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
 function ProductCard({ product }) {
@@ -8,7 +9,6 @@ function ProductCard({ product }) {
   
   const discountPercent = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
   const isInStock = stock > 0;
-  const isLowStock = stock > 0 && stock <= 5;
 
   return (
     <div className={`product-card ${!isInStock ? 'out-of-stock' : ''}`} id={`product-${product.id}`}>
@@ -20,8 +20,8 @@ function ProductCard({ product }) {
         </div>
       )}
 
-      {/* Image */}
-      <div className="product-image-wrapper">
+      {/* Image — clickable to detail page */}
+      <Link to={`/product/${product.id}`} className="product-image-wrapper">
         <img
           src={imageUrl}
           alt={name}
@@ -33,7 +33,7 @@ function ProductCard({ product }) {
             <span>Out of Stock</span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Info */}
       <div className="product-info">
@@ -42,7 +42,9 @@ function ProductCard({ product }) {
           {category}
         </div>
 
-        <h3 className="product-name">{name}</h3>
+        <Link to={`/product/${product.id}`} className="product-name-link">
+          <h3 className="product-name">{name}</h3>
+        </Link>
 
         <div className="product-pricing">
           <span className="price-current">EGP {currentPrice.toFixed(2)}</span>
