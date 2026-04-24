@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { collection, onSnapshot, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const OrderContext = createContext();
@@ -60,8 +60,28 @@ export function OrderProvider({ children }) {
     }
   };
 
+  const deleteOrder = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'orders', id));
+    } catch (error) {
+      console.error("Error deleting order: ", error);
+      throw error;
+    }
+  };
+
+  const deleteAllOrders = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'orders'));
+      const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'orders', d.id)));
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error deleting all orders: ", error);
+      throw error;
+    }
+  };
+
   return (
-    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, loading }}>
+    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, deleteOrder, deleteAllOrders, loading }}>
       {children}
     </OrderContext.Provider>
   );

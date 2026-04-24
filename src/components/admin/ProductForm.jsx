@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../../context/ProductContext';
 import { useCategories } from '../../context/CategoryContext';
-import { X, Save, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Upload, Image as ImageIcon, Clipboard } from 'lucide-react';
 import './ProductForm.css';
 
 function ProductForm({ product, onClose }) {
@@ -34,6 +34,28 @@ function ProductForm({ product, onClose }) {
       });
     }
   }, [product]);
+
+  // Paste event listener for image copy/paste support
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            handleImageFile(file);
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -197,6 +219,10 @@ function ProductForm({ product, onClose }) {
                   <Upload size={32} />
                   <p>Drag & drop an image here</p>
                   <span>or click to browse</span>
+                  <div className="paste-hint">
+                    <Clipboard size={14} />
+                    <span>You can also Ctrl+V to paste</span>
+                  </div>
                 </div>
               )}
               <input
