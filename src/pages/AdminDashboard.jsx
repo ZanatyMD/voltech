@@ -6,6 +6,7 @@ import ProductForm from '../components/admin/ProductForm';
 import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { logoBase64 } from '../assets/logoBase64';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
@@ -61,19 +62,22 @@ function AdminDashboard() {
     
     // Header
     doc.setFontSize(22);
-    doc.setTextColor(0, 212, 255);
-    doc.text('Voltech Electronics', 14, 22);
+    doc.setTextColor(126, 200, 67); // Volt Green
+    doc.text('Voltech Electronics', 14, 25);
+    
+    // Logo (top right)
+    doc.addImage(logoBase64, 'PNG', 150, 10, 45, 20);
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
-    doc.text('Order Invoice', 14, 32);
+    doc.text('Order Invoice', 14, 38);
     
     // Order details
     doc.setFontSize(11);
-    doc.text(`Date: ${new Date(order.orderDate).toLocaleString()}`, 14, 45);
-    doc.text(`Customer: ${order.customerName}`, 14, 52);
-    doc.text(`Phone: ${order.customerPhone}`, 14, 59);
-    doc.text(`Status: ${order.status}`, 14, 66);
+    doc.text(`Date: ${new Date(order.orderDate).toLocaleString()}`, 14, 50);
+    doc.text(`Customer: ${order.customerName}`, 14, 57);
+    doc.text(`Phone: ${order.customerPhone}`, 14, 64);
+    doc.text(`Status: ${order.status}`, 14, 71);
     
     // Table
     const tableData = order.items.map(item => [
@@ -84,18 +88,18 @@ function AdminDashboard() {
     ]);
 
     autoTable(doc, {
-      startY: 75,
+      startY: 80,
       head: [['Product', 'Qty', 'Unit Price', 'Total']],
       body: tableData,
       theme: 'grid',
-      headStyles: { fillColor: [26, 26, 26], textColor: [0, 212, 255] },
+      headStyles: { fillColor: [26, 26, 26], textColor: [126, 200, 67] },
       styles: { fontSize: 10 }
     });
     
     // Total
-    const finalY = doc.lastAutoTable.finalY || 75;
+    const finalY = doc.lastAutoTable.finalY || 80;
     doc.setFontSize(14);
-    doc.setTextColor(0, 212, 255);
+    doc.setTextColor(126, 200, 67); // Volt Green
     doc.text(`Total Amount: EGP ${order.total.toFixed(2)}`, 14, finalY + 15);
     
     // Footer
