@@ -289,6 +289,36 @@
 }
 
 /* ===== ORDER CARDS ===== */
+.order-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.order-search-box svg {
+  color: var(--text-muted);
+}
+
+.order-search-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  flex: 1;
+  font-family: monospace;
+}
+
+.order-search-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
 .orders-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));

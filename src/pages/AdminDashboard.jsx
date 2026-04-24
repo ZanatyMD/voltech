@@ -3,7 +3,7 @@ import { useProducts } from '../context/ProductContext';
 import { useOrders } from '../context/OrderContext';
 import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
-import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
@@ -18,6 +18,7 @@ function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [expandedOrders, setExpandedOrders] = useState({});
+  const [orderSearch, setOrderSearch] = useState('');
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
@@ -467,9 +468,26 @@ function AdminDashboard() {
           )}
         </>
       ) : activeTab === 'orders' ? (
+        <>
+        <div className="order-search-box">
+          <Search size={18} />
+          <input
+            type="text"
+            placeholder="Search by order number (e.g. VT-A3X9K2)"
+            value={orderSearch}
+            onChange={e => setOrderSearch(e.target.value)}
+            className="form-input order-search-input"
+          />
+        </div>
         <div className="orders-card-grid">
           {orders && orders.length > 0 ? (
-            orders.map(order => (
+            orders
+              .filter(order => {
+                if (!orderSearch.trim()) return true;
+                const num = (order.orderNumber || order.id.slice(-6)).toUpperCase();
+                return num.includes(orderSearch.trim().toUpperCase());
+              })
+              .map(order => (
               <div className={`order-card ${order.status.toLowerCase()}`} key={order.id}>
                 <div className="order-card-header">
                   <div className="order-card-date">
@@ -565,6 +583,7 @@ function AdminDashboard() {
             </div>
           )}
         </div>
+        </>
       ) : activeTab === 'categories' ? (
         <div className="categories-manager">
           <div className="add-category-form" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
