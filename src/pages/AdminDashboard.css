@@ -126,6 +126,30 @@
   border-color: rgba(126, 200, 67, 0.3);
 }
 
+/* Out of Stock Red Square */
+.out-of-stock-square {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.out-of-stock-square:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+}
+
+.oos-header {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04)) !important;
+  color: var(--volt-red) !important;
+}
+
+.oos-count {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: var(--volt-red) !important;
+}
+
+.out-of-stock-square .category-product-item.out {
+  opacity: 1;
+}
+
 .category-square-header {
   display: flex;
   align-items: center;

@@ -371,17 +371,40 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Stock Summary Lists */}
-          {outOfStockProducts.length > 0 && (
-            <div className="stock-alert-banner">
-              <AlertTriangle size={18} />
-              <span><strong>{outOfStockProducts.length}</strong> product{outOfStockProducts.length > 1 ? 's' : ''} out of stock: </span>
-              <span className="stock-alert-names">{outOfStockProducts.map(p => p.name).join(', ')}</span>
-            </div>
-          )}
-
-          {/* Category Squares */}
+          {/* Category Squares + Out of Stock Square */}
           <div className="category-grid">
+            {/* Out of Stock Square (Red) */}
+            {outOfStockProducts.length > 0 && (
+              <div className="category-square out-of-stock-square">
+                <div className="category-square-header oos-header">
+                  <AlertTriangle size={16} />
+                  <h3>Out of Stock</h3>
+                  <span className="category-count oos-count">{outOfStockProducts.length}</span>
+                </div>
+                <div className="category-product-list">
+                  {outOfStockProducts.map(product => (
+                    <div className="category-product-item out" key={product.id}>
+                      <img src={product.imageUrl} alt={product.name} className="cat-product-img" />
+                      <div className="cat-product-info">
+                        <span className="cat-product-name">{product.name}</span>
+                        <span className="cat-product-price">EGP {product.currentPrice.toFixed(2)}</span>
+                      </div>
+                      <div className="cat-stock-badge out">Out</div>
+                      <div className="cat-product-actions">
+                        <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit">
+                          <Edit size={14} />
+                        </button>
+                        <button className="btn-icon delete" onClick={() => handleDelete(product.id)} title="Delete">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Category Squares */}
             {Object.keys(productsByCategory).map(category => {
               const catProducts = productsByCategory[category];
               const catInStock = catProducts.filter(p => p.stock > 0).length;
