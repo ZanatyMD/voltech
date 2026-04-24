@@ -183,3 +183,106 @@
   margin-bottom: 16px;
   opacity: 0.5;
 }
+
+/* Dashboard Tabs */
+.dashboard-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--bg-card);
+  color: var(--volt-green);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge-notification {
+  background: var(--volt-red);
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+/* Orders Table Specifics */
+.order-date {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.order-time {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.customer-info strong {
+  display: block;
+  color: var(--text-primary);
+}
+
+.customer-info span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.pending {
+  background: rgba(245, 200, 66, 0.1);
+  color: var(--volt-yellow-dark);
+}
+
+.status-badge.completed {
+  background: rgba(126, 200, 67, 0.1);
+  color: var(--volt-green);
+}
+
+.btn-icon.success {
+  color: var(--volt-green);
+  background: rgba(126, 200, 67, 0.1);
+}
+.btn-icon.success:hover {
+  background: var(--volt-green);
+  color: #000;
+}
+
+.btn-icon.primary-text {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+.btn-icon.primary-text:hover {
+  background: var(--volt-green);
+  color: #000;
+}

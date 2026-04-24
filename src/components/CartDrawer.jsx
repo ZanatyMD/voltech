@@ -1,24 +1,67 @@
+import { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { X, Minus, Plus, Trash2, Send } from 'lucide-react';
+import { useOrders } from '../context/OrderContext';
+import { X, Minus, Plus, Trash2, Send, Loader } from 'lucide-react';
 import './CartDrawer.css';
 
 function CartDrawer() {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const { addOrder } = useOrders();
+  
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isCartOpen) return null;
 
-  const handleCheckout = () => {
-    const phoneNumber = '201503476600'; // WhatsApp number
-    let message = 'مرحباً فولتك! أود طلب العناصر التالية:\n\n';
-    
-    cartItems.forEach((item, index) => {
-      message += `${item.quantity}x ${item.name} - EGP ${(item.currentPrice * item.quantity).toFixed(2)}\n`;
-    });
+  const handleCheckout = async () => {
+    if (!customerName.trim() || !customerPhone.trim()) {
+      alert("Please enter your name and phone number to continue.");
+      return;
+    }
 
-    message += `\n*إجمالي الطلب: EGP ${cartTotal.toFixed(2)}*\n`;
+    setIsSubmitting(true);
+    try {
+      // Save order to Firebase
+      const orderData = {
+        customerName,
+        customerPhone,
+        items: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.currentPrice,
+          quantity: item.quantity
+        })),
+        total: cartTotal
+      };
+      
+      await addOrder(orderData);
 
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+      // Prepare WhatsApp Message
+      const phoneNumber = '201503476600'; // WhatsApp number
+      let message = `مرحباً فولتك! أود طلب العناصر التالية:\nالاسم: ${customerName}\nرقم الهاتف: ${customerPhone}\n\n`;
+      
+      cartItems.forEach((item) => {
+        message += `${item.quantity}x ${item.name} - EGP ${(item.currentPrice * item.quantity).toFixed(2)}\n`;
+      });
+
+      message += `\n*إجمالي الطلب: EGP ${cartTotal.toFixed(2)}*\n`;
+
+      const encodedMessage = encodeURIComponent(message);
+      
+      // Open WhatsApp and Clear Cart
+      window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+      clearCart();
+      setCustomerName('');
+      setCustomerPhone('');
+      setIsCartOpen(false);
+
+    } catch (error) {
+      console.error("Failed to submit order:", error);
+      alert("Failed to submit order. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -73,12 +116,36 @@ function CartDrawer() {
               <span>Total:</span>
               <span className="total-amount">EGP {cartTotal.toFixed(2)}</span>
             </div>
-            <button className="btn btn-primary checkout-btn" onClick={handleCheckout}>
-              <Send size={18} />
-              Checkout via WhatsApp
+            
+            <div className="checkout-form" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px' }}>
+              <input 
+                type="text" 
+                placeholder="Your Full Name" 
+                className="form-input" 
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                required
+              />
+              <input 
+                type="tel" 
+                placeholder="Phone Number (e.g. 01012345678)" 
+                className="form-input" 
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                required
+              />
+            </div>
+
+            <button 
+              className="btn btn-primary checkout-btn" 
+              onClick={handleCheckout}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <Loader size={18} className="spin" /> : <Send size={18} />}
+              {isSubmitting ? 'Processing...' : 'Checkout via WhatsApp'}
             </button>
             <p className="checkout-hint">
-              You will be redirected to WhatsApp to arrange delivery and payment directly with our store.
+              Your order will be saved and you will be redirected to WhatsApp to arrange delivery.
             </p>
           </div>
         )}
