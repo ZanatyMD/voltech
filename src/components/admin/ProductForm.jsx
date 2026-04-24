@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../../context/ProductContext';
+import { useCategories } from '../../context/CategoryContext';
 import { X, Save, Upload, Image as ImageIcon } from 'lucide-react';
 import './ProductForm.css';
 
 function ProductForm({ product, onClose }) {
   const { addProduct, updateProduct } = useProducts();
+  const { categories } = useCategories();
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
-    category: 'Microcontrollers',
+    category: categories && categories.length > 0 ? categories[0] : '',
     originalPrice: '',
     currentPrice: '',
     stock: '',
@@ -124,14 +126,9 @@ function ProductForm({ product, onClose }) {
                 onChange={handleChange}
                 required
               >
-                <option value="Microcontrollers">Microcontrollers</option>
-                <option value="Sensors">Sensors</option>
-                <option value="Actuators">Actuators</option>
-                <option value="Displays">Displays</option>
-                <option value="Modules">Modules</option>
-                <option value="Power">Power</option>
-                <option value="Components">Components</option>
-                <option value="PCBs">PCBs</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
           </div>

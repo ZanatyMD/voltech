@@ -52,18 +52,12 @@ function ProductCard({ product }) {
         </div>
 
         <div className="product-footer">
-          <div className={`stock-indicator ${isInStock ? (isLowStock ? 'low' : 'in') : 'out'}`}>
+          <div className={`stock-indicator ${isInStock ? 'in' : 'out'}`}>
             <div className="stock-dot"></div>
             <span>
-              {!isInStock ? 'Out of Stock' : isLowStock ? `Only ${stock} left` : 'In Stock'}
+              {!isInStock ? 'Out of Stock' : 'In Stock'}
             </span>
           </div>
-          {isInStock && (
-            <div className="stock-count">
-              <Package size={12} />
-              {stock}
-            </div>
-          )}
         </div>
 
         <button 

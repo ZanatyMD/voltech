@@ -49,8 +49,8 @@ function CartDrawer() {
 
       const encodedMessage = encodeURIComponent(message);
       
-      // Open WhatsApp and Clear Cart
-      window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+      // Redirect directly to WhatsApp (bypassing popup blockers)
+      window.location.href = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
       clearCart();
       setCustomerName('');
       setCustomerPhone('');

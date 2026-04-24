@@ -1,18 +1,44 @@
 import { useState } from 'react';
 import { useProducts } from '../context/ProductContext';
 import { useOrders } from '../context/OrderContext';
+import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
 import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
-  const { products, stats, deleteProduct } = useProducts();
+  const { products, stats, deleteProduct, updateProduct } = useProducts();
   const { orders, updateOrderStatus } = useOrders();
+  const { categories, addCategory, deleteCategory } = useCategories();
   const [activeTab, setActiveTab] = useState('products');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    await addCategory(newCategoryName);
+    setNewCategoryName('');
+  };
+
+  const handleCompleteOrder = async (order) => {
+    try {
+      await updateOrderStatus(order.id, 'Completed');
+      // Auto-reduce stock
+      for (const item of order.items) {
+        const product = products.find(p => p.id === item.id);
+        if (product) {
+          const newStock = Math.max(0, product.stock - item.quantity);
+          await updateProduct(product.id, { stock: newStock });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to complete order:", error);
+      alert("Failed to complete order.");
+    }
+  };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -57,7 +83,7 @@ function AdminDashboard() {
       `EGP ${(item.price * item.quantity).toFixed(2)}`
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 75,
       head: [['Product', 'Qty', 'Unit Price', 'Total']],
       body: tableData,
@@ -110,6 +136,12 @@ function AdminDashboard() {
         >
           Orders
           {pendingOrdersCount > 0 && <span className="badge-notification">{pendingOrdersCount}</span>}
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'categories' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('categories')}
+        >
+          Categories
         </button>
       </div>
 
@@ -199,7 +231,7 @@ function AdminDashboard() {
             )}
           </div>
         </>
-      ) : (
+      ) : activeTab === 'orders' ? (
         <div className="table-container">
           <table className="admin-table orders-table">
             <thead>
@@ -242,8 +274,8 @@ function AdminDashboard() {
                         {order.status === 'Pending' && (
                           <button 
                             className="btn-icon success" 
-                            onClick={() => updateOrderStatus(order.id, 'Completed')} 
-                            title="Mark as Completed"
+                            onClick={() => handleCompleteOrder(order)} 
+                            title="Mark as Completed & Reduce Stock"
                           >
                             <CheckCircle size={18} />
                           </button>
@@ -272,7 +304,62 @@ function AdminDashboard() {
             </tbody>
           </table>
         </div>
-      )}
+      ) : activeTab === 'categories' ? (
+        <div className="categories-manager">
+          <div className="add-category-form" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <input 
+              type="text" 
+              value={newCategoryName} 
+              onChange={e => setNewCategoryName(e.target.value)} 
+              placeholder="New Category Name" 
+              className="form-input"
+              style={{ maxWidth: '300px' }}
+            />
+            <button className="btn btn-primary" onClick={handleAddCategory}>
+              <Plus size={18} />
+              Add Category
+            </button>
+          </div>
+          <div className="table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Category Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories && categories.length > 0 ? (
+                  categories.map(cat => (
+                    <tr key={cat}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
+                          <Tag size={16} style={{ color: 'var(--volt-green)' }} />
+                          {cat}
+                        </div>
+                      </td>
+                      <td>
+                        <button className="btn-icon delete" onClick={() => deleteCategory(cat)} title="Delete Category">
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="2" style={{ textAlign: 'center', padding: '3rem' }}>
+                      <div className="empty-state">
+                        <Tag size={48} />
+                        <p>No categories found.</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : null}
 
       {/* Product Form Modal */}
       {isFormOpen && (
