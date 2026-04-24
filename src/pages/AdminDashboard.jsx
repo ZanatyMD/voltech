@@ -66,7 +66,7 @@ function AdminDashboard() {
     doc.text('Voltech Electronics', 14, 25);
     
     // Logo (top right)
-    doc.addImage(logoBase64, 'PNG', 160, 5, 35, 35);
+    doc.addImage(logoBase64, 'PNG', 150, 2, 45, 45);
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
