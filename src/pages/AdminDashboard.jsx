@@ -3,7 +3,7 @@ import { useProducts } from '../context/ProductContext';
 import { useOrders } from '../context/OrderContext';
 import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
-import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
@@ -12,18 +12,41 @@ import './AdminDashboard.css';
 function AdminDashboard() {
   const { products, stats, deleteProduct, updateProduct } = useProducts();
   const { orders, updateOrderStatus, deleteOrder, deleteAllOrders } = useOrders();
-  const { categories, addCategory, deleteCategory } = useCategories();
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
   const [activeTab, setActiveTab] = useState('products');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [expandedOrders, setExpandedOrders] = useState({});
   const [orderSearch, setOrderSearch] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editCategoryName, setEditCategoryName] = useState('');
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
     await addCategory(newCategoryName);
     setNewCategoryName('');
+  };
+
+  const handleStartEditCategory = (cat) => {
+    setEditingCategory(cat);
+    setEditCategoryName(cat);
+  };
+
+  const handleSaveCategory = async () => {
+    if (!editCategoryName.trim() || !editingCategory) return;
+    try {
+      await updateCategory(editingCategory, editCategoryName);
+    } catch (e) {
+      alert('Failed to rename category.');
+    }
+    setEditingCategory(null);
+    setEditCategoryName('');
+  };
+
+  const handleCancelEditCategory = () => {
+    setEditingCategory(null);
+    setEditCategoryName('');
   };
 
   const handleCompleteOrder = async (order) => {
@@ -613,15 +636,48 @@ function AdminDashboard() {
                   categories.map(cat => (
                     <tr key={cat}>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
-                          <Tag size={16} style={{ color: 'var(--volt-green)' }} />
-                          {cat}
-                        </div>
+                        {editingCategory === cat ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Tag size={16} style={{ color: 'var(--volt-green)' }} />
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={editCategoryName}
+                              onChange={e => setEditCategoryName(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') handleSaveCategory(); if (e.key === 'Escape') handleCancelEditCategory(); }}
+                              autoFocus
+                              style={{ maxWidth: '250px', padding: '6px 12px' }}
+                            />
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
+                            <Tag size={16} style={{ color: 'var(--volt-green)' }} />
+                            {cat}
+                          </div>
+                        )}
                       </td>
                       <td>
-                        <button className="btn-icon delete" onClick={() => deleteCategory(cat)} title="Delete Category">
-                          <Trash2 size={16} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          {editingCategory === cat ? (
+                            <>
+                              <button className="btn-icon edit" onClick={handleSaveCategory} title="Save" style={{ color: 'var(--volt-green)' }}>
+                                <Check size={16} />
+                              </button>
+                              <button className="btn-icon delete" onClick={handleCancelEditCategory} title="Cancel">
+                                <X size={16} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button className="btn-icon edit" onClick={() => handleStartEditCategory(cat)} title="Edit Category">
+                                <Edit size={16} />
+                              </button>
+                              <button className="btn-icon delete" onClick={() => deleteCategory(cat)} title="Delete Category">
+                                <Trash2 size={16} />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

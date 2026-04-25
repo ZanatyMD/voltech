@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { collection, onSnapshot, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, onSnapshot, deleteDoc, doc, setDoc, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const CategoryContext = createContext();
@@ -47,6 +47,28 @@ export function CategoryProvider({ children }) {
     }
   };
 
+  const updateCategory = async (oldName, newName) => {
+    if (!newName.trim() || oldName === newName.trim()) return;
+    const trimmed = newName.trim();
+    try {
+      // Create new category doc
+      await setDoc(doc(db, 'categories', trimmed), { name: trimmed });
+      // Delete old category doc
+      await deleteDoc(doc(db, 'categories', oldName));
+      // Update all products that had the old category
+      const productsSnap = await getDocs(
+        query(collection(db, 'products'), where('category', '==', oldName))
+      );
+      const updatePromises = productsSnap.docs.map(productDoc =>
+        updateDoc(doc(db, 'products', productDoc.id), { category: trimmed })
+      );
+      await Promise.all(updatePromises);
+    } catch (error) {
+      console.error("Error updating category: ", error);
+      throw error;
+    }
+  };
+
   const deleteCategory = async (name) => {
     try {
       await deleteDoc(doc(db, 'categories', name));
@@ -57,10 +79,11 @@ export function CategoryProvider({ children }) {
   };
 
   return (
-    <CategoryContext.Provider value={{ categories, addCategory, deleteCategory, loading }}>
+    <CategoryContext.Provider value={{ categories, addCategory, updateCategory, deleteCategory, loading }}>
       {children}
     </CategoryContext.Provider>
   );
 }
 
 export const useCategories = () => useContext(CategoryContext);
+

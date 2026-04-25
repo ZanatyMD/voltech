@@ -1,11 +1,28 @@
 import { useState } from 'react';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, Loader } from 'lucide-react';
 import './ProductGrid.css';
 
+function SkeletonCard() {
+  return (
+    <div className="skeleton-card">
+      <div className="skeleton skeleton-image"></div>
+      <div className="skeleton-body">
+        <div className="skeleton skeleton-badge" style={{ width: '60px', height: '18px' }}></div>
+        <div className="skeleton skeleton-title" style={{ width: '80%', height: '20px' }}></div>
+        <div className="skeleton skeleton-text" style={{ width: '50%', height: '14px' }}></div>
+        <div className="skeleton-row">
+          <div className="skeleton skeleton-price" style={{ width: '90px', height: '24px' }}></div>
+          <div className="skeleton skeleton-btn" style={{ width: '36px', height: '36px', borderRadius: '50%' }}></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProductGrid() {
-  const { products, stats } = useProducts();
+  const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -56,7 +73,19 @@ function ProductGrid() {
           </div>
         </div>
 
-        {filteredProducts.length > 0 ? (
+        {loading ? (
+          <>
+            <div className="loading-banner">
+              <Loader size={20} className="loading-spinner" />
+              <span>Loading products...</span>
+            </div>
+            <div className="product-grid">
+              {[...Array(6)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          </>
+        ) : filteredProducts.length > 0 ? (
           <div className="product-grid">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
