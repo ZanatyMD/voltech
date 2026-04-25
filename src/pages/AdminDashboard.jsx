@@ -3,7 +3,8 @@ import { useProducts } from '../context/ProductContext';
 import { useOrders } from '../context/OrderContext';
 import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
-import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X, Truck } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X, Truck, Barcode as BarcodeIcon } from 'lucide-react';
+import Barcode from 'react-barcode';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
@@ -23,6 +24,7 @@ function AdminDashboard() {
   const [editCategoryName, setEditCategoryName] = useState('');
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressionProgress, setCompressionProgress] = useState('');
+  const [isGeneratingSKUs, setIsGeneratingSKUs] = useState(false);
 
   const compressBase64Image = (base64Str) => {
     return new Promise((resolve) => {
@@ -101,6 +103,27 @@ function AdminDashboard() {
     setCompressionProgress('');
     setIsCompressing(false);
     alert(`Complete! Compressed images for ${fixedCount} products. Your website should load instantly now.`);
+  };
+
+  const handleGenerateSKUs = async () => {
+    if (!window.confirm('This will automatically generate a unique 8-digit numeric barcode (SKU) for any product that doesn\\'t have one yet. Continue?')) return;
+    setIsGeneratingSKUs(true);
+    let updatedCount = 0;
+
+    for (const product of products) {
+      if (!product.sku) {
+        const generatedSku = Math.floor(10000000 + Math.random() * 90000000).toString();
+        try {
+          await updateProduct(product.id, { sku: generatedSku });
+          updatedCount++;
+        } catch(e) {
+          console.error("Error generating SKU", e);
+        }
+      }
+    }
+    
+    setIsGeneratingSKUs(false);
+    alert(`Complete! Generated barcodes for ${updatedCount} products.`);
   };
 
   const handleAddCategory = async () => {
@@ -458,6 +481,10 @@ function AdminDashboard() {
         </div>
         {activeTab === 'products' && (
           <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-secondary" onClick={handleGenerateSKUs} disabled={isGeneratingSKUs}>
+              <BarcodeIcon size={18} />
+              {isGeneratingSKUs ? 'Generating...' : 'Generate Missing Barcodes'}
+            </button>
             <button className="btn btn-secondary" onClick={handleFixOldImages} disabled={isCompressing}>
               <AlertTriangle size={18} />
               {isCompressing ? compressionProgress : 'Fix Old Images'}
@@ -547,6 +574,9 @@ function AdminDashboard() {
                         <span className="cat-product-price">EGP {product.currentPrice.toFixed(2)}</span>
                       </div>
                       <div className="cat-stock-badge out">Out</div>
+                      <div className="cat-product-barcode" style={{ marginTop: '10px', transform: 'scale(0.8)', transformOrigin: 'left top' }}>
+                        {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={12} width={1.5} /> : <span style={{fontSize:'0.8rem', color:'gray'}}>No Barcode</span>}
+                      </div>
                       <div className="cat-product-actions">
                         <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit">
                           <Edit size={14} />
@@ -596,6 +626,9 @@ function AdminDashboard() {
                         </div>
                         <div className={`cat-stock-badge ${product.stock > 0 ? 'in' : 'out'}`}>
                           {product.stock > 0 ? `${product.stock}` : 'Out'}
+                        </div>
+                        <div className="cat-product-barcode" style={{ marginTop: '10px', transform: 'scale(0.8)', transformOrigin: 'left top', gridColumn: '1 / -1' }}>
+                          {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={12} width={1.5} /> : <span style={{fontSize:'0.8rem', color:'gray'}}>No Barcode</span>}
                         </div>
                         <div className="cat-product-actions">
                           <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit">
@@ -690,10 +723,17 @@ function AdminDashboard() {
                 {expandedOrders[order.id] && (
                   <div className="order-card-items-list">
                     {order.items.map((item, idx) => (
-                      <div className="order-item-row" key={idx}>
-                        <span className="order-item-name">{item.name}</span>
-                        <span className="order-item-qty">x{item.quantity}</span>
-                        <span className="order-item-price">EGP {(item.price * item.quantity).toFixed(2)}</span>
+                      <div className="order-item-row" key={idx} style={{ flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                          <span className="order-item-name">{item.name}</span>
+                          {item.sku && item.sku !== 'N/A' && (
+                            <div style={{ transform: 'scale(0.7)', transformOrigin: 'left top', marginTop: '4px', marginBottom: '-10px' }}>
+                              <Barcode value={item.sku} format="CODE128" height={25} displayValue={true} fontSize={14} width={1.2} />
+                            </div>
+                          )}
+                        </div>
+                        <span className="order-item-qty" style={{ alignSelf: 'flex-start', marginTop: '4px' }}>x{item.quantity}</span>
+                        <span className="order-item-price" style={{ alignSelf: 'flex-start', marginTop: '4px' }}>EGP {(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                     {order.deliveryFee !== undefined && (

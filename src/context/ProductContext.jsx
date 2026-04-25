@@ -54,6 +54,7 @@ export function ProductProvider({ children }) {
     try {
       const newProductData = {
         ...product,
+        sku: product.sku || Math.floor(10000000 + Math.random() * 90000000).toString(),
         createdAt: new Date().toISOString(),
       };
       const docRef = await addDoc(collection(db, 'products'), newProductData);

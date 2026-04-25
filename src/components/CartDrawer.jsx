@@ -37,6 +37,7 @@ function CartDrawer() {
         deliveryLocation: isDelivery ? deliveryLocation : 'Store Pickup',
         items: cartItems.map(item => ({
           id: item.id,
+          sku: item.sku || 'N/A',
           name: item.name,
           price: item.currentPrice,
           quantity: item.quantity
