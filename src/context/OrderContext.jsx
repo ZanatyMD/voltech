@@ -62,6 +62,19 @@ export function OrderProvider({ children }) {
     }
   };
 
+  const updateOrder = async (id, updates) => {
+    try {
+      const orderRef = doc(db, 'orders', id);
+      await updateDoc(orderRef, {
+        ...updates,
+        updatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error updating order: ", error);
+      throw error;
+    }
+  };
+
   const deleteOrder = async (id) => {
     try {
       await deleteDoc(doc(db, 'orders', id));
@@ -83,7 +96,7 @@ export function OrderProvider({ children }) {
   };
 
   return (
-    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, deleteOrder, deleteAllOrders, loading }}>
+    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders, loading }}>
       {children}
     </OrderContext.Provider>
   );

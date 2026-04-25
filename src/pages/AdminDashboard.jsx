@@ -3,7 +3,7 @@ import { useProducts } from '../context/ProductContext';
 import { useOrders } from '../context/OrderContext';
 import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
-import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X, Truck } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
@@ -11,7 +11,7 @@ import './AdminDashboard.css';
 
 function AdminDashboard() {
   const { products, stats, deleteProduct, updateProduct } = useProducts();
-  const { orders, updateOrderStatus, deleteOrder, deleteAllOrders } = useOrders();
+  const { orders, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders } = useOrders();
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
   const [activeTab, setActiveTab] = useState('products');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -155,6 +155,27 @@ function AdminDashboard() {
         console.error("Failed to update order:", error);
         alert("Failed to update order.");
       }
+    }
+  };
+
+  const handleSetDeliveryFee = async (order) => {
+    const feeStr = window.prompt("Enter delivery fee (EGP):", order.deliveryFee || "30");
+    if (feeStr === null) return; // Cancelled
+    const fee = parseFloat(feeStr);
+    if (isNaN(fee) || fee < 0) {
+      alert("Please enter a valid number for the delivery fee.");
+      return;
+    }
+    
+    // Calculate new total: sum of items + delivery fee
+    const itemsTotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const newTotal = itemsTotal + fee;
+
+    try {
+      await updateOrder(order.id, { deliveryFee: fee, total: newTotal });
+    } catch (error) {
+      console.error("Failed to set delivery fee:", error);
+      alert("Failed to set delivery fee.");
     }
   };
 
@@ -358,21 +379,35 @@ function AdminDashboard() {
     doc.setLineWidth(0.3);
     doc.line(14, finalY + 4, pageWidth - 14, finalY + 4);
     
-    // Subtotal row
+    let currentY = finalY + 14;
+    
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
     doc.setFont('helvetica', 'normal');
-    doc.text('Subtotal:', pageWidth - 80, finalY + 14);
-    doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 14, finalY + 14, { align: 'right' });
+    
+    // Subtotal & Delivery Fee rows
+    if (order.deliveryFee !== undefined) {
+      const itemsTotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      doc.text('Subtotal:', pageWidth - 80, currentY);
+      doc.text(`EGP ${itemsTotal.toFixed(2)}`, pageWidth - 14, currentY, { align: 'right' });
+      currentY += 8;
+      doc.text('Delivery Fee:', pageWidth - 80, currentY);
+      doc.text(`EGP ${order.deliveryFee.toFixed(2)}`, pageWidth - 14, currentY, { align: 'right' });
+      currentY += 8;
+    } else {
+      doc.text('Subtotal:', pageWidth - 80, currentY);
+      doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 14, currentY, { align: 'right' });
+      currentY += 8;
+    }
     
     // Total highlight box
     doc.setFillColor(...green);
-    doc.roundedRect(pageWidth - 100, finalY + 20, 86, 16, 3, 3, 'F');
+    doc.roundedRect(pageWidth - 100, currentY, 86, 16, 3, 3, 'F');
     doc.setFontSize(12);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL', pageWidth - 94, finalY + 30.5);
-    doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 18, finalY + 30.5, { align: 'right' });
+    doc.text('TOTAL', pageWidth - 94, currentY + 10.5);
+    doc.text(`EGP ${order.total.toFixed(2)}`, pageWidth - 18, currentY + 10.5, { align: 'right' });
     
     // ===== FOOTER =====
     const footerY = pageHeight - 30;
@@ -645,7 +680,10 @@ function AdminDashboard() {
                 <div className="order-card-items-toggle" onClick={() => toggleOrderExpand(order.id)}>
                   <ShoppingBag size={14} />
                   <span>{order.items.length} item{order.items.length > 1 ? 's' : ''}</span>
-                  <strong className="order-card-total">EGP {order.total.toFixed(2)}</strong>
+                  <strong className="order-card-total">
+                    EGP {order.total.toFixed(2)}
+                    {order.deliveryFee !== undefined && <span style={{fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginLeft: '4px'}}>(inc. EGP {order.deliveryFee} delivery)</span>}
+                  </strong>
                   {expandedOrders[order.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </div>
 
@@ -658,10 +696,27 @@ function AdminDashboard() {
                         <span className="order-item-price">EGP {(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
+                    {order.deliveryFee !== undefined && (
+                      <div className="order-item-row" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                        <span className="order-item-name">Delivery Fee</span>
+                        <span className="order-item-qty"></span>
+                        <span className="order-item-price">EGP {order.deliveryFee.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 <div className="order-card-actions">
+                  {order.status === 'Pending' && order.isDelivery && (
+                    <button 
+                      className="order-action-btn edit" 
+                      onClick={() => handleSetDeliveryFee(order)} 
+                      title="Set Delivery Fee"
+                    >
+                      <Truck size={15} />
+                      Set Fee
+                    </button>
+                  )}
                   {order.status === 'Pending' && (
                     <button 
                       className="order-action-btn complete" 
