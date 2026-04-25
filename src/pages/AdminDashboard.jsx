@@ -293,9 +293,17 @@ function AdminDashboard() {
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Date: ${new Date(order.orderDate).toLocaleDateString()}`, rightX + 6, infoY + 19);
-    doc.text(`Time: ${new Date(order.orderDate).toLocaleTimeString()}`, rightX + 6, infoY + 27);
-    doc.text(`Items: ${order.items.length}`, rightX + 6, infoY + 35);
+    doc.text(`Date: ${new Date(order.orderDate).toLocaleDateString()}`, rightX + 6, infoY + 18);
+    doc.text(`Time: ${new Date(order.orderDate).toLocaleTimeString()}`, rightX + 6, infoY + 24);
+    doc.text(`Items: ${order.items.length}`, rightX + 6, infoY + 30);
+    doc.setFont('helvetica', 'bold');
+    doc.text(order.isDelivery ? 'Delivery:' : 'Type:', rightX + 6, infoY + 38);
+    doc.setFont('helvetica', 'normal');
+    
+    // Split long address strings for PDF
+    const addressText = order.isDelivery ? (order.deliveryLocation || 'New Damietta') : 'Store Pickup';
+    const splitAddress = doc.splitTextToSize(addressText, (pageWidth - 36) / 2 - 12);
+    doc.text(splitAddress, rightX + 6, infoY + 44);
     
     // ===== ITEMS TABLE =====
     const tableData = order.items.map((item, idx) => [
@@ -625,6 +633,12 @@ function AdminDashboard() {
                   <div className="order-card-customer-row">
                     <Phone size={14} />
                     <span>{order.customerPhone}</span>
+                  </div>
+                  <div className="order-card-customer-row" style={{ color: order.isDelivery ? 'var(--volt-green)' : 'var(--text-secondary)' }}>
+                    <Package size={14} />
+                    <span style={{ fontSize: '0.85rem' }}>
+                      {order.isDelivery ? `Delivery: ${order.deliveryLocation}` : 'Store Pickup'}
+                    </span>
                   </div>
                 </div>
 
