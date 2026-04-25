@@ -5,6 +5,7 @@ import { useCategories } from '../context/CategoryContext';
 import ProductForm from '../components/admin/ProductForm';
 import { Plus, Edit, Trash2, Package, Tag, AlertTriangle, Download, CheckCircle, Clock, RotateCcw, Trash, ChevronDown, ChevronUp, Phone, User, Calendar, ShoppingBag, Search, Check, X, Truck, Barcode as BarcodeIcon } from 'lucide-react';
 import Barcode from 'react-barcode';
+import JsBarcode from 'jsbarcode';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
@@ -457,6 +458,59 @@ function AdminDashboard() {
     doc.save(`Voltech_${orderNum2}_${orderDateStr}.pdf`);
   };
 
+  const generateBarcodesPDF = (order) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = 20;
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Pick List - Order #${order.orderNumber || order.id.slice(-6).toUpperCase()}`, pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    order.items.forEach((item) => {
+      if (yPos > 260) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${item.quantity}x ${item.name}`, 14, yPos);
+      yPos += 8;
+
+      if (item.sku && item.sku !== 'N/A') {
+        try {
+          const canvas = document.createElement('canvas');
+          JsBarcode(canvas, item.sku, { format: "CODE128", displayValue: true, fontSize: 16, height: 50, margin: 0 });
+          const barcodeDataUrl = canvas.toDataURL("image/png");
+          // Add image: scale to approx 60x20
+          doc.addImage(barcodeDataUrl, 'PNG', 14, yPos, 60, 20);
+          yPos += 28;
+        } catch (e) {
+          console.error("Barcode generation failed for PDF", e);
+          doc.setFont('helvetica', 'normal');
+          doc.text(`SKU: ${item.sku}`, 14, yPos);
+          yPos += 10;
+        }
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(150, 150, 150);
+        doc.text("No Barcode Assigned", 14, yPos);
+        doc.setTextColor(0, 0, 0);
+        yPos += 10;
+      }
+      
+      // Divider
+      doc.setDrawColor(220, 220, 220);
+      doc.line(14, yPos, pageWidth - 14, yPos);
+      yPos += 10;
+    });
+
+    const orderNum2 = order.orderNumber || ('VT-' + order.id.slice(-6).toUpperCase());
+    doc.save(`Voltech_PickList_${orderNum2}.pdf`);
+  };
+
   const pendingOrdersCount = orders ? orders.filter(o => o.status === 'Pending').length : 0;
 
   // Group products by category
@@ -774,6 +828,15 @@ function AdminDashboard() {
                   >
                     <Download size={15} />
                     PDF
+                  </button>
+                  <button 
+                    className="order-action-btn edit" 
+                    onClick={() => generateBarcodesPDF(order)} 
+                    title="Download Pick List PDF with Barcodes"
+                    style={{ backgroundColor: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                  >
+                    <BarcodeIcon size={15} />
+                    Pick List
                   </button>
                   {(order.status === 'Completed' || order.status === 'Pending') && (
                     <button 
