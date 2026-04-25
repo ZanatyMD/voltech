@@ -72,27 +72,53 @@ function ProductForm({ product, onClose }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageFile = (file) => {
-    if (!file || !file.type.startsWith('image/')) return;
-    
+  const compressImage = (file, callback) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      setFormData(prev => ({ ...prev, imageUrl: e.target.result }));
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 800; // Resize to max 800px
+
+        if (width > height && width > maxDimension) {
+          height = Math.round((height * maxDimension) / width);
+          width = maxDimension;
+        } else if (height > maxDimension) {
+          width = Math.round((width * maxDimension) / height);
+          height = maxDimension;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Export as WebP/JPEG with 0.7 quality to reduce base64 size drastically
+        const compressedDataUrl = canvas.toDataURL('image/webp', 0.7);
+        callback(compressedDataUrl);
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   };
 
+  const handleImageFile = (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    compressImage(file, (compressedDataUrl) => {
+      setFormData(prev => ({ ...prev, imageUrl: compressedDataUrl }));
+    });
+  };
+
   const handleGalleryImageFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    compressImage(file, (compressedDataUrl) => {
       setFormData(prev => ({ 
         ...prev, 
-        galleryImages: [...prev.galleryImages, e.target.result] 
+        galleryImages: [...prev.galleryImages, compressedDataUrl] 
       }));
-    };
-    reader.readAsDataURL(file);
+    });
   };
 
   const removeGalleryImage = (index) => {
