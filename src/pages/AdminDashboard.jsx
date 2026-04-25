@@ -21,6 +21,87 @@ function AdminDashboard() {
   const [orderSearch, setOrderSearch] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
   const [editCategoryName, setEditCategoryName] = useState('');
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState('');
+
+  const compressBase64Image = (base64Str) => {
+    return new Promise((resolve) => {
+      // Compress if it's a data URL larger than ~200KB
+      if (!base64Str || !base64Str.startsWith('data:image') || base64Str.length < 200000) {
+        resolve(base64Str);
+        return;
+      }
+      
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 800;
+
+        if (width > height && width > maxDimension) {
+          height = Math.round((height * maxDimension) / width);
+          width = maxDimension;
+        } else if (height > maxDimension) {
+          width = Math.round((width * maxDimension) / height);
+          height = maxDimension;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/webp', 0.7));
+      };
+      img.onerror = () => resolve(base64Str);
+      img.src = base64Str;
+    });
+  };
+
+  const handleFixOldImages = async () => {
+    if (!window.confirm('This will automatically compress all large images in your database to make your website load instantly. Continue?')) return;
+    setIsCompressing(true);
+    let fixedCount = 0;
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      setCompressionProgress(`Compressing product ${i + 1} of ${products.length}...`);
+      
+      let needsUpdate = false;
+      const updates = {};
+
+      if (product.imageUrl && product.imageUrl.length > 200000) {
+        updates.imageUrl = await compressBase64Image(product.imageUrl);
+        needsUpdate = true;
+      }
+
+      if (product.galleryImages && product.galleryImages.length > 0) {
+        const newGallery = [];
+        for (const img of product.galleryImages) {
+          if (img.length > 200000) {
+            newGallery.push(await compressBase64Image(img));
+            needsUpdate = true;
+          } else {
+            newGallery.push(img);
+          }
+        }
+        if (needsUpdate) updates.galleryImages = newGallery;
+      }
+
+      if (needsUpdate) {
+        try {
+          await updateProduct(product.id, updates);
+          fixedCount++;
+        } catch(e) {
+          console.error("Error updating product image size", e);
+        }
+      }
+    }
+    
+    setCompressionProgress('');
+    setIsCompressing(false);
+    alert(`Complete! Compressed images for ${fixedCount} products. Your website should load instantly now.`);
+  };
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
@@ -333,10 +414,16 @@ function AdminDashboard() {
           <p className="section-subtitle">Manage your store inventory and orders</p>
         </div>
         {activeTab === 'products' && (
-          <button className="btn btn-primary" onClick={handleAddNew}>
-            <Plus size={18} />
-            Add Product
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-secondary" onClick={handleFixOldImages} disabled={isCompressing}>
+              <AlertTriangle size={18} />
+              {isCompressing ? compressionProgress : 'Fix Old Images'}
+            </button>
+            <button className="btn btn-primary" onClick={handleAddNew}>
+              <Plus size={18} />
+              Add Product
+            </button>
+          </div>
         )}
         {activeTab === 'orders' && orders && orders.length > 0 && (
           <button className="btn btn-danger" onClick={handleDeleteAllOrders}>
