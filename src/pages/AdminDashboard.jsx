@@ -107,7 +107,7 @@ function AdminDashboard() {
   };
 
   const handleGenerateSKUs = async () => {
-    if (!window.confirm('This will automatically generate a unique 8-digit numeric barcode (SKU) for any product that doesn\\'t have one yet. Continue?')) return;
+    if (!window.confirm("This will automatically generate a unique 8-digit numeric barcode (SKU) for any product that doesn't have one yet. Continue?")) return;
     setIsGeneratingSKUs(true);
     let updatedCount = 0;
 
