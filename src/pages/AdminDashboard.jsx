@@ -9,6 +9,7 @@ import JsBarcode from 'jsbarcode';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
+import { AmiriFont } from '../assets/AmiriFont';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
@@ -249,6 +250,10 @@ function AdminDashboard() {
 
   const generatePDF = (order) => {
     const doc = new jsPDF();
+    doc.addFileToVFS('Amiri-Regular.ttf', AmiriFont);
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal', 'Identity-H');
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'bold', 'Identity-H');
+    
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const green = [126, 200, 67];
@@ -302,8 +307,8 @@ function AdminDashboard() {
     
     doc.setFontSize(11);
     doc.setTextColor(30, 30, 30);
-    doc.setFont('helvetica', 'bold');
-    doc.text(order.customerName, 20, infoY + 19);
+    doc.setFont('Amiri', 'bold');
+    doc.text(doc.processArabic(order.customerName || ''), 20, infoY + 19);
     
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
@@ -347,13 +352,14 @@ function AdminDashboard() {
     
     // Split long address strings for PDF
     const addressText = order.isDelivery ? (order.deliveryLocation || 'New Damietta') : 'Store Pickup';
-    const splitAddress = doc.splitTextToSize(addressText, (pageWidth - 36) / 2 - 12);
+    doc.setFont('Amiri', 'normal');
+    const splitAddress = doc.splitTextToSize(doc.processArabic(addressText), (pageWidth - 36) / 2 - 12);
     doc.text(splitAddress, rightX + 6, infoY + 44);
     
     // ===== ITEMS TABLE =====
     const tableData = order.items.map((item, idx) => [
       (idx + 1).toString(),
-      item.name,
+      doc.processArabic(item.name || ''),
       item.quantity.toString(),
       `EGP ${item.price.toFixed(2)}`,
       `EGP ${(item.price * item.quantity).toFixed(2)}`
@@ -375,7 +381,8 @@ function AdminDashboard() {
       bodyStyles: {
         fontSize: 9,
         cellPadding: 6,
-        textColor: [40, 40, 40]
+        textColor: [40, 40, 40],
+        font: 'Amiri'
       },
       alternateRowStyles: {
         fillColor: [250, 250, 252]
@@ -460,6 +467,9 @@ function AdminDashboard() {
 
   const generateBarcodesPDF = (order) => {
     const doc = new jsPDF();
+    doc.addFileToVFS('Amiri-Regular.ttf', AmiriFont);
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal', 'Identity-H');
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'bold', 'Identity-H');
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
 
@@ -475,8 +485,8 @@ function AdminDashboard() {
       }
 
       doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${item.quantity}x ${item.name}`, 14, yPos);
+      doc.setFont('Amiri', 'bold');
+      doc.text(`${item.quantity}x ${doc.processArabic(item.name || '')}`, 14, yPos);
       yPos += 8;
 
       if (item.sku && item.sku !== 'N/A') {
