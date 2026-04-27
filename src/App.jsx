@@ -8,12 +8,14 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import CartDrawer from './components/CartDrawer';
+import Toast from './components/Toast';
 
 function App() {
   return (
     <div className="app">
       <Navbar />
       <CartDrawer />
+      <Toast />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />

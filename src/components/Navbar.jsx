@@ -1,17 +1,43 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { Sun, Moon, Zap, Shield, LogOut, ShoppingCart, MapPin, Home, Package, Info } from 'lucide-react';
+import { Zap, Shield, LogOut, ShoppingCart, MapPin, Home, Package, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import './Navbar.css';
 
 function Navbar() {
-  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith('/admin');
+  const [activeSection, setActiveSection] = useState('home');
+
+  // Track scroll position to highlight Products link
+  useEffect(() => {
+    const handleScroll = () => {
+      const productsSection = document.getElementById('products-section');
+      if (productsSection) {
+        const rect = productsSection.getBoundingClientRect();
+        if (rect.top <= 200 && rect.bottom > 200) {
+          setActiveSection('products');
+        } else {
+          setActiveSection('home');
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Reset active section when navigating away from home
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setActiveSection('');
+    } else {
+      setActiveSection('home');
+    }
+  }, [location.pathname]);
 
   const handleProductsClick = (e) => {
     e.preventDefault();
@@ -41,14 +67,13 @@ function Navbar() {
           </div>
         </Link>
 
-        {/* Navigation Links (storefront only) */}
         {!isAdmin && (
           <div className="navbar-links">
-            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+            <Link to="/" className={`nav-link ${activeSection === 'home' && location.pathname === '/' ? 'active' : ''}`}>
               <Home size={15} />
               <span>Home</span>
             </Link>
-            <a href="#products-section" className="nav-link" onClick={handleProductsClick}>
+            <a href="#products-section" className={`nav-link ${activeSection === 'products' ? 'active' : ''}`} onClick={handleProductsClick}>
               <Package size={15} />
               <span>Products</span>
             </a>
@@ -93,19 +118,6 @@ function Navbar() {
               <span className="nav-btn-text">Dashboard</span>
             </Link>
           )}
-
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            id="theme-toggle"
-            aria-label="Toggle theme"
-          >
-            <div className={`toggle-track ${theme}`}>
-              <div className="toggle-thumb">
-                {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
-              </div>
-            </div>
-          </button>
         </div>
       </div>
     </nav>

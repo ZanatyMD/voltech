@@ -10,13 +10,14 @@ const defaultCategories = ['Laptops', 'Smartphones', 'Audio', 'Accessories', 'Ga
 export function CategoryProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hasSeeded, setHasSeeded] = useState(false);
 
   useEffect(() => {
+    const alreadySeeded = localStorage.getItem('voltech-categories-seeded');
+
     const unsubscribe = onSnapshot(collection(db, 'categories'), (snapshot) => {
-      if (snapshot.empty && !hasSeeded) {
+      if (snapshot.empty && !alreadySeeded) {
         console.log("Seeding default categories...");
-        setHasSeeded(true);
+        localStorage.setItem('voltech-categories-seeded', 'true');
         defaultCategories.forEach(async (catName) => {
           try {
             await setDoc(doc(db, 'categories', catName), { name: catName });
@@ -35,7 +36,7 @@ export function CategoryProvider({ children }) {
     });
 
     return () => unsubscribe();
-  }, [hasSeeded]);
+  }, []);
 
   const addCategory = async (name) => {
     if (!name.trim()) return;
@@ -51,11 +52,8 @@ export function CategoryProvider({ children }) {
     if (!newName.trim() || oldName === newName.trim()) return;
     const trimmed = newName.trim();
     try {
-      // Create new category doc
       await setDoc(doc(db, 'categories', trimmed), { name: trimmed });
-      // Delete old category doc
       await deleteDoc(doc(db, 'categories', oldName));
-      // Update all products that had the old category
       const productsSnap = await getDocs(
         query(collection(db, 'products'), where('category', '==', oldName))
       );
@@ -86,4 +84,3 @@ export function CategoryProvider({ children }) {
 }
 
 export const useCategories = () => useContext(CategoryContext);
-

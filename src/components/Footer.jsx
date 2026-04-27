@@ -18,7 +18,7 @@ function Footer() {
           </p>
           <div className="social-links">
             <a href="mailto:voltechstore26@gmail.com" target="_blank" rel="noreferrer" aria-label="Mail"><Mail size={20} /></a>
-            <a href="https://wa.me/201503476600" target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={20} /></a>
+            <a href="https://wa.me/201031643665" target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={20} /></a>
             <a href="https://www.instagram.com/voltech.da/" target="_blank" rel="noreferrer" aria-label="Instagram"><Camera size={20} /></a>
           </div>
         </div>
@@ -34,7 +34,7 @@ function Footer() {
           <div className="footer-column">
             <h4>Contact & Social</h4>
             <ul>
-              <li><a href="https://wa.me/201503476600" target="_blank" rel="noreferrer">WhatsApp Chat</a></li>
+              <li><a href="https://wa.me/201031643665" target="_blank" rel="noreferrer">WhatsApp Chat</a></li>
               <li><a href="https://www.instagram.com/voltech.da/" target="_blank" rel="noreferrer">Instagram Page</a></li>
               <li><a href="mailto:voltechstore26@gmail.com" target="_blank" rel="noreferrer">Email Support</a></li>
             </ul>

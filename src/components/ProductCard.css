@@ -13,7 +13,7 @@
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(245, 200, 66, 0.08);
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
 }
@@ -35,8 +35,8 @@
 }
 
 .out-of-stock {
-  opacity: 0.8;
-  filter: grayscale(0.5);
+  opacity: 0.75;
+  filter: grayscale(0.4);
 }
 
 /* Discount Badge */
@@ -61,7 +61,7 @@
 .product-image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 75%; /* 4:3 aspect ratio */
+  padding-top: 75%;
   overflow: hidden;
   background: var(--bg-secondary);
 }
@@ -84,7 +84,7 @@
 .product-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 10, 15, 0.7);
+  background: rgba(7, 8, 13, 0.75);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -108,24 +108,28 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--text-muted);
+  color: var(--volt-yellow);
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
+/* FIXED: Product name fully visible */
 .product-name {
-  font-size: 1.1rem;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex-grow: 1;
+  word-break: break-word;
 }
 
 .product-name-link {
@@ -134,7 +138,7 @@
 }
 
 .product-name-link:hover .product-name {
-  color: var(--volt-green);
+  color: var(--volt-yellow);
 }
 
 /* Pricing */
@@ -147,7 +151,7 @@
 
 .price-current {
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--volt-green);
 }
@@ -189,25 +193,11 @@
 }
 .stock-indicator.in { color: var(--text-secondary); }
 
-.stock-indicator.low .stock-dot {
-  background: var(--volt-yellow-dark);
-  box-shadow: 0 0 8px var(--volt-yellow-dark);
-}
-.stock-indicator.low { color: var(--volt-yellow-dark); }
-
 .stock-indicator.out .stock-dot {
   background: var(--volt-red);
   box-shadow: 0 0 8px var(--volt-red);
 }
 .stock-indicator.out { color: var(--volt-red); }
-
-.stock-count {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
 
 .add-to-cart-btn {
   width: 100%;

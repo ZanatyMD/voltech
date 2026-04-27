@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
+import { showToast } from '../components/Toast';
 import { Tag, ShoppingCart, TrendingDown, ChevronLeft, Package } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import './ProductDetail.css';
@@ -9,7 +10,7 @@ import './ProductDetail.css';
 function ProductDetail() {
   const { id } = useParams();
   const { getProduct, products } = useProducts();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -43,18 +44,40 @@ function ProductDetail() {
   const discountPercent = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
   const isInStock = stock > 0;
 
-  // Build images array: main image + gallery images
   const allImages = [imageUrl, ...(galleryImages || [])].filter(Boolean);
 
-  // Related products from same category
   const relatedProducts = products
     .filter(p => p.category === category && p.id !== id)
     .slice(0, 4);
 
   const handleAddToCart = () => {
+    const existingItem = cartItems.find(item => item.id === product.id);
+    const currentQty = existingItem ? existingItem.quantity : 0;
+    
+    if (currentQty + quantity > stock) {
+      const remaining = stock - currentQty;
+      if (remaining <= 0) {
+        showToast(`Sorry, only ${stock} item${stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+      } else {
+        showToast(`Sorry, you can only add ${remaining} more item${remaining > 1 ? 's' : ''}.`, 'error');
+      }
+      return;
+    }
+
     for (let i = 0; i < quantity; i++) {
       addToCart(product);
     }
+    showToast(`${quantity}x ${name} added to cart!`, 'success', 2000);
+  };
+
+  const handleQuantityChange = (newQty) => {
+    if (newQty < 1) return;
+    if (newQty > stock) {
+      showToast(`Sorry, only ${stock} item${stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+      setQuantity(stock);
+      return;
+    }
+    setQuantity(newQty);
   };
 
   useEffect(() => {
@@ -137,7 +160,7 @@ function ProductDetail() {
 
             <div className={`pd-stock ${isInStock ? 'in' : 'out'}`}>
               <div className="pd-stock-dot"></div>
-              {isInStock ? 'In Stock' : 'Out of Stock'}
+              {isInStock ? `${stock} In Stock` : 'Out of Stock'}
             </div>
 
             {description && (
@@ -152,12 +175,12 @@ function ProductDetail() {
                 <div className="pd-qty">
                   <button 
                     className="pd-qty-btn" 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    onClick={() => handleQuantityChange(quantity - 1)}
                   >−</button>
                   <span className="pd-qty-value">{quantity}</span>
                   <button 
                     className="pd-qty-btn" 
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => handleQuantityChange(quantity + 1)}
                   >+</button>
                 </div>
               )}

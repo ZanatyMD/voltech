@@ -619,92 +619,72 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Category Squares + Out of Stock Square */}
-          <div className="category-grid">
-            {/* Out of Stock Square (Red) */}
+          {/* === VERTICAL PRODUCT LIST === */}
+          <div className="product-list-vertical">
+            {/* Out of Stock Section — FIRST */}
             {outOfStockProducts.length > 0 && (
-              <div className="category-square out-of-stock-square">
-                <div className="category-square-header oos-header">
-                  <AlertTriangle size={16} />
-                  <h3>Out of Stock</h3>
-                  <span className="category-count oos-count">{outOfStockProducts.length}</span>
+              <>
+                <div className="product-list-section-title oos-title">
+                  <AlertTriangle size={18} />
+                  Out of Stock
+                  <span className="section-count">{outOfStockProducts.length}</span>
                 </div>
-                <div className="category-product-list">
-                  {outOfStockProducts.map(product => (
-                    <div className="category-product-item out" key={product.id}>
-                      <img src={product.imageUrl} alt={product.name} className="cat-product-img" />
-                      <div className="cat-product-info">
-                        <span className="cat-product-name">{product.name}</span>
-                        <span className="cat-product-price">EGP {product.currentPrice.toFixed(2)}</span>
+                {outOfStockProducts.map(product => (
+                  <div className="product-row-card out-of-stock-row" key={product.id}>
+                    <div className="product-row-stock out">Out of Stock</div>
+                    <img src={product.imageUrl} alt={product.name} className="product-row-img" />
+                    <div className="product-row-info">
+                      <span className="product-row-name">{product.name}</span>
+                      <span className="product-row-category">{product.category}</span>
+                      <div className="product-row-price">
+                        <span className="current">EGP {product.currentPrice.toFixed(2)}</span>
+                        {product.originalPrice > product.currentPrice && <span className="original">EGP {product.originalPrice.toFixed(2)}</span>}
                       </div>
-                      <div className="cat-stock-badge out">Out</div>
-                      <div className="cat-product-barcode" style={{ marginTop: '10px', transform: 'scale(0.8)', transformOrigin: 'left top' }}>
-                        {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={12} width={1.5} /> : <span style={{fontSize:'0.8rem', color:'gray'}}>No Barcode</span>}
+                    </div>
+                    <div className="product-row-barcode">
+                      {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={11} width={1.2} /> : <span style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>No Barcode</span>}
+                    </div>
+                    <div className="product-row-actions">
+                      <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit"><Edit size={16} /></button>
+                      <button className="btn-icon delete" onClick={() => handleDelete(product.id)} title="Delete"><Trash2 size={16} /></button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* In-Stock Products by Category */}
+            {Object.keys(productsByCategory).map(category => {
+              const catProducts = productsByCategory[category].filter(p => p.stock > 0);
+              if (catProducts.length === 0) return null;
+              return (
+                <div key={category}>
+                  <div className="product-list-section-title">
+                    <Tag size={18} />
+                    {category}
+                    <span className="section-count">{catProducts.length}</span>
+                  </div>
+                  {catProducts.map(product => (
+                    <div className="product-row-card" key={product.id}>
+                      <div className="product-row-stock in">{product.stock} in stock</div>
+                      <img src={product.imageUrl} alt={product.name} className="product-row-img" />
+                      <div className="product-row-info">
+                        <span className="product-row-name">{product.name}</span>
+                        <span className="product-row-category">{product.category}</span>
+                        <div className="product-row-price">
+                          <span className="current">EGP {product.currentPrice.toFixed(2)}</span>
+                          {product.originalPrice > product.currentPrice && <span className="original">EGP {product.originalPrice.toFixed(2)}</span>}
+                        </div>
                       </div>
-                      <div className="cat-product-actions">
-                        <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit">
-                          <Edit size={14} />
-                        </button>
-                        <button className="btn-icon delete" onClick={() => handleDelete(product.id)} title="Delete">
-                          <Trash2 size={14} />
-                        </button>
+                      <div className="product-row-barcode">
+                        {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={11} width={1.2} /> : <span style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>No Barcode</span>}
+                      </div>
+                      <div className="product-row-actions">
+                        <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit"><Edit size={16} /></button>
+                        <button className="btn-icon delete" onClick={() => handleDelete(product.id)} title="Delete"><Trash2 size={16} /></button>
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Category Squares */}
-            {Object.keys(productsByCategory).map(category => {
-              const catProducts = productsByCategory[category];
-              const catInStock = catProducts.filter(p => p.stock > 0).length;
-              const catOutOfStock = catProducts.filter(p => p.stock === 0).length;
-
-              return (
-                <div className="category-square" key={category}>
-                  <div className="category-square-header">
-                    <Tag size={16} />
-                    <h3>{category}</h3>
-                    <span className="category-count">{catProducts.length}</span>
-                  </div>
-                  <div className="category-stock-info">
-                    {catInStock > 0 && (
-                      <span className="stock-pill in-stock">
-                        <CheckCircle size={12} /> {catInStock} In Stock
-                      </span>
-                    )}
-                    {catOutOfStock > 0 && (
-                      <span className="stock-pill out-of-stock">
-                        <AlertTriangle size={12} /> {catOutOfStock} Out
-                      </span>
-                    )}
-                  </div>
-                  <div className="category-product-list">
-                    {catProducts.map(product => (
-                      <div className={`category-product-item ${product.stock === 0 ? 'out' : ''}`} key={product.id}>
-                        <img src={product.imageUrl} alt={product.name} className="cat-product-img" />
-                        <div className="cat-product-info">
-                          <span className="cat-product-name">{product.name}</span>
-                          <span className="cat-product-price">EGP {product.currentPrice.toFixed(2)}</span>
-                        </div>
-                        <div className={`cat-stock-badge ${product.stock > 0 ? 'in' : 'out'}`}>
-                          {product.stock > 0 ? `${product.stock}` : 'Out'}
-                        </div>
-                        <div className="cat-product-barcode" style={{ marginTop: '10px', transform: 'scale(0.8)', transformOrigin: 'left top', gridColumn: '1 / -1' }}>
-                          {product.sku ? <Barcode value={product.sku} format="CODE128" height={30} displayValue={true} fontSize={12} width={1.5} /> : <span style={{fontSize:'0.8rem', color:'gray'}}>No Barcode</span>}
-                        </div>
-                        <div className="cat-product-actions">
-                          <button className="btn-icon edit" onClick={() => handleEdit(product)} title="Edit">
-                            <Edit size={14} />
-                          </button>
-                          <button className="btn-icon delete" onClick={() => handleDelete(product.id)} title="Delete">
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               );
             })}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
 import { Filter, Search, Loader } from 'lucide-react';
@@ -25,6 +25,32 @@ function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const gridRef = useRef(null);
+
+  // IntersectionObserver for scroll reveal animations
+  useEffect(() => {
+    if (loading) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            // Add staggered delay
+            setTimeout(() => {
+              entry.target.classList.add('revealed');
+            }, index * 80);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    const cards = gridRef.current?.querySelectorAll('.scroll-reveal');
+    cards?.forEach(card => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [loading, activeCategory, searchQuery, products]);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
@@ -86,7 +112,7 @@ function ProductGrid() {
             </div>
           </>
         ) : filteredProducts.length > 0 ? (
-          <div className="product-grid">
+          <div className="product-grid" ref={gridRef}>
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}

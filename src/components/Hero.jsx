@@ -21,7 +21,6 @@ function Hero() {
     const ctx = canvas.getContext('2d');
     let animationId;
     let particles = [];
-    let connections = [];
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -30,7 +29,7 @@ function Hero() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Create particles
+    // Create particles — use Electric Blue + Cyber Lime
     for (let i = 0; i < 80; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -38,7 +37,7 @@ function Hero() {
         vx: (Math.random() - 0.5) * 0.4,
         vy: (Math.random() - 0.5) * 0.4,
         radius: Math.random() * 2 + 0.5,
-        color: Math.random() > 0.7 ? '#F5C842' : '#7EC843',
+        color: Math.random() > 0.5 ? '#F5C842' : '#7EC843',
         opacity: Math.random() * 0.5 + 0.1,
       });
     }
@@ -46,7 +45,6 @@ function Hero() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update and draw particles
       particles.forEach((p, i) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -61,7 +59,6 @@ function Hero() {
         ctx.globalAlpha = p.opacity;
         ctx.fill();
 
-        // Draw connections
         for (let j = i + 1; j < particles.length; j++) {
           const dx = p.x - particles[j].x;
           const dy = p.y - particles[j].y;
@@ -70,8 +67,8 @@ function Hero() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = '#7EC843';
-            ctx.globalAlpha = (1 - dist / 120) * 0.15;
+            ctx.strokeStyle = '#F5C842';
+            ctx.globalAlpha = (1 - dist / 120) * 0.12;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -97,11 +94,20 @@ function Hero() {
 
   return (
     <section className="hero" id="hero">
-      {/* Background image layer */}
-      <div className="hero-bg" style={{ 
-        transform: `translateY(${scrollY * 0.4}px) scale(${1 + scrollY * 0.0005})`,
-        opacity: 0.35 - scrollFactor * 0.2
-      }}></div>
+      {/* Background Video */}
+      <video
+        className="hero-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          transform: `translateY(${scrollY * 0.4}px) scale(${1 + scrollY * 0.0005})`,
+          opacity: 0.3 - scrollFactor * 0.15
+        }}
+      >
+        <source src="https://videos.pexels.com/video-files/5532773/5532773-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+      </video>
 
       {/* Canvas particle network */}
       <canvas 
@@ -147,13 +153,12 @@ function Hero() {
         </div>
 
         <h1 className="hero-title animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <span className="hero-title-accent">VOLTECH</span>
           <span className="hero-title-line">Built For Students</span>
-          <span className="hero-title-accent">Voltech is Here !!</span>
         </h1>
 
         <p className="hero-description animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          Tired of the same options ? <br/>
-          Yeah ..... us too .
+          Your ultimate destination for electronics and components.
         </p>
 
         <div className="hero-actions animate-fade-in-up" style={{ animationDelay: '0.3s' }}>

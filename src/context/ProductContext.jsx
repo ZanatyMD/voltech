@@ -8,14 +8,15 @@ const ProductContext = createContext();
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hasSeeded, setHasSeeded] = useState(false);
 
   useEffect(() => {
+    const alreadySeeded = localStorage.getItem('voltech-products-seeded');
+
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
-      if (snapshot.empty && !hasSeeded) {
-        // Seed the database with demo products if it's completely empty on first load
+      if (snapshot.empty && !alreadySeeded) {
+        // Seed the database with demo products only on very first use
         console.log("Seeding database with demo products...");
-        setHasSeeded(true);
+        localStorage.setItem('voltech-products-seeded', 'true');
         demoProducts.forEach(async (p) => {
           try {
             await setDoc(doc(db, 'products', String(p.id)), {
@@ -48,7 +49,7 @@ export function ProductProvider({ children }) {
     });
 
     return () => unsubscribe();
-  }, [hasSeeded]);
+  }, []);
 
   const addProduct = async (product) => {
     try {
