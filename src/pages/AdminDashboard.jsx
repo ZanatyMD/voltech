@@ -10,6 +10,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { logoBase64 } from '../assets/logoBase64';
 import { AmiriFont } from '../assets/AmiriFont';
+import { smartSearch } from '../utils/search';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
@@ -27,6 +28,7 @@ function AdminDashboard() {
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressionProgress, setCompressionProgress] = useState('');
   const [isGeneratingSKUs, setIsGeneratingSKUs] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
 
   const compressBase64Image = (base64Str) => {
     return new Promise((resolve) => {
@@ -523,9 +525,12 @@ function AdminDashboard() {
 
   const pendingOrdersCount = orders ? orders.filter(o => o.status === 'Pending').length : 0;
 
+  // Filter products by smart search
+  const filteredProductsForAdmin = products.filter(p => smartSearch(p.name, productSearch));
+
   // Group products by category
   const productsByCategory = {};
-  products.forEach(product => {
+  filteredProductsForAdmin.forEach(product => {
     const cat = product.category || 'Uncategorized';
     if (!productsByCategory[cat]) {
       productsByCategory[cat] = [];
@@ -533,8 +538,8 @@ function AdminDashboard() {
     productsByCategory[cat].push(product);
   });
 
-  const inStockProducts = products.filter(p => p.stock > 0);
-  const outOfStockProducts = products.filter(p => p.stock === 0);
+  const inStockProducts = filteredProductsForAdmin.filter(p => p.stock > 0);
+  const outOfStockProducts = filteredProductsForAdmin.filter(p => p.stock === 0);
 
   return (
     <div className="admin-dashboard container">
@@ -619,6 +624,18 @@ function AdminDashboard() {
             </div>
           </div>
 
+          {/* Product Search Box */}
+          <div className="order-search-box" style={{ marginBottom: '24px' }}>
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Search products by name, synonym (e.g. sensor -> module)..."
+              value={productSearch}
+              onChange={e => setProductSearch(e.target.value)}
+              className="form-input order-search-input"
+            />
+          </div>
+
           {/* === VERTICAL PRODUCT LIST === */}
           <div className="product-list-vertical">
             {/* Out of Stock Section — FIRST */}
@@ -690,10 +707,10 @@ function AdminDashboard() {
             })}
           </div>
 
-          {products.length === 0 && (
+          {filteredProductsForAdmin.length === 0 && (
             <div className="empty-state">
               <Package size={48} />
-              <p>No products found. Add some to get started!</p>
+              <p>{productSearch ? 'No products match your search.' : 'No products found. Add some to get started!'}</p>
             </div>
           )}
         </>

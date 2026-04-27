@@ -21,6 +21,8 @@ function SkeletonCard() {
   );
 }
 
+import { smartSearch } from '../utils/search';
+
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
@@ -54,7 +56,7 @@ function ProductGrid() {
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = smartSearch(product.name, searchQuery);
     return matchesCategory && matchesSearch;
   });
 
