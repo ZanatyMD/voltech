@@ -14,7 +14,7 @@ function Hero() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Canvas particle system
+  // Pro Canvas animation — Tech Data Streams & Glowing Orbs
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -29,49 +29,45 @@ function Hero() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Create particles — use Electric Blue + Cyber Lime
-    for (let i = 0; i < 80; i++) {
+    // Create high-tech particles
+    for (let i = 0; i < 150; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        length: Math.random() * 40 + 10,
+        speed: Math.random() * 3 + 1,
         radius: Math.random() * 2 + 0.5,
         color: Math.random() > 0.5 ? '#F5C842' : '#7EC843',
-        opacity: Math.random() * 0.5 + 0.1,
+        opacity: Math.random() * 0.6 + 0.1,
+        type: Math.random() > 0.7 ? 'orb' : 'stream'
       });
     }
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+      particles.forEach((p) => {
+        // Move particles upwards (warp speed effect)
+        p.y -= p.speed;
+        if (p.y < -50) {
+          p.y = canvas.height + 50;
+          p.x = Math.random() * canvas.width;
+        }
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
         ctx.globalAlpha = p.opacity;
-        ctx.fill();
+        ctx.fillStyle = p.color;
 
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = p.x - particles[j].x;
-          const dy = p.y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = '#F5C842';
-            ctx.globalAlpha = (1 - dist / 120) * 0.12;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
+        if (p.type === 'stream') {
+          // Draw falling data streams
+          ctx.fillRect(p.x, p.y, 2, p.length);
+        } else {
+          // Draw glowing orbs
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+          ctx.shadowBlur = 0; // reset
         }
       });
 
@@ -94,20 +90,10 @@ function Hero() {
 
   return (
     <section className="hero" id="hero">
-      {/* Background Video */}
-      <video
-        className="hero-video"
-        autoPlay
-        muted
-        loop
-        playsInline
-        style={{
-          transform: `translateY(${scrollY * 0.4}px) scale(${1 + scrollY * 0.0005})`,
-          opacity: 0.3 - scrollFactor * 0.15
-        }}
-      >
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-circuit-board-animation-with-glowing-lines-32810-large.mp4" type="video/mp4" />
-      </video>
+      {/* 3D Cyber Grid Background */}
+      <div className="cyber-grid-wrapper">
+        <div className="cyber-grid"></div>
+      </div>
 
       {/* Canvas particle network */}
       <canvas 
