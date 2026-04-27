@@ -106,7 +106,7 @@ function Hero() {
           opacity: 0.3 - scrollFactor * 0.15
         }}
       >
-        <source src="https://videos.pexels.com/video-files/2620041/2620041-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-circuit-board-animation-with-glowing-lines-32810-large.mp4" type="video/mp4" />
       </video>
 
       {/* Canvas particle network */}
@@ -158,7 +158,7 @@ function Hero() {
         </h1>
 
         <p className="hero-description animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          Tired of the same options ?<br />
+          Tired of the same options ? <br />
           Yeah .... Us too .
         </p>
 
