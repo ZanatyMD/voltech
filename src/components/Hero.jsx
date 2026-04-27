@@ -106,7 +106,7 @@ function Hero() {
           opacity: 0.3 - scrollFactor * 0.15
         }}
       >
-        <source src="https://videos.pexels.com/video-files/5532773/5532773-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+        <source src="https://videos.pexels.com/video-files/2620041/2620041-uhd_2560_1440_30fps.mp4" type="video/mp4" />
       </video>
 
       {/* Canvas particle network */}
@@ -158,7 +158,8 @@ function Hero() {
         </h1>
 
         <p className="hero-description animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          Your ultimate destination for electronics and components.
+          Tired of the same options ?<br />
+          Yeah .... Us too .
         </p>
 
         <div className="hero-actions animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
@@ -179,6 +180,9 @@ function Hero() {
         style={{ opacity: 1 - scrollFactor * 2 }}>
         <ChevronDown size={24} />
       </button>
+
+      {/* Smooth fade at bottom */}
+      <div className="hero-fade-bottom"></div>
     </section>
   );
 }

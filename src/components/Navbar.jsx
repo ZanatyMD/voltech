@@ -69,10 +69,18 @@ function Navbar() {
 
         {!isAdmin && (
           <div className="navbar-links">
-            <Link to="/" className={`nav-link ${activeSection === 'home' && location.pathname === '/' ? 'active' : ''}`}>
+            <a href="#hero" className={`nav-link ${activeSection === 'home' && location.pathname === '/' ? 'active' : ''}`} onClick={(e) => {
+              e.preventDefault();
+              if (location.pathname !== '/') {
+                navigate('/');
+                setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}>
               <Home size={15} />
               <span>Home</span>
-            </Link>
+            </a>
             <a href="#products-section" className={`nav-link ${activeSection === 'products' ? 'active' : ''}`} onClick={handleProductsClick}>
               <Package size={15} />
               <span>Products</span>
