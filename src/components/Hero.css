@@ -15,39 +15,46 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
-  background: linear-gradient(to top, #030306, transparent);
+  height: 250px;
+  background: linear-gradient(to bottom, transparent, var(--bg-primary));
   z-index: 10;
   pointer-events: none;
 }
 
-/* ===== BACKGROUND VIDEO ===== */
-.hero-video-container {
+/* ===== SIMPLE PRO BACKGROUND (NO YT/VIDEO) ===== */
+.pro-bg-container {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  min-width: 100vw;
-  min-height: 100vh;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
+  inset: 0;
+  background: var(--bg-primary);
   overflow: hidden;
-  background: #030306;
+  z-index: 0;
 }
 
-/* We make the iframe larger than the container to hide YouTube titles/logos at the edges */
-.hero-video {
+.pro-bg-gradient {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 150vw;
-  height: 150vh;
-  transform: translate(-50%, -50%);
+  inset: -50%;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(126, 200, 67, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(245, 200, 66, 0.05) 0%, transparent 30%);
+  animation: slowPulse 10s ease-in-out infinite alternate;
   pointer-events: none;
-  border: none;
-  filter: brightness(0.6) saturate(1.2);
+}
+
+.pro-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  pointer-events: none;
+}
+
+@keyframes slowPulse {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  100% { transform: scale(1.1) rotate(5deg); opacity: 1; }
 }
 
 /* ===== CANVAS ===== */

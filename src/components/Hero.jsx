@@ -90,17 +90,10 @@ function Hero() {
 
   return (
     <section className="hero" id="hero">
-      {/* YouTube Background Video */}
-      <div className="hero-video-container">
-        <iframe
-          className="hero-video"
-          src="https://www.youtube.com/embed/xk_IrU5kXYo?autoplay=1&mute=1&controls=0&loop=1&playlist=xk_IrU5kXYo&playsinline=1&modestbranding=1"
-          frameBorder="0"
-          allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          tabIndex="-1"
-          title="Background Video"
-        ></iframe>
+      {/* Simple Pro Background */}
+      <div className="pro-bg-container">
+        <div className="pro-bg-gradient"></div>
+        <div className="pro-grid"></div>
       </div>
 
       {/* Canvas particle network */}
