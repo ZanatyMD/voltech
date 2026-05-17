@@ -12,7 +12,6 @@
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
   box-shadow: var(--shadow-lg), 0 0 30px rgba(245, 200, 66, 0.08);
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
@@ -118,7 +117,7 @@
 
 /* FIXED: Product name fully visible */
 .product-name {
-  font-family: 'Inter', 'Montserrat', sans-serif;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);

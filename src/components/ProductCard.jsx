@@ -3,9 +3,10 @@ import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
 import { showToast } from './Toast';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import './ProductCard.css';
 
-function ProductCard({ product }) {
+function ProductCard({ product, index = 0 }) {
   const { addToCart, cartItems } = useCart();
   const { name, originalPrice, currentPrice, stock, imageUrl, category } = product;
   
@@ -25,13 +26,35 @@ function ProductCard({ product }) {
   };
 
   return (
-    <div className={`product-card scroll-reveal ${!isInStock ? 'out-of-stock' : ''}`} id={`product-${product.id}`}>
+    <motion.div
+      className={`product-card ${!isInStock ? 'out-of-stock' : ''}`}
+      id={`product-${product.id}`}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{
+        duration: 0.5,
+        delay: (index % 6) * 0.08,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      whileHover={{ 
+        y: -8,
+        transition: { type: 'spring', stiffness: 300, damping: 20 }
+      }}
+      layout
+    >
       {/* Discount Badge */}
       {discountPercent > 0 && (
-        <div className="discount-badge">
+        <motion.div 
+          className="discount-badge"
+          initial={{ scale: 0, rotate: -20 }}
+          whileInView={{ scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 + (index % 6) * 0.08, type: 'spring', stiffness: 500, damping: 15 }}
+        >
           <TrendingDown size={12} />
           {discountPercent}% OFF
-        </div>
+        </motion.div>
       )}
 
       {/* Image */}
@@ -69,16 +92,19 @@ function ProductCard({ product }) {
           </div>
         </div>
 
-        <button 
+        <motion.button 
           className="btn btn-primary add-to-cart-btn" 
           disabled={!isInStock}
           onClick={handleAddToCart}
+          whileHover={isInStock ? { scale: 1.03 } : {}}
+          whileTap={isInStock ? { scale: 0.97 } : {}}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           <ShoppingCart size={16} />
           Add to Cart
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

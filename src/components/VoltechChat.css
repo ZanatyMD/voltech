@@ -1,0 +1,241 @@
+/* ===== VOLTECH CHAT WIDGET ===== */
+.voltech-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+}
+
+.voltech-chat-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.voltech-chat-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+/* Input Container */
+.chat-input-container {
+  width: 100%;
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.chat-input-container:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.chat-textarea {
+  width: 100%;
+  padding: 18px 20px;
+  padding-bottom: 4px;
+  resize: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  outline: none;
+  min-height: 60px;
+  overflow: hidden;
+}
+
+.chat-textarea::placeholder {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Input Actions Bar */
+.chat-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+}
+
+.chat-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+}
+
+.chat-action-btn:hover {
+  color: var(--volt-yellow);
+  background: rgba(245, 200, 66, 0.08);
+}
+
+.chat-action-btn .btn-label {
+  display: none;
+}
+
+.chat-action-btn:hover .btn-label {
+  display: inline;
+  color: var(--text-secondary);
+}
+
+.chat-project-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: none;
+  border: 1px dashed var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.chat-project-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-secondary);
+  background: rgba(245, 200, 66, 0.04);
+}
+
+.chat-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.chat-send-btn.active {
+  background: var(--gradient-brand);
+  color: #07080D;
+  border-color: transparent;
+  box-shadow: 0 0 20px rgba(245, 200, 66, 0.3);
+}
+
+.chat-send-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-secondary);
+}
+
+.chat-send-btn.active:hover {
+  box-shadow: 0 0 30px rgba(245, 200, 66, 0.5);
+  transform: scale(1.05);
+}
+
+/* Quick Action Chips */
+.chat-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.chat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chat-chip:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.chat-chip svg {
+  color: var(--volt-yellow);
+  opacity: 0.8;
+}
+
+.chat-chip:hover svg {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .voltech-chat {
+    padding: 40px 16px 24px;
+  }
+  .voltech-chat-title {
+    font-size: 1.5rem;
+  }
+  .chat-quick-actions {
+    gap: 8px;
+  }
+  .chat-chip {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .chat-chip {
+    justify-content: center;
+  }
+}

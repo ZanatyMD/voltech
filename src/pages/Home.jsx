@@ -1,5 +1,6 @@
 import Hero from '../components/Hero';
 import ProductGrid from '../components/ProductGrid';
+import VoltechChat from '../components/VoltechChat';
 import { useEffect } from 'react';
 
 function Home() {
@@ -11,6 +12,7 @@ function Home() {
     <>
       <Hero />
       <ProductGrid />
+      <VoltechChat />
     </>
   );
 }

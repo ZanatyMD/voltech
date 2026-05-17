@@ -79,8 +79,28 @@ export const smartSearch = (productName, query) => {
     const hasDirectMatch = productWords.some(productWord => isFuzzyMatch(queryTerm, productWord));
     if (hasDirectMatch) return true;
     
-    // 2. Is there a fuzzy match for ANY of the query term's synonyms in any product word?
-    const termSynonyms = synonyms[queryTerm] || [];
+    // 2. Predictive Synonym Match: Find all synonym keys that the queryTerm might be starting to type
+    // This expects the word before it's fully typed.
+    const matchingKeys = Object.keys(synonyms).filter(key => isFuzzyMatch(queryTerm, key));
+    
+    // Collect all possible synonyms from the matching keys
+    let termSynonyms = [];
+    matchingKeys.forEach(key => {
+      // Add the key itself
+      termSynonyms.push(key);
+      // Add its synonyms
+      termSynonyms.push(...synonyms[key]);
+    });
+    
+    // Add exact query term synonyms just in case
+    if (synonyms[queryTerm]) {
+      termSynonyms.push(...synonyms[queryTerm]);
+    }
+
+    // Remove duplicates
+    termSynonyms = [...new Set(termSynonyms)];
+
+    // Is there a fuzzy match for ANY of the collected synonyms in any product word?
     const hasSynonymMatch = termSynonyms.some(synonym => 
       productWords.some(productWord => isFuzzyMatch(synonym, productWord))
     );

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
 import { Filter, Search, Loader } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { smartSearch } from '../utils/search';
 import './ProductGrid.css';
 
 function SkeletonCard() {
@@ -21,38 +23,11 @@ function SkeletonCard() {
   );
 }
 
-import { smartSearch } from '../utils/search';
-
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const gridRef = useRef(null);
-
-  // IntersectionObserver for scroll reveal animations
-  useEffect(() => {
-    if (loading) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            // Add staggered delay
-            setTimeout(() => {
-              entry.target.classList.add('revealed');
-            }, index * 80);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    const cards = gridRef.current?.querySelectorAll('.scroll-reveal');
-    cards?.forEach(card => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, [loading, activeCategory, searchQuery, products]);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
@@ -63,14 +38,26 @@ function ProductGrid() {
   return (
     <section className="product-section" id="products-section">
       <div className="container">
-        <div className="section-header">
+        <motion.div
+          className="section-header"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div>
             <h2 className="section-title">Latest Arrivals</h2>
             <p className="section-subtitle">Discover our cutting-edge selection</p>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="product-controls">
+        <motion.div
+          className="product-controls"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div className="search-bar">
             <Search size={18} className="search-icon" />
             <input
@@ -83,23 +70,29 @@ function ProductGrid() {
           </div>
 
           <div className="category-filters">
-            <button
+            <motion.button
               className={`filter-btn ${activeCategory === 'All' ? 'active' : ''}`}
               onClick={() => setActiveCategory('All')}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               All
-            </button>
-            {stats.categories.map(category => (
-              <button
+            </motion.button>
+            {stats.categories.map((category, i) => (
+              <motion.button
                 key={category}
                 className={`filter-btn ${activeCategory === category ? 'active' : ''}`}
                 onClick={() => setActiveCategory(category)}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 {category}
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
           <>
@@ -114,13 +107,24 @@ function ProductGrid() {
             </div>
           </>
         ) : filteredProducts.length > 0 ? (
-          <div className="product-grid" ref={gridRef}>
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <motion.div 
+            className="product-grid" 
+            ref={gridRef}
+            layout
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         ) : (
-          <div className="no-products">
+          <motion.div
+            className="no-products"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <Filter size={48} className="no-products-icon" />
             <h3>No products found</h3>
             <p>We couldn't find any products matching your current filters.</p>
@@ -130,7 +134,7 @@ function ProductGrid() {
             >
               Clear Filters
             </button>
-          </div>
+          </motion.div>
         )}
       </div>
     </section>

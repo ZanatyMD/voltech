@@ -1,7 +1,25 @@
 import { Zap, ChevronDown } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import './Hero.css';
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 function Hero() {
   const { products } = useProducts();
@@ -130,43 +148,68 @@ function Hero() {
       <div className="circuit-line circuit-3"></div>
       <div className="circuit-line circuit-4"></div>
 
-      <div className="container hero-content" style={{ 
-        transform: `translateY(${scrollY * 0.2}px)`, 
-        opacity: 1 - scrollFactor 
-      }}>
-        <div className="hero-badge animate-fade-in-up">
+      <motion.div
+        className="container hero-content"
+        style={{ 
+          transform: `translateY(${scrollY * 0.2}px)`, 
+          opacity: 1 - scrollFactor 
+        }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div className="hero-badge" variants={itemVariants}>
           <Zap size={14} />
           <span>Premium Components</span>
-        </div>
+        </motion.div>
 
-        <h1 className="hero-title animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <motion.h1 className="hero-title" variants={itemVariants}>
           <span className="hero-title-accent">VOLTECH</span>
           <span className="hero-title-line">Built For Students</span>
-        </h1>
+        </motion.h1>
 
-        <p className="hero-description animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <motion.p className="hero-description" variants={itemVariants}>
           Tired of the same options ? <br />
           Yeah .... Us too .
-        </p>
+        </motion.p>
 
-        <div className="hero-actions animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <button className="btn btn-primary btn-lg glow-btn" onClick={scrollToProducts} id="shop-now-btn">
+        <motion.div className="hero-actions" variants={itemVariants}>
+          <motion.button
+            className="btn btn-primary btn-lg glow-btn"
+            onClick={scrollToProducts}
+            id="shop-now-btn"
+            whileHover={{ scale: 1.06, boxShadow: '0 0 40px rgba(245, 200, 66, 0.5)' }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+          >
             <Zap size={18} />
             Shop Now
-          </button>
+          </motion.button>
           <div className="hero-stats">
-            <div className="hero-stat">
+            <motion.div 
+              className="hero-stat"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
+            >
               <span className="stat-number">{products.length}+</span>
               <span className="stat-label">Products</span>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <button className="scroll-indicator" onClick={scrollToProducts} aria-label="Scroll to products"
-        style={{ opacity: 1 - scrollFactor * 2 }}>
+      <motion.button
+        className="scroll-indicator"
+        onClick={scrollToProducts}
+        aria-label="Scroll to products"
+        style={{ opacity: 1 - scrollFactor * 2 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1 - scrollFactor * 2, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+      >
         <ChevronDown size={24} />
-      </button>
+      </motion.button>
 
       {/* Smooth fade at bottom */}
       <div className="hero-fade-bottom"></div>
