@@ -222,6 +222,9 @@
 
 /* Mobile responsive */
 @media (max-width: 600px) {
+  .user-dashboard {
+    padding-top: 180px;
+  }
   .order-stepper::before {
     left: 20px;
     right: 20px;
