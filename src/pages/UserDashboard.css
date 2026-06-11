@@ -221,9 +221,9 @@
 }
 
 /* Mobile responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .user-dashboard {
-    padding-top: 180px;
+    padding-top: 220px !important;
   }
   .order-stepper::before {
     left: 20px;
