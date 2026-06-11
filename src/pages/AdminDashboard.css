@@ -427,8 +427,12 @@
 }
 
 .status-badge.pending { background: rgba(245, 200, 66, 0.1); color: var(--volt-yellow-dark); }
-.status-badge.completed { background: rgba(126, 200, 67, 0.1); color: var(--volt-green); }
+.status-badge.delayed { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.status-badge.processing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-badge.shipped { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.status-badge.completed, .status-badge.delivered { background: rgba(126, 200, 67, 0.1); color: var(--volt-green); }
 .status-badge.returned { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+.status-badge.cancelled { background: rgba(239, 68, 68, 0.1); color: var(--volt-red); }
 
 /* Table */
 .table-container {

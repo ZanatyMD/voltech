@@ -159,7 +159,7 @@ function AdminDashboard() {
 
   const handleCompleteOrder = async (order) => {
     try {
-      await updateOrderStatus(order.id, 'Completed');
+      await updateOrderStatus(order.id, 'Delivered');
       // Auto-reduce stock
       for (const item of order.items) {
         const product = products.find(p => p.id === item.id);
@@ -742,11 +742,14 @@ function AdminDashboard() {
                     <span>{new Date(order.orderDate).toLocaleDateString()}</span>
                     <span className="order-card-time">{new Date(order.orderDate).toLocaleTimeString()}</span>
                   </div>
-                  <span className={`status-badge ${order.status.toLowerCase()}`}>
-                    {order.status === 'Pending' && <Clock size={12} />}
-                    {order.status === 'Completed' && <CheckCircle size={12} />}
+                  <span className={`status-badge ${(order.status === 'Completed' ? 'Delivered' : order.status).toLowerCase()}`}>
+                    {(order.status === 'Pending' || order.status === 'Delayed') && <Clock size={12} />}
+                    {(order.status === 'Completed' || order.status === 'Delivered') && <CheckCircle size={12} />}
                     {order.status === 'Returned' && <RotateCcw size={12} />}
-                    {order.status}
+                    {order.status === 'Processing' && <Package size={12} />}
+                    {(order.status === 'Shipped' || order.status === 'With Delivery Guy') && <Truck size={12} />}
+                    {order.status === 'Cancelled' && <X size={12} />}
+                    {order.status === 'Completed' ? 'Delivered' : order.status === 'With Delivery Guy' ? 'Shipped' : order.status}
                   </span>
                 </div>
 
@@ -770,6 +773,16 @@ function AdminDashboard() {
                     </span>
                   </div>
                 </div>
+
+                {order.status === 'Cancelled' && order.cancelReason && (
+                  <div style={{ margin: '0 18px 14px', padding: '12px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--volt-red)', borderRadius: '8px', fontSize: '0.85rem', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                    <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <strong style={{ display: 'block', marginBottom: '2px' }}>Cancellation Reason:</strong>
+                      {order.cancelReason}
+                    </div>
+                  </div>
+                )}
 
                 <div className="order-card-items-toggle" onClick={() => toggleOrderExpand(order.id)}>
                   <ShoppingBag size={14} />
@@ -808,6 +821,30 @@ function AdminDashboard() {
                 )}
 
                 <div className="order-card-actions">
+                  <div style={{ width: '100%', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Status:</span>
+                    <select 
+                      className="form-input" 
+                      style={{ padding: '4px 8px', fontSize: '0.85rem', width: 'auto', flex: 1 }}
+                      value={order.status === 'Completed' ? 'Delivered' : order.status === 'With Delivery Guy' ? 'Shipped' : order.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+                        if (newStatus === 'Delivered' && order.status !== 'Delivered' && order.status !== 'Completed') {
+                          handleCompleteOrder(order);
+                        } else {
+                          updateOrderStatus(order.id, newStatus);
+                        }
+                      }}
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Delayed">Delayed (Going to be late)</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Returned">Returned</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
                   {order.status === 'Pending' && order.isDelivery && (
                     <button 
                       className="order-action-btn edit" 
@@ -816,16 +853,6 @@ function AdminDashboard() {
                     >
                       <Truck size={15} />
                       Set Fee
-                    </button>
-                  )}
-                  {order.status === 'Pending' && (
-                    <button 
-                      className="order-action-btn complete" 
-                      onClick={() => handleCompleteOrder(order)} 
-                      title="Mark as Completed & Reduce Stock"
-                    >
-                      <CheckCircle size={15} />
-                      Complete
                     </button>
                   )}
                   <button 
@@ -845,16 +872,6 @@ function AdminDashboard() {
                     <BarcodeIcon size={15} />
                     Pick List
                   </button>
-                  {(order.status === 'Completed' || order.status === 'Pending') && (
-                    <button 
-                      className="order-action-btn returned" 
-                      onClick={() => handleReturnedOrder(order)} 
-                      title="Customer didn't take order"
-                    >
-                      <RotateCcw size={15} />
-                      Returned
-                    </button>
-                  )}
                   <button 
                     className="order-action-btn delete-order" 
                     onClick={() => handleDeleteOrder(order)} 

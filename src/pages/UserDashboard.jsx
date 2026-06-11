@@ -7,7 +7,7 @@ import './UserDashboard.css';
 
 export default function UserDashboard() {
   const { user } = useAuth();
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, updateOrder } = useOrders();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,26 +19,32 @@ export default function UserDashboard() {
   if (!user) return null;
 
   const handleCancelOrder = async (orderId) => {
-    if (window.confirm('Are you sure you want to cancel this order?')) {
-      await updateOrderStatus(orderId, 'Cancelled');
+    const reason = window.prompt('Are you sure you want to cancel this order?\nPlease provide a reason for cancellation:');
+    if (reason !== null) {
+      await updateOrder(orderId, { status: 'Cancelled', cancelReason: reason || 'No reason provided' });
     }
   };
 
   const getStepStatus = (status, stepIndex) => {
-    const statuses = ['Pending', 'Processing', 'With Delivery Guy', 'Completed'];
-    if (status === 'Cancelled') return 'cancelled';
-    if (status === 'Returned') return 'returned';
+    const effectiveStatus = status === 'Completed' ? 'Delivered' : status === 'With Delivery Guy' ? 'Shipped' : status;
+    const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
     
-    const currentStatusIndex = statuses.indexOf(status);
+    if (effectiveStatus === 'Cancelled') return 'cancelled';
+    if (effectiveStatus === 'Returned') return 'returned';
+    
+    const checkStatus = effectiveStatus === 'Delayed' ? 'Pending' : effectiveStatus;
+    const currentStatusIndex = statuses.indexOf(checkStatus);
+    
     if (currentStatusIndex >= stepIndex) return 'completed';
     return 'pending';
   };
 
   const getProgressWidth = (status) => {
-    if (status === 'Pending') return '0%';
-    if (status === 'Processing') return '33%';
-    if (status === 'With Delivery Guy') return '66%';
-    if (status === 'Completed') return '100%';
+    const effectiveStatus = status === 'Completed' ? 'Delivered' : status === 'With Delivery Guy' ? 'Shipped' : status;
+    if (effectiveStatus === 'Pending' || effectiveStatus === 'Delayed') return '0%';
+    if (effectiveStatus === 'Processing') return '33%';
+    if (effectiveStatus === 'Shipped') return '66%';
+    if (effectiveStatus === 'Delivered') return '100%';
     return '0%'; // for cancelled/returned
   };
 
@@ -72,6 +78,12 @@ export default function UserDashboard() {
 
               {order.status !== 'Cancelled' && order.status !== 'Returned' ? (
                 <div className="order-stepper">
+                  {order.status === 'Delayed' && (
+                    <div style={{ marginBottom: '20px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderRadius: '8px', width: '100%' }}>
+                      <Clock size={20} />
+                      <strong>Order is going to be a little late, please wait!</strong>
+                    </div>
+                  )}
                   <div className="stepper-progress" style={{ width: getProgressWidth(order.status) }}></div>
                   
                   <div className={`stepper-step ${getStepStatus(order.status, 0)}`}>
@@ -117,8 +129,8 @@ export default function UserDashboard() {
                 <button 
                   className="btn-cancel"
                   onClick={() => handleCancelOrder(order.id)}
-                  disabled={order.status !== 'Pending' && order.status !== 'Processing'}
-                  title={order.status !== 'Pending' && order.status !== 'Processing' ? 'Cannot cancel shipped orders' : ''}
+                  disabled={order.status !== 'Pending' && order.status !== 'Delayed' && order.status !== 'Processing'}
+                  title={order.status !== 'Pending' && order.status !== 'Delayed' && order.status !== 'Processing' ? 'Cannot cancel shipped orders' : ''}
                 >
                   Cancel Order
                 </button>
