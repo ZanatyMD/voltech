@@ -55,7 +55,7 @@ function CartDrawer() {
     return () => clearTimeout(timer);
   }, [showThankYou, countdown, pendingWhatsAppUrl]);
 
-  if (!isCartOpen && !showThankYou) return null;
+  if (!isCartOpen && !showThankYou && !isAuthModalOpen) return null;
 
   const handleCheckout = async () => {
     if (!user || user.role === 'admin') {
