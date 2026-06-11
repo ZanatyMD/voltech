@@ -7,7 +7,7 @@ import './AuthModal.css';
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const { login, register, loading } = useAuth();
   const [isLoginView, setIsLoginView] = useState(true);
-  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -17,9 +17,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     e.preventDefault();
     setError('');
 
-    if (!username.trim() || !password.trim()) {
+    if (!phone.trim() || !password.trim()) {
       setError('Please fill in all fields');
       return;
+    }
+
+    if (phone !== 'voltech.da') {
+      if (phone.length < 10 || phone.length > 11 || !/^\d+$/.test(phone)) {
+        setError('Phone number must be 10 or 11 digits');
+        return;
+      }
     }
 
     if (!isLoginView && password.length < 6) {
@@ -27,15 +34,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       return;
     }
 
-    // Force username to lowercase for consistency
-    const cleanUsername = username.trim().toLowerCase();
+    const cleanPhone = phone.trim();
 
     const result = isLoginView 
-      ? await login(cleanUsername, password)
-      : await register(cleanUsername, password);
+      ? await login(cleanPhone, password)
+      : await register(cleanPhone, password);
 
     if (result.success) {
-      setUsername('');
+      setPhone('');
       setPassword('');
       if (onLoginSuccess) {
         onLoginSuccess();
@@ -50,7 +56,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const toggleView = () => {
     setIsLoginView(!isLoginView);
     setError('');
-    setUsername('');
+    setPhone('');
     setPassword('');
   };
 
@@ -77,10 +83,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 <User size={18} className="auth-input-icon" />
                 <input
                   type="text"
-                  placeholder="Username"
+                  placeholder="Phone Number (10-11 digits)"
                   className="auth-input"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_.]/g, ''))} // only alphanumeric
+                  value={phone}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^a-zA-Z0-9_.]/g, '');
+                    if (val.length <= 20) setPhone(val);
+                  }}
                 />
               </div>
 

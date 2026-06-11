@@ -111,7 +111,7 @@ function Navbar() {
             </div>
           )}
 
-          {!isAdmin && <SmartSearch />}
+          {!isAdmin && location.pathname !== '/my-orders' && <SmartSearch />}
 
           <div className="navbar-actions">
             {!isAdmin && (

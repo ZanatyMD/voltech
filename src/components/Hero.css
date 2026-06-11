@@ -220,9 +220,10 @@
 }
 
 .electric-earth-img {
-  width: 280px;
-  height: 280px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  border-radius: 50%;
   animation: pulseEarth 3s ease-in-out infinite alternate;
   mix-blend-mode: screen;
 }

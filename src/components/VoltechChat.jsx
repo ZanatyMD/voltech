@@ -150,18 +150,8 @@ function VoltechChat() {
           />
         </div>
 
-        <div className="chat-actions-bar">
-          <div className="chat-actions-left">
-            <button type="button" className="chat-action-btn">
-              <Paperclip size={16} />
-              <span className="btn-label">Attach</span>
-            </button>
-          </div>
+        <div className="chat-actions-bar" style={{ justifyContent: 'flex-end' }}>
           <div className="chat-actions-right">
-            <button type="button" className="chat-project-btn">
-              <Plus size={15} />
-              Project
-            </button>
             <button
               type="button"
               className={`chat-send-btn ${value.trim() ? 'active' : ''}`}

@@ -246,72 +246,87 @@ function CartDrawer() {
                   <span className="total-amount">EGP {cartTotal.toFixed(2)}</span>
                 </div>
                 
-                <div className="checkout-form">
-                  <input 
-                    type="text" 
-                    placeholder="Your Full Name (letters only)" 
-                    className="form-input" 
-                    value={customerName}
-                    onChange={handleNameChange}
-                    required
-                  />
-                  <input 
-                    type="tel" 
-                    placeholder="Phone Number (11-12 digits)" 
-                    className="form-input" 
-                    value={customerPhone}
-                    onChange={handlePhoneChange}
-                    maxLength={12}
-                    required
-                  />
-
-                  <div className="delivery-toggle">
-                    <label className="delivery-option">
-                      <input 
-                        type="radio" 
-                        name="deliveryOption" 
-                        checked={!isDelivery} 
-                        onChange={() => setIsDelivery(false)} 
-                      />
-                      Store Pickup
-                    </label>
-                    <label className="delivery-option">
-                      <input 
-                        type="radio" 
-                        name="deliveryOption" 
-                        checked={isDelivery} 
-                        onChange={() => setIsDelivery(true)} 
-                      />
-                      Delivery
-                    </label>
-                  </div>
-
-                  {isDelivery && (
-                    <div className="form-group animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
+                {(!user || user.role === 'admin') ? (
+                  <button 
+                    className="btn btn-primary checkout-btn mt-4" 
+                    onClick={() => {
+                      setPendingCheckout(true);
+                      setIsAuthModalOpen(true);
+                    }}
+                    style={{ width: '100%', marginTop: '1rem' }}
+                  >
+                    Log in
+                  </button>
+                ) : (
+                  <>
+                    <div className="checkout-form">
                       <input 
                         type="text" 
-                        placeholder="Detailed address in New Damietta" 
+                        placeholder="Your Full Name (letters only)" 
                         className="form-input" 
-                        value={deliveryLocation}
-                        onChange={(e) => setDeliveryLocation(e.target.value)}
-                        required={isDelivery}
+                        value={customerName}
+                        onChange={handleNameChange}
+                        required
                       />
-                      <small className="delivery-note">* Delivery available only in New Damietta</small>
-                    </div>
-                  )}
-                </div>
+                      <input 
+                        type="tel" 
+                        placeholder="Phone Number (11-12 digits)" 
+                        className="form-input" 
+                        value={customerPhone}
+                        onChange={handlePhoneChange}
+                        maxLength={12}
+                        required
+                      />
 
-                <button 
-                  className="btn btn-primary checkout-btn" 
-                  onClick={handleCheckout}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? <Loader size={18} className="spin" /> : <Send size={18} />}
-                  {isSubmitting ? 'Processing...' : 'Checkout via WhatsApp'}
-                </button>
-                <p className="checkout-hint">
-                  Your order will be saved and you will be redirected to WhatsApp.
-                </p>
+                      <div className="delivery-toggle">
+                        <label className="delivery-option">
+                          <input 
+                            type="radio" 
+                            name="deliveryOption" 
+                            checked={!isDelivery} 
+                            onChange={() => setIsDelivery(false)} 
+                          />
+                          Store Pickup
+                        </label>
+                        <label className="delivery-option">
+                          <input 
+                            type="radio" 
+                            name="deliveryOption" 
+                            checked={isDelivery} 
+                            onChange={() => setIsDelivery(true)} 
+                          />
+                          Delivery
+                        </label>
+                      </div>
+
+                      {isDelivery && (
+                        <div className="form-group animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
+                          <input 
+                            type="text" 
+                            placeholder="Detailed address in New Damietta" 
+                            className="form-input" 
+                            value={deliveryLocation}
+                            onChange={(e) => setDeliveryLocation(e.target.value)}
+                            required={isDelivery}
+                          />
+                          <small className="delivery-note">* Delivery available only in New Damietta</small>
+                        </div>
+                      )}
+                    </div>
+
+                    <button 
+                      className="btn btn-primary checkout-btn" 
+                      onClick={handleCheckout}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? <Loader size={18} className="spin" /> : <Send size={18} />}
+                      {isSubmitting ? 'Processing...' : 'Checkout via WhatsApp'}
+                    </button>
+                    <p className="checkout-hint">
+                      Your order will be saved and you will be redirected to WhatsApp.
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>
