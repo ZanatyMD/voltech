@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -9,6 +9,9 @@ export default function UserDashboard() {
   const { user } = useAuth();
   const { orders, updateOrderStatus, updateOrder } = useOrders();
   const navigate = useNavigate();
+  const [cancellingOrderId, setCancellingOrderId] = useState(null);
+  const [cancelStep, setCancelStep] = useState(1);
+  const [cancelReason, setCancelReason] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -18,11 +21,19 @@ export default function UserDashboard() {
 
   if (!user) return null;
 
-  const handleCancelOrder = async (orderId) => {
-    const reason = window.prompt('Are you sure you want to cancel this order?\nPlease provide a reason for cancellation:');
-    if (reason !== null) {
-      await updateOrder(orderId, { status: 'Cancelled', cancelReason: reason || 'No reason provided' });
-    }
+  const handleCancelClick = (orderId) => {
+    setCancellingOrderId(orderId);
+    setCancelStep(1);
+    setCancelReason('');
+  };
+
+  const submitCancel = async () => {
+    if (!cancellingOrderId) return;
+    await updateOrder(cancellingOrderId, { 
+      status: 'Cancelled', 
+      cancelReason: cancelReason.trim() || 'No reason provided' 
+    });
+    setCancellingOrderId(null);
   };
 
   const getStepStatus = (status, stepIndex) => {
@@ -128,7 +139,7 @@ export default function UserDashboard() {
               <div className="user-order-actions">
                 <button 
                   className="btn-cancel"
-                  onClick={() => handleCancelOrder(order.id)}
+                  onClick={() => handleCancelClick(order.id)}
                   disabled={order.status !== 'Pending' && order.status !== 'Delayed' && order.status !== 'Processing'}
                   title={order.status !== 'Pending' && order.status !== 'Delayed' && order.status !== 'Processing' ? 'Cannot cancel shipped orders' : ''}
                 >
@@ -137,6 +148,39 @@ export default function UserDashboard() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {cancellingOrderId && (
+        <div className="modal-overlay">
+          <div className="modal-content cancel-modal">
+            {cancelStep === 1 ? (
+              <>
+                <h3>Cancel Order</h3>
+                <p>Are you sure you want to cancel this order?</p>
+                <div className="modal-actions">
+                  <button className="btn btn-secondary" onClick={() => setCancellingOrderId(null)}>No, Keep it</button>
+                  <button className="btn btn-danger" onClick={() => setCancelStep(2)} style={{ background: '#ff3b30', color: 'white', border: 'none' }}>Yes, Cancel</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3>Why are you cancelling?</h3>
+                <p>Please tell us the reason for your cancellation:</p>
+                <textarea 
+                  rows="3" 
+                  value={cancelReason} 
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Enter reason here..."
+                  autoFocus
+                />
+                <div className="modal-actions">
+                  <button className="btn btn-secondary" onClick={() => setCancellingOrderId(null)}>Nevermind</button>
+                  <button className="btn btn-danger" onClick={submitCancel} style={{ background: '#ff3b30', color: 'white', border: 'none' }}>Submit & Cancel</button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
