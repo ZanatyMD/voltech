@@ -25,7 +25,8 @@ function CartDrawer() {
 
   useEffect(() => {
     if (user && user.role !== 'admin') {
-      setCustomerName(user.username);
+      setCustomerName('');
+      setCustomerPhone(user.username);
     }
   }, [user]);
 

@@ -22,11 +22,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       return;
     }
 
-    if (phone !== 'voltech.da') {
-      if (phone.length < 10 || phone.length > 11 || !/^\d+$/.test(phone)) {
-        setError('Phone number must be 10 or 11 digits');
-        return;
-      }
+    if (phone.length < 10 || phone.length > 11 || !/^\d+$/.test(phone)) {
+      setError('Phone number must be 10 or 11 digits');
+      return;
     }
 
     if (!isLoginView && password.length < 6) {
@@ -82,13 +80,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
               <div className="auth-input-group">
                 <User size={18} className="auth-input-icon" />
                 <input
-                  type="text"
+                  type="tel"
                   placeholder="Phone Number (10-11 digits)"
                   className="auth-input"
                   value={phone}
                   onChange={(e) => {
-                    const val = e.target.value.replace(/[^a-zA-Z0-9_.]/g, '');
-                    if (val.length <= 20) setPhone(val);
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    if (val.length <= 11) setPhone(val);
                   }}
                 />
               </div>

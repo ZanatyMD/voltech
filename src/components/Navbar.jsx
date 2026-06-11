@@ -160,12 +160,7 @@ function Navbar() {
 
             {user && user.role === 'admin' && (
               <>
-                {!isAdmin && (
-                  <Link to="/admin/dashboard" className="nav-btn-pill">
-                    <Shield size={16} />
-                    <span className="nav-btn-text">Console</span>
-                  </Link>
-                )}
+                {/* Admin console link removed to keep it hidden. Admin should navigate directly to /admin/login */}
                 <button className="nav-btn-pill" onClick={logout}>
                   <LogOut size={16} />
                   <span className="nav-btn-text">Exit</span>
