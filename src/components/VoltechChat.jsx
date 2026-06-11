@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package, MessageCircle, Truck, ArrowUp, Paperclip, Plus, Cpu, Zap } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './VoltechChat.css';
 
 function useAutoResizeTextarea({ minHeight, maxHeight }) {
@@ -54,7 +55,7 @@ const chipVariants = {
 };
 
 const quickActions = [
-  { icon: <Package size={15} />, label: 'Browse Products' },
+  { icon: <span>📦</span>, label: 'Products' },
   { icon: <Cpu size={15} />, label: 'Arduino & MCUs' },
   { icon: <Truck size={15} />, label: 'Delivery Info' },
   { icon: <MessageCircle size={15} />, label: 'Contact Us' },
@@ -67,6 +68,8 @@ function VoltechChat() {
     minHeight: 60,
     maxHeight: 200,
   });
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -83,9 +86,24 @@ function VoltechChat() {
   };
 
   const handleChipClick = (label) => {
-    const phoneNumber = '201031643665';
-    const message = encodeURIComponent(`Hi Voltech! I'm interested in: ${label}`);
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    if (label === 'Products' || label === 'Browse Products') {
+      const el = document.getElementById('products-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (label === 'Arduino & MCUs') {
+      const el = document.getElementById('products-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      searchParams.set('search', 'arduino');
+      setSearchParams(searchParams, { replace: true });
+    } else if (label === 'Delivery Info') {
+      navigate('/delivery-info');
+    } else if (label === 'New Arrivals') {
+      const el = document.getElementById('new-arrivals-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (label === 'Contact Us') {
+      const phoneNumber = '201031643665';
+      const message = encodeURIComponent(`Hi Voltech! I'm interested in: Contacting you.`);
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    }
   };
 
   return (

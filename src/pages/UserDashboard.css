@@ -1,0 +1,238 @@
+.user-dashboard {
+  padding: 40px 0;
+  min-height: calc(100vh - 200px);
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.dashboard-header p {
+  color: var(--text-secondary);
+}
+
+.orders-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.user-order-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.user-order-card:hover {
+  border-color: rgba(126, 200, 67, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.user-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.order-id-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-id {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.order-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.order-total-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--volt-green);
+}
+
+/* Stepper */
+.order-stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 32px;
+  padding: 0 10px;
+}
+
+.order-stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: var(--border-color);
+  z-index: 0;
+}
+
+.stepper-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 80px;
+}
+
+.step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  border: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.stepper-step.completed .step-icon,
+.stepper-step.active .step-icon {
+  background: var(--volt-green);
+  border-color: var(--volt-green);
+  color: #fff;
+}
+
+.stepper-step.completed .step-icon {
+  box-shadow: 0 0 10px rgba(126, 200, 67, 0.4);
+}
+
+.step-label {
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stepper-step.active .step-label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Stepper Line Fill */
+.stepper-progress {
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  height: 2px;
+  background: var(--volt-green);
+  z-index: 0;
+  transition: width 0.5s ease;
+}
+
+/* Items List */
+.user-order-items {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.user-order-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-order-item:last-child {
+  border-bottom: none;
+}
+
+.item-qty-name {
+  display: flex;
+  gap: 12px;
+}
+
+.item-qty {
+  color: var(--text-secondary);
+}
+
+.item-price {
+  font-weight: 500;
+}
+
+.user-order-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #ff3b30;
+  color: #ff3b30;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 59, 48, 0.1);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+.empty-orders {
+  text-align: center;
+  padding: 64px 20px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.empty-orders h2 {
+  margin: 16px 0 8px;
+}
+
+.empty-orders p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .order-stepper::before {
+    left: 20px;
+    right: 20px;
+  }
+  .stepper-progress {
+    left: 20px;
+  }
+  .stepper-step {
+    width: 60px;
+  }
+  .step-label {
+    font-size: 0.65rem;
+  }
+}

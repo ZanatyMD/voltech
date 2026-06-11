@@ -1,0 +1,114 @@
+.new-arrivals-section {
+  padding: 80px 0;
+  background: linear-gradient(180deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+  overflow: hidden;
+  width: 100%;
+}
+
+.new-arrivals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  margin-bottom: 40px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-title h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-icon {
+  color: var(--primary);
+  filter: drop-shadow(0 0 10px rgba(250, 188, 63, 0.5));
+}
+
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.control-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  background: transparent;
+}
+
+.control-btn-left {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-dark) 0%, transparent 100%);
+}
+
+.control-btn-right {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-dark) 0%, transparent 100%);
+}
+
+.control-btn:hover {
+  color: var(--volt-green);
+}
+
+.control-btn-left:hover {
+  background: linear-gradient(to right, rgba(25, 26, 35, 0.95) 0%, transparent 100%);
+}
+
+.control-btn-right:hover {
+  background: linear-gradient(to left, rgba(25, 26, 35, 0.95) 0%, transparent 100%);
+}
+
+.carousel-container-fixed {
+  display: flex;
+  gap: 30px;
+  padding: 20px 0;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex: 1;
+}
+
+.carousel-item-wrapper {
+  width: calc(50% - 15px);
+  max-width: 600px;
+  height: 500px; /* Adjust height based on ProductCard */
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .carousel-item-wrapper {
+    height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-title h2 {
+    font-size: 1.8rem;
+  }
+  .carousel-container-fixed {
+    gap: 15px;
+  }
+  .carousel-item-wrapper {
+    height: 400px;
+    width: calc(50% - 7.5px);
+  }
+}

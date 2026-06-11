@@ -1,15 +1,30 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from './AuthContext';
 
 const OrderContext = createContext();
 
 export function OrderProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot) => {
+    let q;
+    const ordersRef = collection(db, 'orders');
+
+    if (user && user.role === 'admin') {
+      q = ordersRef; // Admin sees all
+    } else if (user) {
+      q = query(ordersRef, where('userId', '==', user.id)); // User sees their own
+    } else {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedOrders = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -30,7 +45,7 @@ export function OrderProvider({ children }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const addOrder = async (orderData) => {
     try {

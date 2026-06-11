@@ -1,0 +1,145 @@
+.smart-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.smart-search-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 100;
+}
+
+.smart-search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.smart-search-input:focus {
+  outline: none;
+  border-color: var(--volt-green);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(126, 200, 67, 0.15);
+}
+
+.smart-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.smart-search-input:focus + .smart-search-icon {
+  color: var(--volt-green);
+}
+
+.smart-search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.smart-search-clear:hover {
+  color: var(--text-primary);
+}
+
+/* Dropdown */
+.smart-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: rgba(20, 20, 22, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.search-result-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  background: white;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.search-result-name {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-price {
+  color: var(--volt-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.search-no-results {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .smart-search-container {
+    max-width: 100%;
+    margin: 10px 0;
+    order: 3;
+  }
+}

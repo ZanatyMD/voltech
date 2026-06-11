@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useOrders } from '../context/OrderContext';
+import { useAuth } from '../context/AuthContext';
 import { showToast } from './Toast';
 import { X, Minus, Plus, Trash2, Send, Loader, CheckCircle } from 'lucide-react';
+import AuthModal from './AuthModal';
 import './CartDrawer.css';
 
 function CartDrawer() {
   const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { user } = useAuth();
   
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -17,6 +20,14 @@ function CartDrawer() {
   const [showThankYou, setShowThankYou] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [pendingWhatsAppUrl, setPendingWhatsAppUrl] = useState('');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
+
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      setCustomerName(user.username);
+    }
+  }, [user]);
 
   // Name filter: only letters, spaces, and Arabic characters
   const handleNameChange = (e) => {
@@ -47,6 +58,12 @@ function CartDrawer() {
   if (!isCartOpen && !showThankYou) return null;
 
   const handleCheckout = async () => {
+    if (!user || user.role === 'admin') {
+      setPendingCheckout(true);
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     if (!customerName.trim()) {
       showToast('Please enter your name to continue.', 'error');
       return;
@@ -67,6 +84,7 @@ function CartDrawer() {
     setIsSubmitting(true);
     try {
       const orderData = {
+        userId: user ? user.id : 'guest',
         customerName,
         customerPhone,
         isDelivery,
@@ -129,6 +147,22 @@ function CartDrawer() {
 
   return (
     <>
+      {/* Auth Modal for Guests */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setPendingCheckout(false);
+        }}
+        onLoginSuccess={() => {
+          setIsAuthModalOpen(false);
+          if (pendingCheckout) {
+            // Auto trigger checkout validation next
+            setTimeout(handleCheckout, 300);
+          }
+        }}
+      />
+
       {/* Thank You Modal */}
       {showThankYou && (
         <div className="thankyou-overlay" onClick={handleCloseThankYou}>

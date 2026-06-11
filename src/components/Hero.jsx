@@ -1,44 +1,26 @@
-import { Zap, ChevronDown } from 'lucide-react';
+import { Zap, Cpu, HardDrive } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import './Hero.css';
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
 function Hero() {
   const { products } = useProducts();
   const [scrollY, setScrollY] = useState(0);
   const canvasRef = useRef(null);
-  
+
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Pro Canvas animation — Tech Data Streams & Glowing Orbs
+  // Simplified matrix/cyber canvas effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationId;
-    let particles = [];
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -47,53 +29,32 @@ function Hero() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Create high-tech particles
-    for (let i = 0; i < 150; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        length: Math.random() * 40 + 10,
-        speed: Math.random() * 3 + 1,
-        radius: Math.random() * 2 + 0.5,
-        color: Math.random() > 0.5 ? '#F5C842' : '#7EC843',
-        opacity: Math.random() * 0.6 + 0.1,
-        type: Math.random() > 0.7 ? 'orb' : 'stream'
-      });
-    }
+    const particles = Array.from({ length: 50 }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 2 + 1,
+      speed: Math.random() * 2 + 0.5,
+    }));
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((p) => {
-        // Move particles upwards (warp speed effect)
-        p.y -= p.speed;
-        if (p.y < -50) {
-          p.y = canvas.height + 50;
+      ctx.fillStyle = 'rgba(3, 4, 7, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#7EC843';
+      particles.forEach(p => {
+        p.y += p.speed;
+        if (p.y > canvas.height) {
+          p.y = 0;
           p.x = Math.random() * canvas.width;
         }
-
-        ctx.globalAlpha = p.opacity;
-        ctx.fillStyle = p.color;
-
-        if (p.type === 'stream') {
-          // Draw falling data streams
-          ctx.fillRect(p.x, p.y, 2, p.length);
-        } else {
-          // Draw glowing orbs
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = p.color;
-          ctx.fill();
-          ctx.shadowBlur = 0; // reset
-        }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
       });
-
-      ctx.globalAlpha = 1;
       animationId = requestAnimationFrame(animate);
     };
-
     animate();
+
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
@@ -104,114 +65,92 @@ function Hero() {
     document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollFactor = Math.min(scrollY / 600, 1);
-
   return (
     <section className="hero" id="hero">
-      {/* Simple Pro Background */}
-      <div className="pro-bg-container">
-        <div className="pro-bg-gradient"></div>
-        <div className="pro-grid"></div>
-      </div>
-
-      {/* Canvas particle network */}
+      <div className="hero-glow-core"></div>
+      
       <canvas 
         ref={canvasRef} 
         className="hero-canvas"
-        style={{ transform: `translateY(${scrollY * 0.2}px)` }}
+        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
       ></canvas>
 
-      {/* Scan line effect */}
-      <div className="scan-lines"></div>
-
-      {/* Glow orbs */}
-      <div className="hero-glow glow-1" style={{ 
-        transform: `translate(-50%, calc(-50% + ${scrollY * 0.5}px))` 
-      }}></div>
-      <div className="hero-glow glow-2" style={{ 
-        transform: `translate(-50%, calc(-50% + ${scrollY * 0.3}px))` 
-      }}></div>
-
-      {/* Floating particles (CSS) */}
-      <div className="particle particle-1"></div>
-      <div className="particle particle-2"></div>
-      <div className="particle particle-3"></div>
-      <div className="particle particle-4"></div>
-      <div className="particle particle-5"></div>
-      <div className="particle particle-6"></div>
-      <div className="particle particle-7"></div>
-      <div className="particle particle-8"></div>
-
-      {/* Circuit lines */}
-      <div className="circuit-line circuit-1"></div>
-      <div className="circuit-line circuit-2"></div>
-      <div className="circuit-line circuit-3"></div>
-      <div className="circuit-line circuit-4"></div>
-
-      <motion.div
-        className="container hero-content"
-        style={{ 
-          transform: `translateY(${scrollY * 0.2}px)`, 
-          opacity: 1 - scrollFactor 
-        }}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div className="hero-badge" variants={itemVariants}>
-          <Zap size={14} />
-          <span>Premium Components</span>
-        </motion.div>
-
-        <motion.h1 className="hero-title" variants={itemVariants}>
-          <span className="hero-title-accent">VOLTECH</span>
-          <span className="hero-title-line">Built For Students</span>
-        </motion.h1>
-
-        <motion.p className="hero-description" variants={itemVariants}>
-          Tired of the same options ? <br />
-          Yeah .... Us too .
-        </motion.p>
-
-        <motion.div className="hero-actions" variants={itemVariants}>
-          <motion.button
-            className="btn btn-primary btn-lg glow-btn"
-            onClick={scrollToProducts}
-            id="shop-now-btn"
-            whileHover={{ scale: 1.06, boxShadow: '0 0 40px rgba(245, 200, 66, 0.5)' }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      <div className="container hero-content" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
+        <div className="hero-text-side">
+          <motion.div 
+            className="hero-badge-cyber"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <Zap size={18} />
-            Shop Now
-          </motion.button>
-          <div className="hero-stats">
-            <motion.div 
-              className="hero-stat"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
-            >
-              <span className="stat-number">{products.length}+</span>
-              <span className="stat-label">Products</span>
-            </motion.div>
+            <Zap size={16} /> SYSTEM ONLINE
+          </motion.div>
+
+          <motion.h1 
+            className="hero-title-massive"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <span className="text-stroke">NEXT-GEN</span>
+            <span className="text-glow">VOLTECH</span>
+          </motion.h1>
+
+          <motion.p 
+            className="hero-desc-cyber"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            Tired from the same options ...... Yeah us too .
+          </motion.p>
+
+          <motion.div 
+            className="hero-actions-asym"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <button className="btn-cyber" onClick={scrollToProducts}>
+              Initialize Shop
+            </button>
+            
+            <div className="hero-stats-cyber">
+              <div className="stat-cyber">
+                <span className="num">{products.length}+</span>
+                <span className="lab">Modules</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="hero-graphic-side">
+          <div className="cyber-circle c1"></div>
+          <div className="cyber-circle c2"></div>
+          <div className="cyber-circle c3">
+            <img src="/neon-earth.png" alt="Neon Earth" className="electric-earth-img" />
           </div>
-        </motion.div>
-      </motion.div>
+          
+          <motion.div 
+            className="floating-icon icon-1"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 0.8 }}
+          >
+            <Cpu size={40} color="var(--volt-yellow)" />
+          </motion.div>
 
-      <motion.button
-        className="scroll-indicator"
-        onClick={scrollToProducts}
-        aria-label="Scroll to products"
-        style={{ opacity: 1 - scrollFactor * 2 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1 - scrollFactor * 2, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-      >
-        <ChevronDown size={24} />
-      </motion.button>
-
-      {/* Smooth fade at bottom */}
+          <motion.div 
+            className="floating-icon icon-2"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 1 }}
+          >
+            <HardDrive size={40} color="var(--volt-green)" />
+          </motion.div>
+        </div>
+      </div>
+      
       <div className="hero-fade-bottom"></div>
     </section>
   );

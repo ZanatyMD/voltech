@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
-import { Filter, Search, Loader } from 'lucide-react';
+import { Filter, Search, Loader, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { smartSearch } from '../utils/search';
 import './ProductGrid.css';
@@ -26,7 +27,8 @@ function SkeletonCard() {
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   const gridRef = useRef(null);
 
   const filteredProducts = products.filter(product => {
@@ -46,7 +48,9 @@ function ProductGrid() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <div>
-            <h2 className="section-title">Latest Arrivals</h2>
+            <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
+              PRODUCTS <Package size={32} color="var(--volt-green)" />
+            </h2>
             <p className="section-subtitle">Discover our cutting-edge selection</p>
           </div>
         </motion.div>
@@ -65,7 +69,15 @@ function ProductGrid() {
               placeholder="Search products..."
               className="form-input search-input"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val) {
+                  searchParams.set('search', val);
+                } else {
+                  searchParams.delete('search');
+                }
+                setSearchParams(searchParams, { replace: true });
+              }}
             />
           </div>
 
@@ -130,7 +142,11 @@ function ProductGrid() {
             <p>We couldn't find any products matching your current filters.</p>
             <button 
               className="btn btn-secondary mt-4" 
-              onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
+              onClick={() => { 
+                setActiveCategory('All'); 
+                searchParams.delete('search');
+                setSearchParams(searchParams, { replace: true });
+              }}
             >
               Clear Filters
             </button>
