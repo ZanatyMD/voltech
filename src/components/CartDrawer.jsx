@@ -157,8 +157,8 @@ function CartDrawer() {
         onLoginSuccess={() => {
           setIsAuthModalOpen(false);
           if (pendingCheckout) {
-            // Auto trigger checkout validation next
-            setTimeout(handleCheckout, 300);
+            setIsCartOpen(true);
+            setPendingCheckout(false);
           }
         }}
       />
@@ -252,6 +252,7 @@ function CartDrawer() {
                     onClick={() => {
                       setPendingCheckout(true);
                       setIsAuthModalOpen(true);
+                      setIsCartOpen(false);
                     }}
                     style={{ width: '100%', marginTop: '1rem' }}
                   >
