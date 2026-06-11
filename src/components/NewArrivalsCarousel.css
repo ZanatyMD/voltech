@@ -111,4 +111,11 @@
     height: 400px;
     width: calc(50% - 7.5px);
   }
+  .control-btn {
+    width: 50px;
+  }
+  .control-btn svg {
+    width: 40px !important;
+    height: 40px !important;
+  }
 }
