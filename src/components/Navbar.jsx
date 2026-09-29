@@ -63,19 +63,7 @@ function Navbar() {
           transition={{ duration: 0.7, type: 'spring', stiffness: 200, damping: 20 }}
         >
           <Link to="/" className="navbar-brand">
-            <motion.div
-              className="brand-icon"
-              whileHover={{ rotate: 180, scale: 1.1 }}
-              transition={{ type: 'spring', stiffness: 200 }}
-            >
-              <Zap size={20} />
-            </motion.div>
-            <div className="brand-text">
-              <span className="brand-name">
-                <span className="brand-vol">VOL</span>
-                <span className="brand-tech">TECH</span>
-              </span>
-            </div>
+            <img src="/voltech-logo.png" alt="Voltech" className="navbar-logo-img" />
           </Link>
 
           {!isAdmin && (
