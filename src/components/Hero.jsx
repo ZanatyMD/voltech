@@ -93,7 +93,11 @@ function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <span className="text-stroke">NEXT-GEN</span>
-            <img src="/voltech-logo.png" alt="Voltech Electronics Store" className="hero-logo-img" />
+            <span className="hero-brand-logo">
+              <span className="hero-vol">VOL</span><span className="hero-tech">TECH</span>
+              <Zap size={48} className="hero-bolt" />
+            </span>
+            <span className="hero-store-subtitle">Electronics Store</span>
           </motion.h1>
 
           <motion.p 

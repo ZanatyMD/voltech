@@ -63,7 +63,10 @@ function Navbar() {
           transition={{ duration: 0.7, type: 'spring', stiffness: 200, damping: 20 }}
         >
           <Link to="/" className="navbar-brand">
-            <img src="/voltech-logo.png" alt="Voltech" className="navbar-logo-img" />
+            <span className="nav-brand-logo">
+              <span className="nav-vol">VOL</span><span className="nav-tech">TECH</span>
+              <Zap size={18} className="nav-bolt" />
+            </span>
           </Link>
 
           {!isAdmin && (

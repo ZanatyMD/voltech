@@ -110,12 +110,52 @@
   text-shadow: 0 0 30px rgba(245, 200, 66, 0.4);
 }
 
-.hero-logo-img {
-  max-width: 500px;
-  width: 100%;
-  height: auto;
-  margin-top: 8px;
-  filter: drop-shadow(0 0 30px rgba(126, 200, 67, 0.3));
+/* Hero Brand Logo — Pro Style */
+.hero-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+.hero-vol {
+  color: var(--volt-yellow);
+  text-shadow: 
+    0 0 20px rgba(245, 200, 66, 0.5),
+    0 0 60px rgba(245, 200, 66, 0.2);
+  font-style: italic;
+}
+
+.hero-tech {
+  background: linear-gradient(135deg, #7EC843 0%, #4CAF50 60%, #2E7D32 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(126, 200, 67, 0.4));
+  font-style: italic;
+}
+
+.hero-bolt {
+  color: #7EC843;
+  filter: drop-shadow(0 0 15px rgba(126, 200, 67, 0.6));
+  margin-left: -4px;
+  animation: boltPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes boltPulse {
+  0% { filter: drop-shadow(0 0 10px rgba(126, 200, 67, 0.4)); }
+  100% { filter: drop-shadow(0 0 25px rgba(126, 200, 67, 0.8)); }
+}
+
+.hero-store-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  -webkit-text-stroke: 0;
+  margin-top: 4px;
 }
 
 .hero-desc-cyber {
@@ -278,7 +318,12 @@
     width: 100%;
     margin-top: 40px;
   }
-  .hero-logo-img {
-    max-width: 320px;
+  .hero-store-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+  }
+  .hero-bolt {
+    width: 32px;
+    height: 32px;
   }
 }

@@ -41,16 +41,39 @@
   color: var(--text-primary);
 }
 
-.navbar-logo-img {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(126, 200, 67, 0.3));
-  transition: filter 0.3s ease;
+/* Nav Brand Logo — Pro Style */
+.nav-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-style: italic;
+  transition: all 0.3s ease;
 }
 
-.navbar-logo-img:hover {
-  filter: drop-shadow(0 0 15px rgba(126, 200, 67, 0.5));
+.nav-vol {
+  color: var(--volt-yellow);
+  text-shadow: 0 0 10px rgba(245, 200, 66, 0.3);
+}
+
+.nav-tech {
+  background: linear-gradient(135deg, #7EC843, #4CAF50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-bolt {
+  color: #7EC843;
+  filter: drop-shadow(0 0 6px rgba(126, 200, 67, 0.5));
+  margin-left: -2px;
+}
+
+.navbar-brand:hover .nav-brand-logo {
+  filter: drop-shadow(0 0 10px rgba(126, 200, 67, 0.3));
 }
 
 /* Search overrides for Pill */
