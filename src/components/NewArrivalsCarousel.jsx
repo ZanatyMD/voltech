@@ -30,9 +30,12 @@ function NewArrivalsCarousel() {
   if (loading || newProducts.length === 0) return null;
 
   const getVisibleProducts = () => {
+    if (!newProducts || newProducts.length === 0) return [];
+    const count = Math.min(2, newProducts.length);
     const visible = [];
-    for (let i = 0; i < 2; i++) {
-      visible.push(newProducts[(currentIndex + i) % newProducts.length]);
+    for (let i = 0; i < count; i++) {
+      const p = newProducts[(currentIndex + i) % newProducts.length];
+      if (p) visible.push(p);
     }
     return visible;
   };

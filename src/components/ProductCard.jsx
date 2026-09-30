@@ -7,13 +7,18 @@ import './ProductCard.css';
 
 function ProductCard({ product, index = 0 }) {
   const { addToCart, cartItems } = useCart();
-  const { name, originalPrice, currentPrice, stock, imageUrl, category } = product;
   
-  const discountPercent = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
-  const isInStock = stock > 0;
+  if (!product) return null;
+  
+  const { name = '', originalPrice = 0, currentPrice = 0, stock = 0, imageUrl = '', category = '' } = product;
+  
+  const discountPercent = (originalPrice && originalPrice > currentPrice)
+    ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) 
+    : 0;
+  const isInStock = (Number(stock) || 0) > 0;
 
   const handleAddToCart = () => {
-    const existingItem = cartItems.find(item => item.id === product.id);
+    const existingItem = (cartItems || []).find(item => item.id === product.id);
     const currentQty = existingItem ? existingItem.quantity : 0;
     
     if (currentQty >= stock) {
@@ -59,9 +64,9 @@ function ProductCard({ product, index = 0 }) {
           </Link>
           
           <div className="cyber-pricing">
-            <span className="cyber-price">EGP {currentPrice.toFixed(0)}</span>
+            <span className="cyber-price">EGP {Number(currentPrice || 0).toFixed(0)}</span>
             {discountPercent > 0 && (
-              <span className="cyber-price-original">EGP {originalPrice.toFixed(0)}</span>
+              <span className="cyber-price-original">EGP {Number(originalPrice || 0).toFixed(0)}</span>
             )}
           </div>
 
