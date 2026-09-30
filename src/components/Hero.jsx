@@ -112,7 +112,7 @@ function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Tired from the same options ...... Yeah us too .
+            Tired of the same options ...... Yeah us too .
           </motion.p>
 
           <motion.div 
