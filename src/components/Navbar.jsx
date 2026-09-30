@@ -78,13 +78,6 @@ function Navbar() {
                 <Home size={15} />
                 <span>Home</span>
               </a>
-              <Link
-                to="/shop"
-                className={`nav-link ${location.pathname === '/shop' ? 'active' : ''}`}
-              >
-                <Package size={15} />
-                <span>Products</span>
-              </Link>
               <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
                 <Info size={15} />
                 <span>About Us</span>
