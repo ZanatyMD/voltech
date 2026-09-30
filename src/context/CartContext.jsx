@@ -13,27 +13,41 @@ export function CartProvider({ children }) {
     localStorage.setItem('voltech-cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product) => {
+  const addToCart = (product, selectedVariant = null) => {
+    const variantName = selectedVariant ? selectedVariant.name : (product.selectedVariant || null);
+    const itemPrice = selectedVariant ? selectedVariant.currentPrice : product.currentPrice;
+    const itemStock = selectedVariant && selectedVariant.stock !== undefined ? selectedVariant.stock : product.stock;
+    const cartItemId = variantName ? `${product.id}-${variantName}` : product.id;
+
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => (item.cartItemId || item.id) === cartItemId);
       if (existing) {
-        if (existing.quantity >= product.stock) return prev; // Cannot exceed stock
+        if (existing.quantity >= itemStock) return prev;
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          (item.cartItemId || item.id) === cartItemId 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { 
+        ...product, 
+        cartItemId,
+        selectedVariant: variantName,
+        currentPrice: itemPrice,
+        stock: itemStock,
+        quantity: 1 
+      }];
     });
     setIsCartOpen(true);
   };
 
   const removeFromCart = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+    setCartItems(prev => prev.filter(item => (item.cartItemId || item.id) !== id));
   };
 
   const updateQuantity = (id, amount) => {
     setCartItems(prev => prev.map(item => {
-      if (item.id === id) {
+      if ((item.cartItemId || item.id) === id) {
         const newQuantity = Math.max(1, Math.min(item.quantity + amount, item.stock));
         return { ...item, quantity: newQuantity };
       }

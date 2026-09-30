@@ -14,12 +14,15 @@ function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+
   const product = getProduct(id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setSelectedImage(0);
     setQuantity(1);
+    setSelectedVariantIndex(0);
   }, [id]);
 
   if (!product) {
@@ -40,10 +43,15 @@ function ProductDetail() {
     );
   }
 
-  const { name, originalPrice, currentPrice, stock, imageUrl, category, description, galleryImages } = product;
-  const discountPercent = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
-  const isInStock = stock > 0;
+  const { name, originalPrice, currentPrice, stock, imageUrl, category, description, galleryImages, variants } = product;
+  
+  const hasVariants = variants && variants.length > 0;
+  const activeVariant = hasVariants ? variants[selectedVariantIndex] || variants[0] : null;
+  const displayPrice = activeVariant ? activeVariant.currentPrice : currentPrice;
+  const displayStock = activeVariant && activeVariant.stock !== undefined ? activeVariant.stock : stock;
+  const isInStock = displayStock > 0;
 
+  const discountPercent = Math.round(((originalPrice - displayPrice) / originalPrice) * 100);
   const allImages = [imageUrl, ...(galleryImages || [])].filter(Boolean);
 
   const relatedProducts = products
@@ -51,11 +59,19 @@ function ProductDetail() {
     .slice(0, 4);
 
   const handleAddToCart = () => {
-    const existingItem = cartItems.find(item => item.id === product.id);
+    const productToAdd = {
+      ...product,
+      currentPrice: displayPrice,
+      selectedVariant: activeVariant ? activeVariant.name : null
+    };
+
+    const existingItem = cartItems.find(item => 
+      item.id === product.id && item.selectedVariant === (activeVariant ? activeVariant.name : null)
+    );
     const currentQty = existingItem ? existingItem.quantity : 0;
     
-    if (currentQty + quantity > stock) {
-      const remaining = stock - currentQty;
+    if (currentQty + quantity > displayStock) {
+      const remaining = displayStock - currentQty;
       if (remaining <= 0) {
         showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
       } else {
@@ -65,16 +81,17 @@ function ProductDetail() {
     }
 
     for (let i = 0; i < quantity; i++) {
-      addToCart(product);
+      addToCart(productToAdd, activeVariant);
     }
-    showToast(`${quantity}x ${name} added to cart!`, 'success', 2000);
+    const variantStr = activeVariant ? ` (${activeVariant.name})` : '';
+    showToast(`${quantity}x ${name}${variantStr} added to cart!`, 'success', 2000);
   };
 
   const handleQuantityChange = (newQty) => {
     if (newQty < 1) return;
-    if (newQty > stock) {
+    if (newQty > displayStock) {
       showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
-      setQuantity(stock);
+      setQuantity(displayStock);
       return;
     }
     setQuantity(newQty);
@@ -149,14 +166,33 @@ function ProductDetail() {
             <h1 className="pd-name">{name}</h1>
 
             <div className="pd-pricing">
-              <span className="pd-price-current">EGP {currentPrice.toFixed(2)}</span>
+              <span className="pd-price-current">EGP {displayPrice.toFixed(2)}</span>
               {discountPercent > 0 && (
                 <>
                   <span className="pd-price-original">EGP {originalPrice.toFixed(2)}</span>
-                  <span className="pd-save">Save EGP {(originalPrice - currentPrice).toFixed(2)}</span>
+                  <span className="pd-save">Save EGP {(originalPrice - displayPrice).toFixed(2)}</span>
                 </>
               )}
             </div>
+
+            {hasVariants && (
+              <div className="pd-variants-box">
+                <label className="pd-variants-title">Select Size / Option:</label>
+                <div className="pd-variants-grid">
+                  {variants.map((v, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`pd-variant-pill ${selectedVariantIndex === idx ? 'active' : ''}`}
+                      onClick={() => setSelectedVariantIndex(idx)}
+                    >
+                      <span className="pd-variant-name">{v.name}</span>
+                      <span className="pd-variant-price">EGP {v.currentPrice.toFixed(2)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className={`pd-stock ${isInStock ? 'in' : 'out'}`}>
               <div className="pd-stock-dot"></div>

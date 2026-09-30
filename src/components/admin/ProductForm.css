@@ -227,6 +227,92 @@
   margin-top: 8px;
 }
 
+/* ===== VARIANTS ADMIN SECTION ===== */
+.variants-section-admin {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.variants-header-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.btn-add-variant-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(126, 200, 67, 0.15);
+  color: var(--volt-green, #7EC843);
+  border: 1px solid rgba(126, 200, 67, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-variant-admin:hover {
+  background: rgba(126, 200, 67, 0.25);
+  box-shadow: 0 0 12px rgba(126, 200, 67, 0.2);
+}
+
+.variants-hint-admin {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.variants-list-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.variant-row-admin {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.variant-input-name {
+  flex: 2;
+  min-width: 120px;
+}
+
+.variant-input-price {
+  flex: 1;
+  min-width: 90px;
+}
+
+.variant-input-stock {
+  flex: 1;
+  min-width: 70px;
+}
+
+.btn-remove-variant-admin {
+  background: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-variant-admin:hover {
+  background: #ff4d4d;
+  color: #fff;
+}
+
 @media (max-width: 600px) {
   .form-row {
     flex-direction: column;
@@ -234,5 +320,8 @@
   }
   .modal-header, .product-form {
     padding: 20px;
+  }
+  .variant-row-admin {
+    flex-wrap: wrap;
   }
 }

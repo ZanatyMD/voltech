@@ -117,22 +117,18 @@
   justify-content: center;
   position: relative;
   gap: 2px;
+  filter: drop-shadow(0 0 25px rgba(126, 200, 67, 0.35));
 }
 
 .hero-vol {
-  color: var(--volt-yellow);
-  text-shadow: 
-    0 0 20px rgba(245, 200, 66, 0.5),
-    0 0 60px rgba(245, 200, 66, 0.2);
+  color: #F5C842;
+  text-shadow: 0 0 25px rgba(245, 200, 66, 0.5);
   font-style: italic;
 }
 
 .hero-tech {
-  background: linear-gradient(135deg, #7EC843 0%, #4CAF50 60%, #2E7D32 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 20px rgba(126, 200, 67, 0.4));
+  color: #7EC843;
+  text-shadow: 0 0 25px rgba(126, 200, 67, 0.5);
   font-style: italic;
 }
 
@@ -144,13 +140,12 @@
   margin-left: 2px;
   align-self: center;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 15px rgba(126, 200, 67, 0.7));
   animation: boltPulse 2s ease-in-out infinite alternate;
 }
 
 @keyframes boltPulse {
-  0% { filter: drop-shadow(0 0 10px rgba(126, 200, 67, 0.4)); }
-  100% { filter: drop-shadow(0 0 25px rgba(126, 200, 67, 0.8)); }
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.08); opacity: 1; }
 }
 
 .hero-store-subtitle {

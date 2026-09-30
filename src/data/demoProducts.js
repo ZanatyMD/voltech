@@ -60,14 +60,20 @@ const demoProducts = [
   },
   {
     id: '6',
-    name: 'Custom Double-Sided PCB (10x10cm)',
+    name: 'Custom Double-Sided Prototype PCB',
     category: 'PCBs',
     originalPrice: 600.00,
     currentPrice: 500.00,
     stock: 999,
     imageUrl: 'https://images.unsplash.com/photo-1553341640-6b28f1e58f01?w=500&h=400&fit=crop',
-    description: 'High-quality custom PCB manufacturing service. Max size 10x10cm, 2 layers.',
+    description: 'High-quality custom PCB prototyping board available in multiple sizes.',
     createdAt: new Date().toISOString(),
+    variants: [
+      { name: '5x5 cm', currentPrice: 250.00, stock: 999 },
+      { name: '7x9 cm', currentPrice: 380.00, stock: 999 },
+      { name: '10x10 cm', currentPrice: 500.00, stock: 999 },
+      { name: '15x20 cm', currentPrice: 850.00, stock: 999 }
+    ]
   },
   {
     id: '7',

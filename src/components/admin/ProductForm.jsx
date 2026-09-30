@@ -23,7 +23,8 @@ function ProductForm({ product, onClose }) {
     stock: '',
     imageUrl: '',
     galleryImages: [],
-    description: ''
+    description: '',
+    variants: []
   });
 
   useEffect(() => {
@@ -36,10 +37,33 @@ function ProductForm({ product, onClose }) {
         stock: product.stock,
         imageUrl: product.imageUrl || '',
         galleryImages: product.galleryImages || [],
-        description: product.description || ''
+        description: product.description || '',
+        variants: product.variants || []
       });
     }
   }, [product]);
+
+  const handleAddVariant = () => {
+    setFormData(prev => ({
+      ...prev,
+      variants: [...(prev.variants || []), { name: '', currentPrice: prev.currentPrice || '', stock: prev.stock || '' }]
+    }));
+  };
+
+  const handleVariantChange = (index, field, value) => {
+    setFormData(prev => {
+      const updated = [...(prev.variants || [])];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, variants: updated };
+    });
+  };
+
+  const handleRemoveVariant = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      variants: (prev.variants || []).filter((_, i) => i !== index)
+    }));
+  };
 
   // Paste event listener for image copy/paste support
   useEffect(() => {
@@ -182,11 +206,20 @@ function ProductForm({ product, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    const formattedVariants = (formData.variants || [])
+      .filter(v => v.name && v.name.trim())
+      .map(v => ({
+        name: v.name.trim(),
+        currentPrice: parseFloat(v.currentPrice) || parseFloat(formData.currentPrice),
+        stock: v.stock !== '' ? parseInt(v.stock, 10) : parseInt(formData.stock, 10)
+      }));
+
     const formattedData = {
       ...formData,
       originalPrice: parseFloat(formData.originalPrice),
       currentPrice: parseFloat(formData.currentPrice),
       stock: parseInt(formData.stock, 10),
+      variants: formattedVariants
     };
 
     if (product) {
@@ -239,7 +272,7 @@ function ProductForm({ product, onClose }) {
 
           <div className="form-row">
             <div className="form-group flex-1">
-              <label className="form-label">Current Price (EGP)</label>
+              <label className="form-label">Base Price (EGP)</label>
               <input
                 type="number"
                 name="currentPrice"
@@ -276,6 +309,66 @@ function ProductForm({ product, onClose }) {
                 required
               />
             </div>
+          </div>
+
+          {/* Product Variants / Sizes Section */}
+          <div className="form-group variants-section-admin">
+            <div className="variants-header-admin">
+              <label className="form-label">Product Sizes / Options (Optional)</label>
+              <button 
+                type="button" 
+                className="btn-add-variant-admin"
+                onClick={handleAddVariant}
+              >
+                <Plus size={14} /> Add Option / Size
+              </button>
+            </div>
+            <p className="variants-hint-admin">
+              Add multiple size/spec options (e.g. PCB: 5x5 cm, 10x10 cm) with different prices.
+            </p>
+
+            {formData.variants && formData.variants.length > 0 && (
+              <div className="variants-list-admin">
+                {formData.variants.map((variant, index) => (
+                  <div key={index} className="variant-row-admin">
+                    <input
+                      type="text"
+                      placeholder="Size / Name (e.g. 5x5 cm)"
+                      className="form-input variant-input-name"
+                      value={variant.name}
+                      onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price (EGP)"
+                      step="0.01"
+                      min="0"
+                      className="form-input variant-input-price"
+                      value={variant.currentPrice}
+                      onChange={(e) => handleVariantChange(index, 'currentPrice', e.target.value)}
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Stock"
+                      min="0"
+                      className="form-input variant-input-stock"
+                      value={variant.stock}
+                      onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="btn-remove-variant-admin"
+                      onClick={() => handleRemoveVariant(index)}
+                      title="Remove option"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Main Product Image */}

@@ -208,35 +208,53 @@ function CartDrawer() {
                   </button>
                 </div>
               ) : (
-                cartItems.map(item => (
-                  <div key={item.id} className="cart-item">
-                    <img src={item.imageUrl} alt={item.name} className="cart-item-img" />
-                    <div className="cart-item-info">
-                      <h4>{item.name}</h4>
-                      <p className="cart-item-price">EGP {item.currentPrice.toFixed(2)}</p>
-                      <div className="cart-item-controls">
-                        <div className="quantity-controls">
-                          <button onClick={() => updateQuantity(item.id, -1)} disabled={item.quantity <= 1}>
-                            <Minus size={14} />
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button onClick={() => {
-                            if (item.quantity >= item.stock) {
-                              showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
-                              return;
-                            }
-                            updateQuantity(item.id, 1);
+                cartItems.map(item => {
+                  const itemIdKey = item.cartItemId || item.id;
+                  return (
+                    <div key={itemIdKey} className="cart-item">
+                      <img src={item.imageUrl} alt={item.name} className="cart-item-img" />
+                      <div className="cart-item-info">
+                        <h4>{item.name}</h4>
+                        {item.selectedVariant && (
+                          <span className="cart-item-variant" style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--volt-green)',
+                            background: 'rgba(126, 200, 67, 0.1)',
+                            border: '1px solid rgba(126, 200, 67, 0.2)',
+                            padding: '2px 8px',
+                            borderRadius: '10px',
+                            display: 'inline-block',
+                            marginTop: '2px',
+                            marginBottom: '4px'
                           }}>
-                            <Plus size={14} />
+                            Option: {item.selectedVariant}
+                          </span>
+                        )}
+                        <p className="cart-item-price">EGP {item.currentPrice.toFixed(2)}</p>
+                        <div className="cart-item-controls">
+                          <div className="quantity-controls">
+                            <button onClick={() => updateQuantity(itemIdKey, -1)} disabled={item.quantity <= 1}>
+                              <Minus size={14} />
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => {
+                              if (item.quantity >= item.stock) {
+                                showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
+                                return;
+                              }
+                              updateQuantity(itemIdKey, 1);
+                            }}>
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                          <button className="remove-btn" onClick={() => removeFromCart(itemIdKey)}>
+                            <Trash2 size={16} />
                           </button>
                         </div>
-                        <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
-                          <Trash2 size={16} />
-                        </button>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
