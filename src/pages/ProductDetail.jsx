@@ -57,7 +57,7 @@ function ProductDetail() {
     if (currentQty + quantity > stock) {
       const remaining = stock - currentQty;
       if (remaining <= 0) {
-        showToast(`Sorry, only ${stock} item${stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+        showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
       } else {
         showToast(`Sorry, you can only add ${remaining} more item${remaining > 1 ? 's' : ''}.`, 'error');
       }
@@ -73,7 +73,7 @@ function ProductDetail() {
   const handleQuantityChange = (newQty) => {
     if (newQty < 1) return;
     if (newQty > stock) {
-      showToast(`Sorry, only ${stock} item${stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+      showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
       setQuantity(stock);
       return;
     }
@@ -160,7 +160,7 @@ function ProductDetail() {
 
             <div className={`pd-stock ${isInStock ? 'in' : 'out'}`}>
               <div className="pd-stock-dot"></div>
-              {isInStock ? `${stock} In Stock` : 'Out of Stock'}
+              {isInStock ? 'In Stock' : 'Out of Stock'}
             </div>
 
             {description && (

@@ -95,7 +95,7 @@ function Hero() {
             <span className="text-stroke">NEXT-GEN</span>
             <span className="hero-brand-logo">
               <span className="hero-vol">VOL</span><span className="hero-tech">TECH</span>
-              <Zap size={48} className="hero-bolt" />
+              <Zap className="hero-bolt" />
             </span>
             <span className="hero-store-subtitle">Electronics Store</span>
           </motion.h1>

@@ -222,7 +222,7 @@ function CartDrawer() {
                           <span>{item.quantity}</span>
                           <button onClick={() => {
                             if (item.quantity >= item.stock) {
-                              showToast(`Sorry, only ${item.stock} item${item.stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+                              showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
                               return;
                             }
                             updateQuantity(item.id, 1);

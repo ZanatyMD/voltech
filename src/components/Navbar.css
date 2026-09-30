@@ -68,8 +68,13 @@
 
 .nav-bolt {
   color: #7EC843;
+  fill: #7EC843;
+  width: 0.85em;
+  height: 0.85em;
   filter: drop-shadow(0 0 6px rgba(126, 200, 67, 0.5));
-  margin-left: -2px;
+  margin-left: 1px;
+  align-self: center;
+  flex-shrink: 0;
 }
 
 .navbar-brand:hover .nav-brand-logo {

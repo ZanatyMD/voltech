@@ -17,7 +17,7 @@ function ProductCard({ product, index = 0 }) {
     const currentQty = existingItem ? existingItem.quantity : 0;
     
     if (currentQty >= stock) {
-      showToast(`Sorry, only ${stock} item${stock > 1 ? 's' : ''} remaining in stock.`, 'error');
+      showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
       return;
     }
     addToCart(product);

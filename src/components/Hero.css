@@ -114,8 +114,9 @@
 .hero-brand-logo {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
   position: relative;
+  gap: 2px;
 }
 
 .hero-vol {
@@ -137,8 +138,13 @@
 
 .hero-bolt {
   color: #7EC843;
-  filter: drop-shadow(0 0 15px rgba(126, 200, 67, 0.6));
-  margin-left: -4px;
+  fill: #7EC843;
+  width: 0.75em;
+  height: 0.75em;
+  margin-left: 2px;
+  align-self: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 15px rgba(126, 200, 67, 0.7));
   animation: boltPulse 2s ease-in-out infinite alternate;
 }
 
@@ -321,9 +327,5 @@
   .hero-store-subtitle {
     font-size: 0.7rem;
     letter-spacing: 4px;
-  }
-  .hero-bolt {
-    width: 32px;
-    height: 32px;
   }
 }
