@@ -233,6 +233,7 @@
   display: inline-flex;
   align-items: center;
   transform: skewX(-6deg);
+  white-space: nowrap;
 }
 
 .btn-cyber-outline:hover {
