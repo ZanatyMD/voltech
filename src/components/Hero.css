@@ -341,19 +341,42 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-left: 0;
     padding-top: 20px;
-    margin: 0 auto 40px;
+    margin: 0 auto 30px;
   }
   .hero-actions-asym {
-    flex-direction: column;
-    gap: 30px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    z-index: 20;
+  }
+  .btn-cyber {
+    font-size: 0.9rem;
+    padding: 14px 28px;
+  }
+  .btn-cyber-outline {
+    font-size: 0.9rem;
+    padding: 14px 28px;
   }
   .hero-graphic-side {
-    height: 400px;
+    height: 280px;
     width: 100%;
-    margin-top: 40px;
+    margin-top: 30px;
+    pointer-events: none;
   }
   .hero-store-subtitle {
     font-size: 0.7rem;
     letter-spacing: 4px;
+  }
+  .c1 { width: 260px; height: 260px; }
+  .c2 { width: 200px; height: 200px; }
+  .c3 { width: 140px; height: 140px; }
+  .floating-icon {
+    padding: 14px;
+  }
+  .floating-icon svg {
+    width: 28px;
+    height: 28px;
   }
 }
