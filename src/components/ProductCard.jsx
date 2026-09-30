@@ -1,16 +1,18 @@
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { showToast } from './Toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './ProductCard.css';
 
 function ProductCard({ product, index = 0 }) {
   const { addToCart, cartItems } = useCart();
+  const navigate = useNavigate();
   
   if (!product) return null;
   
   const { name = '', originalPrice = 0, currentPrice = 0, stock = 0, imageUrl = '', category = '' } = product;
+  const hasVariants = product.variants && product.variants.length > 0;
   
   const discountPercent = (originalPrice && originalPrice > currentPrice)
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) 
@@ -18,6 +20,12 @@ function ProductCard({ product, index = 0 }) {
   const isInStock = (Number(stock) || 0) > 0;
 
   const handleAddToCart = () => {
+    // If product has variants, send to product page to choose
+    if (hasVariants) {
+      navigate(`/product/${product.id}`);
+      return;
+    }
+    
     const existingItem = (cartItems || []).find(item => item.id === product.id);
     const currentQty = existingItem ? existingItem.quantity : 0;
     
@@ -76,7 +84,7 @@ function ProductCard({ product, index = 0 }) {
             onClick={handleAddToCart}
           >
             <ShoppingCart size={16} />
-            {isInStock ? 'Add to Cart' : 'Sold Out'}
+            {!isInStock ? 'Sold Out' : hasVariants ? 'Choose Option' : 'Add to Cart'}
           </button>
         </div>
       </div>
