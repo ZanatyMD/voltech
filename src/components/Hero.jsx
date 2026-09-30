@@ -132,13 +132,6 @@ function Hero() {
                 Login / Sign Up
               </button>
             )}
-            
-            <div className="hero-stats-cyber">
-              <div className="stat-cyber">
-                <span className="num">{products.length}+</span>
-                <span className="lab">Modules</span>
-              </div>
-            </div>
           </motion.div>
         </div>
 
