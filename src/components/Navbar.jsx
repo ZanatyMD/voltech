@@ -41,17 +41,8 @@ function Navbar() {
     }
   }, [location.pathname]);
 
-  const handleProductsClick = (e) => {
-    e.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
-    } else {
-      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
+
 
   return (
     <>
@@ -87,14 +78,13 @@ function Navbar() {
                 <Home size={15} />
                 <span>Home</span>
               </a>
-              <a
-                href="#products-section"
-                className={`nav-link ${activeSection === 'products' ? 'active' : ''}`}
-                onClick={handleProductsClick}
+              <Link
+                to="/shop"
+                className={`nav-link ${location.pathname === '/shop' ? 'active' : ''}`}
               >
                 <Package size={15} />
                 <span>Products</span>
-              </a>
+              </Link>
               <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
                 <Info size={15} />
                 <span>About Us</span>

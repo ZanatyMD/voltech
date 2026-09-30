@@ -1,12 +1,18 @@
-import { Zap, Cpu, HardDrive } from 'lucide-react';
+import { Zap, Cpu, HardDrive, ShoppingBag, LogIn } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
+import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import AuthModal from './AuthModal';
 import './Hero.css';
 
 function Hero() {
   const { products } = useProducts();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -61,11 +67,11 @@ function Hero() {
     };
   }, []);
 
-  const scrollToProducts = () => {
-    document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
+
+
 
   return (
+    <>
     <section className="hero" id="hero">
       <div className="hero-glow-core"></div>
       
@@ -115,9 +121,17 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <button className="btn-cyber" onClick={scrollToProducts}>
-              Initialize Shop
+            <button className="btn-cyber" onClick={() => navigate('/shop')}>
+              <ShoppingBag size={20} className="btn-cyber-icon" />
+              Browse Shop
             </button>
+            
+            {!user && (
+              <button className="btn-cyber-outline" onClick={() => setIsAuthModalOpen(true)}>
+                <LogIn size={20} className="btn-cyber-icon" />
+                Login / Sign Up
+              </button>
+            )}
             
             <div className="hero-stats-cyber">
               <div className="stat-cyber">
@@ -157,7 +171,11 @@ function Hero() {
       
       <div className="hero-fade-bottom"></div>
     </section>
+
+    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+    </>
   );
 }
 
 export default Hero;
+

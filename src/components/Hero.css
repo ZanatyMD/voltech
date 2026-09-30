@@ -211,6 +211,37 @@
   color: #000;
 }
 
+.btn-cyber-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.btn-cyber-outline {
+  position: relative;
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 16px 40px;
+  border: 2px solid rgba(126, 200, 67, 0.5);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  transform: skewX(-6deg);
+}
+
+.btn-cyber-outline:hover {
+  border-color: var(--volt-green);
+  background: rgba(126, 200, 67, 0.15);
+  box-shadow: 0 0 30px rgba(126, 200, 67, 0.3);
+  color: var(--volt-green);
+}
+
 .hero-stats-cyber {
   display: flex;
   gap: 30px;
