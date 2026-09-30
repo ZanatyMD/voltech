@@ -28,6 +28,7 @@ function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const gridRef = useRef(null);
   const categoryMenuRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
