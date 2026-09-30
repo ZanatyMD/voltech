@@ -148,7 +148,7 @@ function ProductGrid() {
                       {activeCategory === 'All' && <Check size={16} className="check-icon" />}
                     </button>
 
-                    {stats.categories.map((category) => (
+                    {(stats?.categories || []).map((category) => (
                       <button
                         key={category}
                         type="button"

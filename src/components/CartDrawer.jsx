@@ -60,11 +60,15 @@ function CartDrawer() {
 
   if (!isCartOpen && !showThankYou && !isAuthModalOpen) return null;
 
+  const safeDamiettaFee = typeof damiettaShippingFee === 'number' && !isNaN(damiettaShippingFee) 
+    ? damiettaShippingFee 
+    : 40;
+
   const currentDeliveryFee = isDelivery 
-    ? (deliveryType === 'damietta' ? damiettaShippingFee : 0) 
+    ? (deliveryType === 'damietta' ? safeDamiettaFee : 0) 
     : 0;
   
-  const finalOrderTotal = cartTotal + currentDeliveryFee;
+  const finalOrderTotal = (Number(cartTotal) || 0) + currentDeliveryFee;
 
   const handleCheckout = async () => {
     if (!user || user.role === 'admin') {
@@ -296,13 +300,13 @@ function CartDrawer() {
                 <div className="cart-total-summary">
                   <div className="summary-row">
                     <span>Items Subtotal:</span>
-                    <span>EGP {cartTotal.toFixed(2)}</span>
+                    <span>EGP {Number(cartTotal || 0).toFixed(2)}</span>
                   </div>
                   {isDelivery && (
                     <div className="summary-row shipping-row">
                       <span>Shipping Fee:</span>
                       {deliveryType === 'damietta' ? (
-                        <span className="shipping-badge">EGP {damiettaShippingFee.toFixed(2)}</span>
+                        <span className="shipping-badge">EGP {safeDamiettaFee.toFixed(2)}</span>
                       ) : (
                         <span className="shipping-pending-badge">To be calculated</span>
                       )}
@@ -384,7 +388,7 @@ function CartDrawer() {
                               />
                               <div className="zone-info">
                                 <strong>📍 New Damietta</strong>
-                                <span>Shipping: EGP {damiettaShippingFee}</span>
+                                <span>Shipping: EGP {safeDamiettaFee}</span>
                               </div>
                             </label>
 

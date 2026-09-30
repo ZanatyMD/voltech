@@ -45,13 +45,13 @@ function ProductDetail() {
 
   const { name, originalPrice, currentPrice, stock, imageUrl, category, description, galleryImages, variants } = product;
   
-  const hasVariants = variants && variants.length > 0;
-  const activeVariant = hasVariants ? variants[selectedVariantIndex] || variants[0] : null;
-  const displayPrice = activeVariant ? activeVariant.currentPrice : currentPrice;
-  const displayStock = activeVariant && activeVariant.stock !== undefined ? activeVariant.stock : stock;
+  const hasVariants = Array.isArray(variants) && variants.length > 0;
+  const activeVariant = hasVariants ? (variants[selectedVariantIndex] || variants[0]) : null;
+  const displayPrice = activeVariant ? Number(activeVariant.currentPrice || currentPrice || 0) : Number(currentPrice || 0);
+  const displayStock = activeVariant && activeVariant.stock !== undefined ? activeVariant.stock : (stock || 0);
   const isInStock = displayStock > 0;
 
-  const discountPercent = Math.round(((originalPrice - displayPrice) / originalPrice) * 100);
+  const discountPercent = originalPrice ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100) : 0;
   const allImages = [imageUrl, ...(galleryImages || [])].filter(Boolean);
 
   const relatedProducts = products
@@ -187,7 +187,7 @@ function ProductDetail() {
                       onClick={() => setSelectedVariantIndex(idx)}
                     >
                       <span className="pd-variant-name">{v.name}</span>
-                      <span className="pd-variant-price">EGP {v.currentPrice.toFixed(2)}</span>
+                      <span className="pd-variant-price">EGP {Number(v.currentPrice || 0).toFixed(2)}</span>
                     </button>
                   ))}
                 </div>
