@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
-import { Filter, Search, Loader, Package } from 'lucide-react';
+import { Filter, Search, Loader, Package, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { smartSearch } from '../utils/search';
 import './ProductGrid.css';
@@ -27,9 +27,21 @@ function SkeletonCard() {
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState('All');
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const categoryMenuRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
-  const gridRef = useRef(null);
+
+  // Close dropdown menu on click outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (categoryMenuRef.current && !categoryMenuRef.current.contains(e.target)) {
+        setIsCategoryMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
@@ -81,28 +93,79 @@ function ProductGrid() {
             />
           </div>
 
-          <div className="category-filters">
+          <div className="category-dropdown-wrapper" ref={categoryMenuRef}>
             <motion.button
-              className={`filter-btn ${activeCategory === 'All' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('All')}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              type="button"
+              className={`category-toggle-btn ${activeCategory !== 'All' ? 'active' : ''}`}
+              onClick={() => setIsCategoryMenuOpen(prev => !prev)}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
             >
-              All
+              <SlidersHorizontal size={18} className="category-icon-dash" />
+              <span className="category-btn-text">
+                Category: <strong>{activeCategory}</strong>
+              </span>
+              <ChevronDown 
+                size={16} 
+                className={`category-arrow ${isCategoryMenuOpen ? 'open' : ''}`} 
+              />
             </motion.button>
-            {stats.categories.map((category, i) => (
-              <motion.button
-                key={category}
-                className={`filter-btn ${activeCategory === category ? 'active' : ''}`}
-                onClick={() => setActiveCategory(category)}
-                whileHover={{ scale: 1.06 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                {category}
-              </motion.button>
-            ))}
+
+            <AnimatePresence>
+              {isCategoryMenuOpen && (
+                <motion.div 
+                  className="category-dropdown-menu"
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="category-menu-header">
+                    <span>Filter by Category</span>
+                    {activeCategory !== 'All' && (
+                      <button 
+                        type="button"
+                        className="reset-category-btn"
+                        onClick={() => {
+                          setActiveCategory('All');
+                          setIsCategoryMenuOpen(false);
+                        }}
+                      >
+                        Reset (All)
+                      </button>
+                    )}
+                  </div>
+                  <div className="category-menu-grid">
+                    <button
+                      type="button"
+                      className={`category-menu-item ${activeCategory === 'All' ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveCategory('All');
+                        setIsCategoryMenuOpen(false);
+                      }}
+                    >
+                      <span>All Categories</span>
+                      {activeCategory === 'All' && <Check size={16} className="check-icon" />}
+                    </button>
+
+                    {stats.categories.map((category) => (
+                      <button
+                        key={category}
+                        type="button"
+                        className={`category-menu-item ${activeCategory === category ? 'active' : ''}`}
+                        onClick={() => {
+                          setActiveCategory(category);
+                          setIsCategoryMenuOpen(false);
+                        }}
+                      >
+                        <span>{category}</span>
+                        {activeCategory === category && <Check size={16} className="check-icon" />}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 

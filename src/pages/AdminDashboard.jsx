@@ -15,7 +15,7 @@ import './AdminDashboard.css';
 
 function AdminDashboard() {
   const { products, stats, deleteProduct, updateProduct } = useProducts();
-  const { orders, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders } = useOrders();
+  const { orders, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders, damiettaShippingFee, updateDamiettaShippingFee } = useOrders();
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
   const [activeTab, setActiveTab] = useState('products');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -29,6 +29,7 @@ function AdminDashboard() {
   const [compressionProgress, setCompressionProgress] = useState('');
   const [isGeneratingSKUs, setIsGeneratingSKUs] = useState(false);
   const [productSearch, setProductSearch] = useState('');
+  const [adminDamiettaFee, setAdminDamiettaFee] = useState(damiettaShippingFee || 40);
 
   const compressBase64Image = (base64Str) => {
     return new Promise((resolve) => {
@@ -186,8 +187,9 @@ function AdminDashboard() {
   };
 
   const handleSetDeliveryFee = async (order) => {
-    const feeStr = window.prompt("Enter delivery fee (EGP):", order.deliveryFee || "30");
-    if (feeStr === null) return; // Cancelled
+    const currentFee = order.deliveryFee !== undefined ? order.deliveryFee : 40;
+    const feeStr = window.prompt(`Set shipping fee for order #${order.orderNumber || order.id} (Customer: ${order.customerName}):`, currentFee.toString());
+    if (feeStr === null) return;
     const fee = parseFloat(feeStr);
     if (isNaN(fee) || fee < 0) {
       alert("Please enter a valid number for the delivery fee.");
@@ -199,10 +201,15 @@ function AdminDashboard() {
     const newTotal = itemsTotal + fee;
 
     try {
-      await updateOrder(order.id, { deliveryFee: fee, total: newTotal });
-    } catch (error) {
-      console.error("Failed to set delivery fee:", error);
-      alert("Failed to set delivery fee.");
+      await updateOrder(order.id, { 
+        deliveryFee: fee, 
+        total: newTotal,
+        shippingPending: false
+      });
+      alert(`Shipping fee updated to EGP ${fee}. New total amount: EGP ${newTotal.toFixed(2)}`);
+    } catch (e) {
+      console.error("Failed to update shipping fee", e);
+      alert("Failed to update shipping fee.");
     }
   };
 
@@ -716,6 +723,74 @@ function AdminDashboard() {
         </>
       ) : activeTab === 'orders' ? (
         <>
+        {/* New Damietta Shipping Rate Settings Card */}
+        <div style={{
+          background: 'rgba(20, 22, 32, 0.5)',
+          border: '1px solid rgba(126, 200, 67, 0.3)',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              background: 'rgba(126, 200, 67, 0.15)',
+              border: '1px solid rgba(126, 200, 67, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Truck size={22} color="var(--volt-green)" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.05rem', margin: 0, color: 'var(--text-primary)', fontWeight: '700' }}>
+                New Damietta Shipping Rate
+              </h3>
+              <p style={{ fontSize: '0.82rem', margin: '2px 0 0', color: 'var(--text-muted)' }}>
+                Default delivery fee automatically applied at checkout for New Damietta
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type="number" 
+                min="0" 
+                step="1"
+                value={adminDamiettaFee}
+                onChange={(e) => setAdminDamiettaFee(e.target.value)}
+                className="form-input"
+                style={{ width: '100px', paddingRight: '40px', fontWeight: 'bold', fontSize: '1.05rem', textAlign: 'center' }}
+              />
+              <span style={{ position: 'absolute', right: '10px', color: 'var(--volt-green)', fontSize: '0.85rem', fontWeight: 'bold' }}>EGP</span>
+            </div>
+            <button 
+              className="btn btn-primary"
+              onClick={() => {
+                const val = parseFloat(adminDamiettaFee);
+                if (isNaN(val) || val < 0) {
+                  alert("Please enter a valid shipping rate.");
+                  return;
+                }
+                updateDamiettaShippingFee(val);
+                alert(`New Damietta shipping rate saved to ${val} EGP!`);
+              }}
+              style={{ padding: '10px 18px', fontSize: '0.9rem' }}
+            >
+              Save Rate
+            </button>
+          </div>
+        </div>
+
         <div className="order-search-box">
           <Search size={18} />
           <input
@@ -769,9 +844,31 @@ function AdminDashboard() {
                   <div className="order-card-customer-row" style={{ color: order.isDelivery ? 'var(--volt-green)' : 'var(--text-secondary)' }}>
                     <Package size={14} />
                     <span style={{ fontSize: '0.85rem' }}>
-                      {order.isDelivery ? `Delivery: ${order.deliveryLocation}` : 'Store Pickup'}
+                      {order.isDelivery ? (
+                        <>
+                          <strong>{order.deliveryZone || 'Delivery'}:</strong> {order.deliveryLocation}
+                        </>
+                      ) : 'Store Pickup'}
                     </span>
                   </div>
+                  {order.shippingPending && (
+                    <div style={{ marginTop: '6px' }}>
+                      <span style={{ 
+                        background: 'rgba(245, 200, 66, 0.15)', 
+                        color: 'var(--volt-yellow)', 
+                        border: '1px solid rgba(245, 200, 66, 0.3)',
+                        padding: '2px 8px', 
+                        borderRadius: '10px', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 'bold',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        <AlertTriangle size={12} /> Shipping Fee Pending
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {order.status === 'Cancelled' && order.cancelReason && (
@@ -789,7 +886,16 @@ function AdminDashboard() {
                   <span>{order.items.length} item{order.items.length > 1 ? 's' : ''}</span>
                   <strong className="order-card-total">
                     EGP {order.total.toFixed(2)}
-                    {order.deliveryFee !== undefined && <span style={{fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginLeft: '4px'}}>(inc. EGP {order.deliveryFee} delivery)</span>}
+                    {order.deliveryFee !== undefined && order.deliveryFee > 0 && (
+                      <span style={{fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginLeft: '4px'}}>
+                        (inc. EGP {order.deliveryFee} shipping)
+                      </span>
+                    )}
+                    {order.shippingPending && (
+                      <span style={{fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--volt-yellow)', marginLeft: '4px'}}>
+                        (+ Shipping pending)
+                      </span>
+                    )}
                   </strong>
                   {expandedOrders[order.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </div>
@@ -812,7 +918,7 @@ function AdminDashboard() {
                     ))}
                     {order.deliveryFee !== undefined && (
                       <div className="order-item-row" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                        <span className="order-item-name">Delivery Fee</span>
+                        <span className="order-item-name">Shipping Fee {order.deliveryZone ? `(${order.deliveryZone})` : ''}</span>
                         <span className="order-item-qty"></span>
                         <span className="order-item-price">EGP {order.deliveryFee.toFixed(2)}</span>
                       </div>
@@ -845,14 +951,15 @@ function AdminDashboard() {
                       <option value="Cancelled">Cancelled</option>
                     </select>
                   </div>
-                  {order.status === 'Pending' && order.isDelivery && (
+                  {order.isDelivery && (
                     <button 
                       className="order-action-btn edit" 
                       onClick={() => handleSetDeliveryFee(order)} 
-                      title="Set Delivery Fee"
+                      title="Set or update shipping fee for this order"
+                      style={order.shippingPending ? { backgroundColor: 'rgba(245, 200, 66, 0.2)', color: 'var(--volt-yellow)', borderColor: 'rgba(245, 200, 66, 0.4)' } : {}}
                     >
                       <Truck size={15} />
-                      Set Fee
+                      {order.shippingPending ? 'Set Shipping Fee' : `Fee: EGP ${order.deliveryFee !== undefined ? order.deliveryFee : 0}`}
                     </button>
                   )}
                   <button 

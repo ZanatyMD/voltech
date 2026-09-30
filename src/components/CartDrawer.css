@@ -178,54 +178,110 @@
   background: var(--bg-tertiary);
 }
 
-.cart-total {
+.cart-total-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.summary-row.total-row {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.shipping-badge {
+  color: var(--volt-green);
   font-weight: 600;
 }
 
-.total-amount {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  color: var(--volt-green);
+.shipping-pending-badge {
+  color: var(--volt-yellow);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(245, 200, 66, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
-.checkout-form {
+.delivery-zone-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.delivery-zone-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.delivery-zone-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.delivery-toggle {
-  display: flex;
-  gap: 16px;
-  margin: 4px 0;
-  padding: 0 4px;
-}
-
-.delivery-option {
-  display: flex;
-  align-items: center;
   gap: 8px;
+}
+
+.delivery-zone-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
   cursor: pointer;
-  color: var(--text-primary);
-  font-size: 0.95rem;
+  transition: all 0.2s ease;
 }
 
-.delivery-option input[type="radio"] {
+.delivery-zone-card:hover {
+  background: rgba(126, 200, 67, 0.05);
+  border-color: rgba(126, 200, 67, 0.3);
+}
+
+.delivery-zone-card.active {
+  background: rgba(126, 200, 67, 0.12);
+  border-color: var(--volt-green);
+  box-shadow: 0 0 10px rgba(126, 200, 67, 0.15);
+}
+
+.delivery-zone-card input[type="radio"] {
   accent-color: var(--volt-green);
-  width: 16px;
-  height: 16px;
+  margin-top: 3px;
 }
 
-.delivery-note {
-  color: var(--volt-green);
-  font-size: 0.8rem;
-  padding-left: 4px;
+.zone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zone-info strong {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.zone-info span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .checkout-btn {

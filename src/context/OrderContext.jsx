@@ -10,6 +10,17 @@ export function OrderProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
+  const [damiettaShippingFee, setDamiettaShippingFee] = useState(() => {
+    const saved = localStorage.getItem('voltech-damietta-shipping');
+    return saved !== null ? parseFloat(saved) : 40;
+  });
+
+  const updateDamiettaShippingFee = (newFee) => {
+    const val = parseFloat(newFee) >= 0 ? parseFloat(newFee) : 40;
+    setDamiettaShippingFee(val);
+    localStorage.setItem('voltech-damietta-shipping', val.toString());
+  };
+
   useEffect(() => {
     let q;
     const ordersRef = collection(db, 'orders');
@@ -111,7 +122,10 @@ export function OrderProvider({ children }) {
   };
 
   return (
-    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders, loading }}>
+    <OrderContext.Provider value={{ 
+      orders, addOrder, updateOrderStatus, updateOrder, deleteOrder, deleteAllOrders, loading,
+      damiettaShippingFee, updateDamiettaShippingFee
+    }}>
       {children}
     </OrderContext.Provider>
   );

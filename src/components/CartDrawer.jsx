@@ -9,15 +9,17 @@ import './CartDrawer.css';
 
 function CartDrawer() {
   const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
-  const { addOrder } = useOrders();
+  const { addOrder, damiettaShippingFee } = useOrders();
   const { user } = useAuth();
   
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [isDelivery, setIsDelivery] = useState(false);
+  const [deliveryType, setDeliveryType] = useState('damietta'); // 'damietta' or 'outside'
   const [deliveryLocation, setDeliveryLocation] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [thankYouMessage, setThankYouMessage] = useState('');
   const [countdown, setCountdown] = useState(3);
   const [pendingWhatsAppUrl, setPendingWhatsAppUrl] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -58,6 +60,12 @@ function CartDrawer() {
 
   if (!isCartOpen && !showThankYou && !isAuthModalOpen) return null;
 
+  const currentDeliveryFee = isDelivery 
+    ? (deliveryType === 'damietta' ? damiettaShippingFee : 0) 
+    : 0;
+  
+  const finalOrderTotal = cartTotal + currentDeliveryFee;
+
   const handleCheckout = async () => {
     if (!user || user.role === 'admin') {
       setPendingCheckout(true);
@@ -78,26 +86,33 @@ function CartDrawer() {
       return;
     }
     if (isDelivery && !deliveryLocation.trim()) {
-      showToast('Please enter your delivery address in New Damietta.', 'error');
+      showToast(deliveryType === 'damietta' 
+        ? 'Please enter your detailed address in New Damietta.' 
+        : 'Please enter your city & detailed address.', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
+      const isOutside = isDelivery && deliveryType === 'outside';
+
       const orderData = {
         userId: user ? user.id : 'guest',
         customerName,
         customerPhone,
         isDelivery,
+        deliveryZone: isDelivery ? (deliveryType === 'damietta' ? 'New Damietta' : 'Outside New Damietta') : 'Store Pickup',
         deliveryLocation: isDelivery ? deliveryLocation : 'Store Pickup',
+        deliveryFee: currentDeliveryFee,
+        shippingPending: isOutside,
         items: cartItems.map(item => ({
           id: item.id,
           sku: item.sku || 'N/A',
-          name: item.name,
+          name: item.selectedVariant ? `${item.name} (${item.selectedVariant})` : item.name,
           price: item.currentPrice,
           quantity: item.quantity
         })),
-        total: cartTotal
+        total: finalOrderTotal
       };
       
       await addOrder(orderData);
@@ -107,21 +122,39 @@ function CartDrawer() {
       let message = `مرحباً فولتك! أود طلب العناصر التالية:\nالاسم: ${customerName}\nرقم الهاتف: ${customerPhone}\n`;
       
       if (isDelivery) {
-        message += `طريقة الاستلام: توصيل (دمياط الجديدة)\nالعنوان: ${deliveryLocation}\n\n`;
+        if (deliveryType === 'damietta') {
+          message += `طريقة الاستلام: توصيل (دمياط الجديدة)\nمصاريف الشحن: EGP ${damiettaShippingFee}\nالعنوان: ${deliveryLocation}\n\n`;
+        } else {
+          message += `طريقة الاستلام: توصيل (خارج دمياط الجديدة / المحافظات)\nمصاريف الشحن: سيتم تحديدها وتأكيدها قريباً\nالعنوان: ${deliveryLocation}\n\n`;
+        }
       } else {
         message += `طريقة الاستلام: استلام من الفرع\n\n`;
       }
       
       cartItems.forEach((item) => {
-        message += `${item.quantity}x ${item.name} - EGP ${(item.currentPrice * item.quantity).toFixed(2)}\n`;
+        const titleStr = item.selectedVariant ? `${item.name} (${item.selectedVariant})` : item.name;
+        message += `${item.quantity}x ${titleStr} - EGP ${(item.currentPrice * item.quantity).toFixed(2)}\n`;
       });
 
-      message += `\n*إجمالي الطلب: EGP ${cartTotal.toFixed(2)}*\n`;
+      if (isDelivery && deliveryType === 'damietta') {
+        message += `الشحن (دمياط الجديدة): EGP ${damiettaShippingFee}\n`;
+        message += `\n*إجمالي الطلب: EGP ${finalOrderTotal.toFixed(2)}*\n`;
+      } else if (isOutside) {
+        message += `الشحن: سيتم تحديده لاحقاً\n`;
+        message += `\n*المجموع الفرعي للقطع: EGP ${cartTotal.toFixed(2)} (الشحن يحدد لاحقاً)*\n`;
+      } else {
+        message += `\n*إجمالي الطلب: EGP ${cartTotal.toFixed(2)}*\n`;
+      }
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
       
-      // Show thank you modal, then redirect
+      if (isOutside) {
+        setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you shortly.");
+      } else {
+        setThankYouMessage("Your order has been placed successfully! You'll be redirected to WhatsApp to confirm your order details.");
+      }
+
       setPendingWhatsAppUrl(whatsappUrl);
       setShowThankYou(true);
       setCountdown(3);
@@ -260,9 +293,28 @@ function CartDrawer() {
 
             {cartItems.length > 0 && (
               <div className="cart-footer">
-                <div className="cart-total">
-                  <span>Total:</span>
-                  <span className="total-amount">EGP {cartTotal.toFixed(2)}</span>
+                <div className="cart-total-summary">
+                  <div className="summary-row">
+                    <span>Items Subtotal:</span>
+                    <span>EGP {cartTotal.toFixed(2)}</span>
+                  </div>
+                  {isDelivery && (
+                    <div className="summary-row shipping-row">
+                      <span>Shipping Fee:</span>
+                      {deliveryType === 'damietta' ? (
+                        <span className="shipping-badge">EGP {damiettaShippingFee.toFixed(2)}</span>
+                      ) : (
+                        <span className="shipping-pending-badge">To be calculated</span>
+                      )}
+                    </div>
+                  )}
+                  <div className="summary-row total-row">
+                    <span>Total:</span>
+                    <span className="total-amount">
+                      EGP {finalOrderTotal.toFixed(2)}
+                      {isDelivery && deliveryType === 'outside' && <small style={{ display: 'block', fontSize: '0.7rem', color: 'var(--volt-yellow)', fontWeight: 'normal' }}>+ Shipping to be confirmed</small>}
+                    </span>
+                  </div>
                 </div>
                 
                 {(!user || user.role === 'admin') ? (
@@ -275,14 +327,14 @@ function CartDrawer() {
                     }}
                     style={{ width: '100%', marginTop: '1rem' }}
                   >
-                    Log in
+                    Log in to Checkout
                   </button>
                 ) : (
                   <>
                     <div className="checkout-form">
                       <input 
                         type="text" 
-                        placeholder="Your Full Name (letters only)" 
+                        placeholder="Your Full Name" 
                         className="form-input" 
                         value={customerName}
                         onChange={handleNameChange}
@@ -315,21 +367,56 @@ function CartDrawer() {
                             checked={isDelivery} 
                             onChange={() => setIsDelivery(true)} 
                           />
-                          Delivery
+                          Home Delivery
                         </label>
                       </div>
 
                       {isDelivery && (
-                        <div className="form-group animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
-                          <input 
-                            type="text" 
-                            placeholder="Detailed address in New Damietta" 
-                            className="form-input" 
-                            value={deliveryLocation}
-                            onChange={(e) => setDeliveryLocation(e.target.value)}
-                            required={isDelivery}
-                          />
-                          <small className="delivery-note">* Delivery available only in New Damietta</small>
+                        <div className="delivery-zone-box animate-fade-in-up">
+                          <label className="delivery-zone-label">Select Delivery Location:</label>
+                          <div className="delivery-zone-options">
+                            <label className={`delivery-zone-card ${deliveryType === 'damietta' ? 'active' : ''}`}>
+                              <input 
+                                type="radio" 
+                                name="deliveryZone" 
+                                checked={deliveryType === 'damietta'} 
+                                onChange={() => setDeliveryType('damietta')} 
+                              />
+                              <div className="zone-info">
+                                <strong>📍 New Damietta</strong>
+                                <span>Shipping: EGP {damiettaShippingFee}</span>
+                              </div>
+                            </label>
+
+                            <label className={`delivery-zone-card ${deliveryType === 'outside' ? 'active' : ''}`}>
+                              <input 
+                                type="radio" 
+                                name="deliveryZone" 
+                                checked={deliveryType === 'outside'} 
+                                onChange={() => setDeliveryType('outside')} 
+                              />
+                              <div className="zone-info">
+                                <strong>🚚 Outside New Damietta / Cities</strong>
+                                <span>Shipping fee determined soon</span>
+                              </div>
+                            </label>
+                          </div>
+
+                          <div className="form-group" style={{ marginTop: '12px' }}>
+                            <input 
+                              type="text" 
+                              placeholder={deliveryType === 'damietta' ? "Detailed address in New Damietta" : "City & Detailed Address"} 
+                              className="form-input" 
+                              value={deliveryLocation}
+                              onChange={(e) => setDeliveryLocation(e.target.value)}
+                              required={isDelivery}
+                            />
+                            {deliveryType === 'outside' && (
+                              <small className="delivery-note" style={{ color: 'var(--volt-yellow)', display: 'block', marginTop: '6px' }}>
+                                * Upon placing order, we will calculate the shipping amount for your city and contact you to confirm!
+                              </small>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
