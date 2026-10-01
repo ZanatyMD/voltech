@@ -76,7 +76,7 @@ function VoltechChat() {
       e.preventDefault();
       if (value.trim()) {
         // Open WhatsApp with the message
-        const phoneNumber = '201031643665';
+        const phoneNumber = '201503476600';
         const encodedMsg = encodeURIComponent(value.trim());
         window.open(`https://wa.me/${phoneNumber}?text=${encodedMsg}`, '_blank');
         setValue('');
@@ -100,7 +100,7 @@ function VoltechChat() {
       const el = document.getElementById('new-arrivals-section');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else if (label === 'Contact Us') {
-      const phoneNumber = '201031643665';
+      const phoneNumber = '201503476600';
       const message = encodeURIComponent(`Hi Voltech! I'm interested in: Contacting you.`);
       window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     }
@@ -157,7 +157,7 @@ function VoltechChat() {
               className={`chat-send-btn ${value.trim() ? 'active' : ''}`}
               onClick={() => {
                 if (value.trim()) {
-                  const phoneNumber = '201031643665';
+                  const phoneNumber = '201503476600';
                   const encodedMsg = encodeURIComponent(value.trim());
                   window.open(`https://wa.me/${phoneNumber}?text=${encodedMsg}`, '_blank');
                   setValue('');

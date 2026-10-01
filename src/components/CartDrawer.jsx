@@ -122,7 +122,7 @@ function CartDrawer() {
       await addOrder(orderData);
 
       // Build WhatsApp URL
-      const phoneNumber = '201031643665';
+      const phoneNumber = '201503476600';
       let message = `مرحباً فولتك! أود طلب العناصر التالية:\nالاسم: ${customerName}\nرقم الهاتف: ${customerPhone}\n`;
       
       if (isDelivery) {

@@ -36,7 +36,7 @@ const socialVariants = {
 function Footer() {
   const socialLinks = [
     { href: 'mailto:voltechstore26@gmail.com', icon: <Mail size={20} />, label: 'Mail' },
-    { href: 'https://wa.me/201031643665', icon: <MessageCircle size={20} />, label: 'WhatsApp' },
+    { href: 'https://wa.me/201503476600', icon: <MessageCircle size={20} />, label: 'WhatsApp' },
     { href: 'https://www.instagram.com/voltech.da/', icon: <Camera size={20} />, label: 'Instagram' },
   ];
 
@@ -98,7 +98,7 @@ function Footer() {
           <div className="footer-column">
             <h4>Contact & Social</h4>
             <ul>
-              <li><a href="https://wa.me/201031643665" target="_blank" rel="noreferrer">WhatsApp Chat</a></li>
+              <li><a href="https://wa.me/201503476600" target="_blank" rel="noreferrer">WhatsApp Chat</a></li>
               <li><a href="https://www.instagram.com/voltech.da/" target="_blank" rel="noreferrer">Instagram Page</a></li>
               <li><a href="mailto:voltechstore26@gmail.com" target="_blank" rel="noreferrer">Email Support</a></li>
             </ul>
