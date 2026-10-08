@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { Truck, MapPin, Clock, ShieldCheck } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 import './DeliveryInfo.css';
 
 function DeliveryInfo() {
+  const { t } = useLanguage();
   return (
     <div className="delivery-page">
       <div className="container">
@@ -15,8 +17,8 @@ function DeliveryInfo() {
           <div className="header-icon-wrapper">
             <Truck size={48} className="header-icon" />
           </div>
-          <h1 className="delivery-title">Delivery Information</h1>
-          <p className="delivery-subtitle">Everything you need to know about getting your Voltech products.</p>
+          <h1 className="delivery-title">{t.delivery_title}</h1>
+          <p className="delivery-subtitle">{t.delivery_subtitle}</p>
         </motion.div>
 
         <motion.div
@@ -26,31 +28,30 @@ function DeliveryInfo() {
           transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="delivery-card main-info">
-            <h2>Delivery Fees & Time</h2>
+            <h2>{t.delivery_fees_title}</h2>
             <p className="highlight-text">
-              Delivery fees and timelines may vary depending on the courier service and your specific location. 
-              The delivery payment is determined by the distance the delivery personnel needs to travel to reach you.
+              {t.delivery_fees_p1}
             </p>
             <p>
-              We partner with reliable couriers to ensure your electronics reach you safely and as quickly as possible. Once you place an order, you will be contacted to confirm the exact delivery fee before dispatch.
+              {t.delivery_fees_p2}
             </p>
           </div>
 
           <div className="delivery-features">
             <div className="feature-item">
               <div className="feature-icon"><MapPin size={24} /></div>
-              <h3>Nationwide Coverage</h3>
-              <p>We deliver across the country to bring technology to your doorstep.</p>
+              <h3>{t.delivery_nationwide}</h3>
+              <p>{t.delivery_nationwide_desc}</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon"><Clock size={24} /></div>
-              <h3>Prompt Dispatch</h3>
-              <p>Orders are processed and handed over to couriers swiftly.</p>
+              <h3>{t.delivery_prompt}</h3>
+              <p>{t.delivery_prompt_desc}</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon"><ShieldCheck size={24} /></div>
-              <h3>Safe Handling</h3>
-              <p>Fragile electronic components are packaged with extreme care.</p>
+              <h3>{t.delivery_safe}</h3>
+              <p>{t.delivery_safe_desc}</p>
             </div>
           </div>
         </motion.div>

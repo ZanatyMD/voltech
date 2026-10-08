@@ -130,6 +130,19 @@
   box-shadow: 0 0 15px rgba(126, 200, 67, 0.2);
 }
 
+.lang-toggle-btn {
+  font-family: var(--font-heading);
+  letter-spacing: 0.5px;
+  border-color: rgba(245, 200, 66, 0.3) !important;
+  color: var(--volt-yellow) !important;
+  background: rgba(245, 200, 66, 0.08) !important;
+}
+
+.lang-toggle-btn:hover {
+  background: rgba(245, 200, 66, 0.2) !important;
+  box-shadow: 0 0 15px rgba(245, 200, 66, 0.3) !important;
+}
+
 /* Cart Button */
 .cart-btn-pill {
   position: relative;

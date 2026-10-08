@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import './About.css';
 
 const cardVariants = {
@@ -25,6 +26,7 @@ const listItemVariants = {
 };
 
 function About() {
+  const { t } = useLanguage();
   return (
     <div className="about-page">
       <div className="container">
@@ -34,8 +36,8 @@ function About() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h1>About <span className="volt-green">Voltech</span></h1>
-          <p className="about-subtitle">Built For Students, By Tech Enthusiasts.</p>
+          <h1>{t.about_title_prefix}<span className="volt-green">{t.about_title_voltech}</span></h1>
+          <p className="about-subtitle">{t.about_subtitle}</p>
         </motion.div>
         
         <div className="about-content">
@@ -46,13 +48,12 @@ function About() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2>Who We Are</h2>
+            <h2>{t.about_who_title}</h2>
             <p>
-              Voltech was founded with a single mission: to provide engineering students, hobbyists, and makers with high-quality, affordable electronic components. 
-              We know how frustrating it can be to hunt down the right Arduino board, sensor, or custom PCB for your graduation project, only to face high prices and long shipping times.
+              {t.about_who_p1}
             </p>
             <p>
-              That's why Voltech is here. We are a local store dedicated to fueling your innovation. From microcontrollers and actuators to basic jumper wires and breadboards, we stock everything you need to bring your circuit designs to life.
+              {t.about_who_p2}
             </p>
           </motion.div>
 
@@ -63,12 +64,12 @@ function About() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2>Our Promise</h2>
+            <h2>{t.about_promise_title}</h2>
             <ul className="promise-list">
               {[
-                { title: 'Student-First Pricing:', desc: 'We keep our margins low so you can afford to build bigger and better projects.' },
-                { title: 'Quality Components:', desc: 'Every module and board is tested to ensure it works reliably when you need it most.' },
-                { title: 'Direct Support:', desc: "We don't just sell parts; we understand them. Our WhatsApp support is always open to help you pick the right components." },
+                { title: t.about_promise_1_title, desc: t.about_promise_1_desc },
+                { title: t.about_promise_2_title, desc: t.about_promise_2_desc },
+                { title: t.about_promise_3_title, desc: t.about_promise_3_desc },
               ].map((item, i) => (
                 <motion.li
                   key={i}

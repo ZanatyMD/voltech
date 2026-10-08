@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, User, Lock, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import './AuthModal.css';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
@@ -10,6 +11,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { t } = useLanguage();
 
   if (!isOpen) return null;
 
@@ -18,17 +20,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     setError('');
 
     if (!phone.trim() || !password.trim()) {
-      setError('Please fill in all fields');
+      setError(t.auth_fill_fields);
       return;
     }
 
     if (phone.length < 10 || phone.length > 11 || !/^\d+$/.test(phone)) {
-      setError('Phone number must be 10 or 11 digits');
+      setError(t.auth_phone_digits);
       return;
     }
 
     if (!isLoginView && password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t.auth_password_min);
       return;
     }
 
@@ -67,11 +69,11 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
               <X size={20} />
             </button>
 
-            <h2>{isLoginView ? 'Welcome Back' : 'Create Account'}</h2>
+            <h2>{isLoginView ? t.auth_welcome : t.auth_create}</h2>
             <p>
               {isLoginView 
-                ? 'Login to view your orders and fast checkout.' 
-                : 'Join Voltech for a seamless shopping experience.'}
+                ? t.auth_login_desc 
+                : t.auth_register_desc}
             </p>
 
             {error && <div className="auth-error">{error}</div>}
@@ -81,7 +83,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 <User size={18} className="auth-input-icon" />
                 <input
                   type="tel"
-                  placeholder="Phone Number (10-11 digits)"
+                  placeholder={t.auth_phone_placeholder}
                   className="auth-input"
                   value={phone}
                   onChange={(e) => {
@@ -95,7 +97,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 <Lock size={18} className="auth-input-icon" />
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder={t.auth_password_placeholder}
                   className="auth-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -107,14 +109,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 className="btn btn-primary auth-btn"
                 disabled={loading}
               >
-                {loading ? <Loader size={18} className="spin" /> : (isLoginView ? 'Login' : 'Register')}
+                {loading ? <Loader size={18} className="spin" /> : (isLoginView ? t.auth_login_btn : t.auth_register_btn)}
               </button>
             </form>
 
             <div className="auth-toggle">
-              {isLoginView ? "Don't have an account? " : "Already have an account? "}
+              {isLoginView ? t.auth_no_account : t.auth_have_account}
               <button type="button" className="auth-toggle-btn" onClick={toggleView}>
-                {isLoginView ? 'Register' : 'Login'}
+                {isLoginView ? t.auth_register_btn : t.auth_login_btn}
               </button>
             </div>
           </div>

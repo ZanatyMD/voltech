@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Zap, Shield, LogOut, ShoppingCart, Home, LogIn, ListOrdered, Package, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -11,6 +12,7 @@ import './Navbar.css';
 function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();
+  const { t, toggleLanguage } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -76,11 +78,11 @@ function Navbar() {
                 }}
               >
                 <Home size={15} />
-                <span>Home</span>
+                <span>{t.nav_home}</span>
               </a>
               <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
                 <Info size={15} />
-                <span>About Us</span>
+                <span>{t.nav_about}</span>
               </Link>
             </div>
           )}
@@ -88,6 +90,10 @@ function Navbar() {
           {!isAdmin && location.pathname !== '/my-orders' && <SmartSearch />}
 
           <div className="navbar-actions">
+            <button className="nav-btn-pill lang-toggle-btn" onClick={toggleLanguage} style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+              {t.lang_toggle}
+            </button>
+
             {!isAdmin && (
               <motion.button
                 className="cart-btn-pill"
@@ -112,7 +118,7 @@ function Navbar() {
             {!user && !isAdmin && (
               <button className="nav-btn-pill" onClick={() => setIsAuthModalOpen(true)}>
                 <LogIn size={16} />
-                <span className="nav-btn-text">Login</span>
+                <span className="nav-btn-text">{t.nav_login}</span>
               </button>
             )}
 
@@ -120,14 +126,14 @@ function Navbar() {
               <>
                 <Link to="/my-orders" className="nav-btn-pill">
                   <ListOrdered size={16} />
-                  <span className="nav-btn-text">Orders</span>
+                  <span className="nav-btn-text">{t.nav_orders}</span>
                 </Link>
                 <button className="nav-btn-pill" onClick={() => {
                   logout();
                   navigate('/');
                 }}>
                   <LogOut size={16} />
-                  <span className="nav-btn-text">Exit</span>
+                  <span className="nav-btn-text">{t.nav_exit}</span>
                 </button>
               </>
             )}
@@ -137,7 +143,7 @@ function Navbar() {
                 {/* Admin console link removed to keep it hidden. Admin should navigate directly to /admin/login */}
                 <button className="nav-btn-pill" onClick={logout}>
                   <LogOut size={16} />
-                  <span className="nav-btn-text">Exit</span>
+                  <span className="nav-btn-text">{t.nav_exit}</span>
                 </button>
               </>
             )}
@@ -145,7 +151,7 @@ function Navbar() {
             {!user && isAdmin && (
               <Link to="/" className="nav-btn-pill">
                 <Home size={16} />
-                <span className="nav-btn-text">Store</span>
+                <span className="nav-btn-text">{t.nav_store}</span>
               </Link>
             )}
           </div>

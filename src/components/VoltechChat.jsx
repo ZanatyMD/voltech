@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package, MessageCircle, Truck, ArrowUp, Paperclip, Plus, Cpu, Zap } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import './VoltechChat.css';
 
 function useAutoResizeTextarea({ minHeight, maxHeight }) {
@@ -55,14 +56,15 @@ const chipVariants = {
 };
 
 const quickActions = [
-  { icon: <span>📦</span>, label: 'Products' },
-  { icon: <Cpu size={15} />, label: 'Arduino & MCUs' },
-  { icon: <Truck size={15} />, label: 'Delivery Info' },
-  { icon: <MessageCircle size={15} />, label: 'Contact Us' },
-  { icon: <Zap size={15} />, label: 'New Arrivals' },
+  { id: 'products', icon: <span>📦</span>, label: 'Products' },
+  { id: 'arduino', icon: <Cpu size={15} />, label: 'Arduino & MCUs' },
+  { id: 'delivery', icon: <Truck size={15} />, label: 'Delivery Info' },
+  { id: 'contact', icon: <MessageCircle size={15} />, label: 'Contact Us' },
+  { id: 'arrivals', icon: <Zap size={15} />, label: 'New Arrivals' },
 ];
 
 function VoltechChat() {
+  const { t } = useLanguage();
   const [value, setValue] = useState('');
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 60,
@@ -106,6 +108,14 @@ function VoltechChat() {
     }
   };
 
+  const quickActionLabels = {
+    products: t.chat_products,
+    arduino: t.chat_arduino,
+    delivery: t.chat_delivery,
+    contact: t.chat_contact,
+    arrivals: t.chat_arrivals,
+  };
+
   return (
     <div className="voltech-chat">
       <motion.h2
@@ -115,7 +125,7 @@ function VoltechChat() {
         viewport={{ once: true, amount: 0.5 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        How Can We Help You?
+        {t.chat_title}
       </motion.h2>
 
       <motion.p
@@ -125,7 +135,7 @@ function VoltechChat() {
         viewport={{ once: true, amount: 0.5 }}
         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
       >
-        Ask us anything about products, pricing, or delivery
+        {t.chat_subtitle}
       </motion.p>
 
       <motion.div
@@ -144,7 +154,7 @@ function VoltechChat() {
               adjustHeight();
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Voltech a question..."
+            placeholder={t.chat_placeholder}
             className="chat-textarea"
             style={{ overflow: 'hidden' }}
           />
@@ -174,7 +184,7 @@ function VoltechChat() {
       <div className="chat-quick-actions">
         {quickActions.map((action, i) => (
           <motion.button
-            key={action.label}
+            key={action.id || action.label}
             className="chat-chip"
             custom={i}
             variants={chipVariants}
@@ -186,7 +196,7 @@ function VoltechChat() {
             onClick={() => handleChipClick(action.label)}
           >
             {action.icon}
-            <span>{action.label}</span>
+            <span>{quickActionLabels[action.id] || action.label}</span>
           </motion.button>
         ))}
       </div>

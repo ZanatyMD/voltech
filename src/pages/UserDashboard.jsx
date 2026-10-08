@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Package, Clock, Truck, CheckCircle, XCircle, ShoppingBag } from 'lucide-react';
 import './UserDashboard.css';
@@ -8,6 +9,7 @@ import './UserDashboard.css';
 export default function UserDashboard() {
   const { user } = useAuth();
   const { orders, updateOrderStatus, updateOrder } = useOrders();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [cancellingOrderId, setCancellingOrderId] = useState(null);
   const [cancelStep, setCancelStep] = useState(1);
@@ -62,16 +64,16 @@ export default function UserDashboard() {
   return (
     <div className="container user-dashboard animate-fade-in-up">
       <div className="dashboard-header">
-        <h1>My Orders</h1>
-        <p>Track your order status and history.</p>
+        <h1>{t.user_my_orders}</h1>
+        <p>{t.user_orders_desc}</p>
       </div>
 
       {orders.length === 0 ? (
         <div className="empty-orders">
           <ShoppingBag size={48} color="var(--text-muted)" />
-          <h2>No orders yet</h2>
-          <p>Looks like you haven't placed any orders.</p>
-          <Link to="/" className="btn btn-primary">Start Shopping</Link>
+          <h2>{t.user_no_orders}</h2>
+          <p>{t.user_no_orders_desc}</p>
+          <Link to="/" className="btn btn-primary">{t.user_start_shopping}</Link>
         </div>
       ) : (
         <div className="orders-grid">
@@ -91,11 +93,11 @@ export default function UserDashboard() {
                     display: 'inline-block',
                     width: 'fit-content'
                   }}>
-                    Payment: {order.paymentMethod === 'vodafone_cash' ? '📱 Vodafone Cash' : order.paymentMethod === 'instapay' ? '💳 InstaPay' : '💵 Cash'}
+                    {t.user_payment_label} {order.paymentMethod === 'vodafone_cash' ? `📱 ${t.cart_vodafone_cash}` : order.paymentMethod === 'instapay' ? `💳 ${t.cart_instapay}` : `💵 ${t.cart_cash}`}
                   </span>
                 </div>
                 <div className="order-total-price">
-                  EGP {order.total.toFixed(2)}
+                  {t.egp} {order.total.toFixed(2)}
                 </div>
               </div>
 
@@ -148,7 +150,7 @@ export default function UserDashboard() {
                         </span>
                       )}
                     </div>
-                    <span className="item-price">EGP {(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="item-price">{t.egp} {(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>

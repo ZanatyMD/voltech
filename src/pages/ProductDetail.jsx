@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { showToast } from '../components/Toast';
 import { Tag, ShoppingCart, TrendingDown, ChevronLeft, Package } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
@@ -11,6 +12,7 @@ function ProductDetail() {
   const { id } = useParams();
   const { getProduct, products } = useProducts();
   const { addToCart, cartItems } = useCart();
+  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -33,11 +35,11 @@ function ProductDetail() {
         <div className="container">
           <div className="product-not-found">
             <Package size={64} />
-            <h2>Product Not Found</h2>
-            <p>The product you're looking for doesn't exist or has been removed.</p>
+            <h2>{t.pd_not_found}</h2>
+            <p>{t.pd_not_found_desc}</p>
             <Link to="/" className="btn btn-primary">
               <ChevronLeft size={18} />
-              Back to Shop
+              {t.pd_back_to_shop}
             </Link>
           </div>
         </div>
@@ -64,7 +66,7 @@ function ProductDetail() {
 
   const handleAddToCart = () => {
     if (requiresSpec && !customSpecification.trim()) {
-      showToast('Please type the required value/specification (e.g., resistor or capacitor value) before adding to cart.', 'error');
+      showToast(t.pd_specify_error, 'error');
       return;
     }
 
@@ -89,9 +91,9 @@ function ProductDetail() {
     if (currentQty + quantity > displayStock) {
       const remaining = displayStock - currentQty;
       if (remaining <= 0) {
-        showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
+        showToast(t.prod_max_qty, 'error');
       } else {
-        showToast(`Sorry, you can only add ${remaining} more item${remaining > 1 ? 's' : ''}.`, 'error');
+        showToast(`${t.pd_can_add_more} ${remaining} ${t.pd_more_items}.`, 'error');
       }
       return;
     }
@@ -101,13 +103,13 @@ function ProductDetail() {
     }
     const variantStr = activeVariant ? ` (${activeVariant.name})` : '';
     const specStr = customSpecification.trim() ? ` [${customSpecification.trim()}]` : '';
-    showToast(`${quantity}x ${name}${variantStr}${specStr} added to cart!`, 'success', 2000);
+    showToast(`${quantity}x ${name}${variantStr}${specStr} ${t.prod_added_to_cart}`, 'success', 2000);
   };
 
   const handleQuantityChange = (newQty) => {
     if (newQty < 1) return;
     if (newQty > displayStock) {
-      showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
+      showToast(t.prod_max_qty, 'error');
       setQuantity(displayStock);
       return;
     }
@@ -125,13 +127,13 @@ function ProductDetail() {
       <div className="container">
         {/* Breadcrumb */}
         <div className="pd-breadcrumb">
-          <Link to="/">Home</Link>
+          <Link to="/">{t.pd_breadcrumb_home}</Link>
           <span>/</span>
           <Link to="/" onClick={() => {
             setTimeout(() => {
               document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
-          }}>Products</Link>
+          }}>{t.pd_breadcrumb_products}</Link>
           <span>/</span>
           <span className="current">{name}</span>
         </div>
@@ -143,7 +145,7 @@ function ProductDetail() {
               {discountPercent > 0 && (
                 <div className="pd-discount-badge">
                   <TrendingDown size={14} />
-                  {discountPercent}% OFF
+                  {discountPercent}% {t.pd_off}
                 </div>
               )}
               <img 
@@ -153,7 +155,7 @@ function ProductDetail() {
               />
               {!isInStock && (
                 <div className="pd-out-overlay">
-                  <span>Out of Stock</span>
+                  <span>{t.pd_out_of_stock}</span>
                 </div>
               )}
             </div>
@@ -183,18 +185,18 @@ function ProductDetail() {
             <h1 className="pd-name">{name}</h1>
 
             <div className="pd-pricing">
-              <span className="pd-price-current">EGP {displayPrice.toFixed(2)}</span>
+              <span className="pd-price-current">{t.egp} {displayPrice.toFixed(2)}</span>
               {discountPercent > 0 && (
                 <>
-                  <span className="pd-price-original">EGP {originalPrice.toFixed(2)}</span>
-                  <span className="pd-save">Save EGP {(originalPrice - displayPrice).toFixed(2)}</span>
+                  <span className="pd-price-original">{t.egp} {originalPrice.toFixed(2)}</span>
+                  <span className="pd-save">{t.pd_save} {t.egp} {(originalPrice - displayPrice).toFixed(2)}</span>
                 </>
               )}
             </div>
 
             {hasVariants && (
               <div className="pd-variants-box">
-                <label className="pd-variants-title">Select Size / Option:</label>
+                <label className="pd-variants-title">{t.pd_select_option}</label>
                 <div className="pd-variants-grid">
                   {variants.map((v, idx) => (
                     <button
@@ -204,7 +206,7 @@ function ProductDetail() {
                       onClick={() => setSelectedVariantIndex(idx)}
                     >
                       <span className="pd-variant-name">{v.name}</span>
-                      <span className="pd-variant-price">EGP {Number(v.currentPrice || 0).toFixed(2)}</span>
+                      <span className="pd-variant-price">{t.egp} {Number(v.currentPrice || 0).toFixed(2)}</span>
                     </button>
                   ))}
                 </div>
@@ -215,13 +217,13 @@ function ProductDetail() {
               <div className="pd-custom-spec-box">
                 <div className="pd-custom-spec-header">
                   <label className="pd-custom-spec-title">
-                    Specify Value / Number <span className="req-star">*</span>
+                    {t.pd_specify_value} <span className="req-star">*</span>
                   </label>
-                  <span className="pd-custom-spec-hint">e.g. 10kΩ, 220Ω, 100uF, 0.1uF</span>
+                  <span className="pd-custom-spec-hint">{t.pd_specify_hint}</span>
                 </div>
                 <input
                   type="text"
-                  placeholder="Type the exact value/number you want..."
+                  placeholder={t.pd_specify_placeholder}
                   className="form-input pd-custom-spec-input"
                   value={customSpecification}
                   onChange={(e) => setCustomSpecification(e.target.value)}
@@ -232,12 +234,12 @@ function ProductDetail() {
 
             <div className={`pd-stock ${isInStock ? 'in' : 'out'}`}>
               <div className="pd-stock-dot"></div>
-              {isInStock ? 'In Stock' : 'Out of Stock'}
+              {isInStock ? t.pd_in_stock : t.pd_out_of_stock}
             </div>
 
             {description && (
               <div className="pd-description">
-                <h3>Description</h3>
+                <h3>{t.pd_description}</h3>
                 <p>{description}</p>
               </div>
             )}
@@ -262,7 +264,7 @@ function ProductDetail() {
                 onClick={handleAddToCart}
               >
                 <ShoppingCart size={18} />
-                {isInStock ? 'Add to Cart' : 'Out of Stock'}
+                {isInStock ? t.pd_add_to_cart : t.pd_out_of_stock}
               </button>
             </div>
           </div>
@@ -271,7 +273,7 @@ function ProductDetail() {
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="pd-related">
-            <h2 className="pd-related-title">Related Products</h2>
+            <h2 className="pd-related-title">{t.pd_related}</h2>
             <div className="pd-related-grid">
               {relatedProducts.map(p => (
                 <ProductCard key={p.id} product={p} />

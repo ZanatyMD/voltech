@@ -1,6 +1,7 @@
 import { Zap, Camera, MessageCircle, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import './Footer.css';
 
 const footerContainerVariants = {
@@ -34,6 +35,7 @@ const socialVariants = {
 };
 
 function Footer() {
+  const { t } = useLanguage();
   const socialLinks = [
     { href: 'mailto:voltechstore26@gmail.com', icon: <Mail size={20} />, label: 'Mail' },
     { href: 'https://wa.me/201503476600', icon: <MessageCircle size={20} />, label: 'WhatsApp' },
@@ -61,7 +63,7 @@ function Footer() {
             <span className="footer-name">VOLTECH</span>
           </div>
           <p className="footer-description">
-            Your ultimate destination for electronic components, Arduino boards, and PCBs. Built for students, by tech enthusiasts.
+            {t.footer_desc}
           </p>
           <div className="social-links">
             {socialLinks.map((social, i) => (
@@ -89,18 +91,18 @@ function Footer() {
           variants={footerItemVariants}
         >
           <div className="footer-column">
-            <h4>Quick Links</h4>
+            <h4>{t.footer_quick_links}</h4>
             <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/">{t.footer_home}</Link></li>
+              <li><Link to="/about">{t.footer_about}</Link></li>
             </ul>
           </div>
           <div className="footer-column">
-            <h4>Contact & Social</h4>
+            <h4>{t.footer_contact}</h4>
             <ul>
-              <li><a href="https://wa.me/201503476600" target="_blank" rel="noreferrer">WhatsApp Chat</a></li>
-              <li><a href="https://www.instagram.com/voltech.da/" target="_blank" rel="noreferrer">Instagram Page</a></li>
-              <li><a href="mailto:voltechstore26@gmail.com" target="_blank" rel="noreferrer">Email Support</a></li>
+              <li><a href="https://wa.me/201503476600" target="_blank" rel="noreferrer">{t.footer_whatsapp}</a></li>
+              <li><a href="https://www.instagram.com/voltech.da/" target="_blank" rel="noreferrer">{t.footer_instagram}</a></li>
+              <li><a href="mailto:voltechstore26@gmail.com" target="_blank" rel="noreferrer">{t.footer_email}</a></li>
             </ul>
           </div>
         </motion.div>
@@ -114,7 +116,7 @@ function Footer() {
         transition={{ duration: 0.6, delay: 0.3 }}
       >
         <div className="container">
-          <p>&copy; {new Date().getFullYear()} Voltech Electronics Store. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {t.footer_copyright}</p>
         </div>
       </motion.div>
     </footer>

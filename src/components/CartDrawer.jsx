@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useOrders } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { showToast } from './Toast';
 import { X, Minus, Plus, Trash2, Send, Loader, CheckCircle } from 'lucide-react';
 import AuthModal from './AuthModal';
@@ -13,6 +14,7 @@ function CartDrawer() {
   const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, updateCustomSpecification, cartTotal, clearCart } = useCart();
   const { addOrder, damiettaShippingFee } = useOrders();
   const { user } = useAuth();
+  const { t, isArabic } = useLanguage();
   
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -67,21 +69,21 @@ function CartDrawer() {
     }
 
     if (!customerName.trim()) {
-      showToast('Please enter your name to continue.', 'error');
+      showToast(t.cart_name_error, 'error');
       return;
     }
     if (!customerPhone.trim()) {
-      showToast('Please enter your phone number.', 'error');
+      showToast(t.cart_phone_error, 'error');
       return;
     }
     if (customerPhone.length < 11 || customerPhone.length > 12) {
-      showToast('Phone number must be exactly 11 or 12 digits.', 'error');
+      showToast(t.cart_phone_length_error, 'error');
       return;
     }
     if (isDelivery && !deliveryLocation.trim()) {
       showToast(deliveryType === 'damietta' 
-        ? 'Please enter your detailed address in New Damietta.' 
-        : 'Please enter your city & detailed address.', 'error');
+        ? t.cart_address_error_damietta 
+        : t.cart_address_error_outside, 'error');
       return;
     }
 
@@ -90,7 +92,7 @@ function CartDrawer() {
       item => item.requiresSpecification && (!item.customSpecification || !item.customSpecification.trim())
     );
     if (missingSpecItem) {
-      showToast(`Please specify the value/number (e.g. resistor or capacitor rating) for "${missingSpecItem.name}" before checking out.`, 'error');
+      showToast(`${t.cart_spec_error} "${missingSpecItem.name}" ${t.cart_spec_error_suffix}`, 'error');
       return;
     }
 
@@ -127,9 +129,9 @@ function CartDrawer() {
         setThankYouMessage("instapay");
       } else {
         if (isOutside) {
-          setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you directly on your phone to confirm delivery.");
+          setThankYouMessage(t.thankyou_outside);
         } else {
-          setThankYouMessage("Your order has been placed successfully! Our team will review your order and contact you on your phone to confirm. Payment will be collected on delivery.");
+          setThankYouMessage(t.thankyou_cash);
         }
       }
 
@@ -180,93 +182,93 @@ function CartDrawer() {
             <div className="thankyou-icon">
               <CheckCircle size={40} />
             </div>
-            <h2 className="thankyou-title">Thank You!</h2>
+            <h2 className="thankyou-title">{t.thankyou_title}</h2>
 
             {thankYouMessage === 'vcash' ? (
               <div className="payment-instructions-box">
                 <img src={vodafoneLogo} alt="Vodafone Cash" className="payment-logo" />
-                <p className="payment-inst-title">Please send <strong>EGP {finalOrderTotal.toFixed(2)}</strong> via Vodafone Cash to:</p>
+                <p className="payment-inst-title">{t.pay_vcash_send} <strong>{t.egp} {finalOrderTotal.toFixed(2)}</strong> {t.pay_vcash_via}</p>
                 <div 
                   className="payment-number-box" 
                   onClick={() => {
                     navigator.clipboard?.writeText('01041703311');
-                    showToast('Vodafone Cash number copied: 01041703311', 'success');
+                    showToast(t.pay_vcash_copied, 'success');
                   }}
                   style={{ cursor: 'pointer' }}
                   title="Click to copy"
                 >
                   <span className="payment-number">01041703311</span>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>📋 Click to copy number</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t.pay_copy_number}</span>
                 </div>
                 <div className="payment-steps">
-                  <p>1. Open your Vodafone Cash app:</p>
+                  <p>{t.pay_vcash_step1}</p>
                   <div className="payment-app-links">
                     <a href="https://play.google.com/store/apps/details?id=com.emeint.android.myservices&hl=en" target="_blank" rel="noopener noreferrer" className="app-link-btn android">
-                      📱 Android
+                      {t.pay_android}
                     </a>
                     <a href="https://apps.apple.com/eg/app/ana-vodafone/id437564823" target="_blank" rel="noopener noreferrer" className="app-link-btn ios">
-                      🍎 iPhone
+                      {t.pay_iphone}
                     </a>
                   </div>
-                  <p>2. Send the total amount to the number above</p>
-                  <p>3. <strong>Take a screenshot</strong> of the successful transfer</p>
-                  <p>4. Send the screenshot to our WhatsApp to confirm:</p>
+                  <p>{t.pay_vcash_step2}</p>
+                  <p>{t.pay_vcash_step3}</p>
+                  <p>{t.pay_vcash_step4}</p>
                   <a
                     href={`https://wa.me/201503476600?text=${encodeURIComponent('مرحباً فولتك! تم إرسال المبلغ عبر فودافون كاش، وأرفق لكم صورة التحويل لتأكيد الطلب.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-whatsapp-confirm"
                   >
-                    📩 Send Screenshot via WhatsApp
+                    {t.pay_whatsapp_btn}
                   </a>
                 </div>
               </div>
             ) : thankYouMessage === 'instapay' ? (
               <div className="payment-instructions-box">
                 <img src={instapayLogo} alt="InstaPay" className="payment-logo" />
-                <p className="payment-inst-title">Please send <strong>EGP {finalOrderTotal.toFixed(2)}</strong> via InstaPay:</p>
+                <p className="payment-inst-title">{t.pay_vcash_send} <strong>{t.egp} {finalOrderTotal.toFixed(2)}</strong> {t.pay_instapay_via}</p>
                 <div 
                   className="payment-number-box"
                   onClick={() => {
                     navigator.clipboard?.writeText('kamar.elkhouli@instapay');
-                    showToast('InstaPay username copied!', 'success');
+                    showToast(t.pay_instapay_copied, 'success');
                   }}
                   style={{ cursor: 'pointer' }}
                   title="Click to copy"
                 >
                   <span className="payment-number instapay-id">kamar.elkhouli@instapay</span>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>📋 Click to copy address</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t.pay_copy_address}</span>
                 </div>
                 <div className="payment-steps">
-                  <p>1. Click the link below to send money:</p>
+                  <p>{t.pay_instapay_step1}</p>
                   <a
                     href="https://ipn.eg/S/kamar.elkhouli/instapay/83ROzy"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-instapay-link"
                   >
-                    💳 Open InstaPay Link
+                    {t.pay_instapay_open}
                   </a>
-                  <p style={{ marginTop: '12px' }}>2. After sending, <strong>take a screenshot</strong></p>
-                  <p>3. Send the screenshot to our WhatsApp to confirm:</p>
+                  <p style={{ marginTop: '12px' }}>{t.pay_instapay_step2}</p>
+                  <p>{t.pay_instapay_step3}</p>
                   <a
                     href={`https://wa.me/201503476600?text=${encodeURIComponent('مرحباً فولتك! تم إرسال المبلغ عبر InstaPay، وأرفق لكم صورة التحويل لتأكيد الطلب.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-whatsapp-confirm"
                   >
-                    📩 Send Screenshot via WhatsApp
+                    {t.pay_whatsapp_btn}
                   </a>
                 </div>
               </div>
             ) : (
               <p className="thankyou-message">
-                {thankYouMessage || "Your order has been placed successfully! Our team will review your order and contact you soon."}
+                {thankYouMessage || t.thankyou_default}
               </p>
             )}
 
             <button className="btn btn-primary" style={{ marginTop: '20px', width: '100%' }} onClick={handleCloseThankYou}>
-              Continue Shopping
+              {t.thankyou_continue}
             </button>
           </div>
         </div>
@@ -278,7 +280,7 @@ function CartDrawer() {
           <div className="cart-overlay" onClick={() => setIsCartOpen(false)}></div>
           <div className={`cart-drawer ${isCartOpen ? 'open' : ''}`}>
             <div className="cart-header">
-              <h2>Your Cart</h2>
+              <h2>{t.cart_title}</h2>
               <button className="btn-icon close-cart" onClick={() => setIsCartOpen(false)}>
                 <X size={24} />
               </button>
@@ -287,9 +289,9 @@ function CartDrawer() {
             <div className="cart-items">
               {cartItems.length === 0 ? (
                 <div className="empty-cart">
-                  <p>Your cart is empty.</p>
+                  <p>{t.cart_empty}</p>
                   <button className="btn btn-secondary mt-4" onClick={() => setIsCartOpen(false)}>
-                    Continue Shopping
+                    {t.thankyou_continue}
                   </button>
                 </div>
               ) : (
@@ -340,10 +342,10 @@ function CartDrawer() {
                         )}
                         {!item.requiresSpecification && item.customSpecification && (
                           <span style={{ fontSize: '0.75rem', color: 'var(--volt-green)', display: 'block', marginBottom: '4px' }}>
-                            Spec: {item.customSpecification}
+                            {t.cart_spec_label} {item.customSpecification}
                           </span>
                         )}
-                        <p className="cart-item-price">EGP {item.currentPrice.toFixed(2)}</p>
+                        <p className="cart-item-price">{t.egp} {item.currentPrice.toFixed(2)}</p>
                         <div className="cart-item-controls">
                           <div className="quantity-controls">
                             <button onClick={() => updateQuantity(itemIdKey, -1)} disabled={item.quantity <= 1}>
@@ -352,7 +354,7 @@ function CartDrawer() {
                             <span>{item.quantity}</span>
                             <button onClick={() => {
                               if (item.quantity >= item.stock) {
-                                showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
+                                showToast(t.prod_max_qty, 'error');
                                 return;
                               }
                               updateQuantity(itemIdKey, 1);
@@ -375,24 +377,24 @@ function CartDrawer() {
               <div className="cart-footer">
                 <div className="cart-total-summary">
                   <div className="summary-row">
-                    <span>Items Subtotal:</span>
-                    <span>EGP {Number(cartTotal || 0).toFixed(2)}</span>
+                    <span>{t.cart_subtotal}</span>
+                    <span>{t.egp} {Number(cartTotal || 0).toFixed(2)}</span>
                   </div>
                   {isDelivery && (
                     <div className="summary-row shipping-row">
-                      <span>Shipping Fee:</span>
+                      <span>{t.cart_delivery_fee}</span>
                       {deliveryType === 'damietta' ? (
-                        <span className="shipping-badge">EGP {safeDamiettaFee.toFixed(2)}</span>
+                        <span className="shipping-badge">{t.egp} {safeDamiettaFee.toFixed(2)}</span>
                       ) : (
-                        <span className="shipping-pending-badge">To be calculated</span>
+                        <span className="shipping-pending-badge">{t.cart_pending}</span>
                       )}
                     </div>
                   )}
                   <div className="summary-row total-row">
-                    <span>Total:</span>
+                    <span>{t.cart_total}</span>
                     <span className="total-amount">
-                      EGP {finalOrderTotal.toFixed(2)}
-                      {isDelivery && deliveryType === 'outside' && <small style={{ display: 'block', fontSize: '0.7rem', color: 'var(--volt-yellow)', fontWeight: 'normal' }}>+ Shipping to be confirmed</small>}
+                      {t.egp} {finalOrderTotal.toFixed(2)}
+                      {isDelivery && deliveryType === 'outside' && <small style={{ display: 'block', fontSize: '0.7rem', color: 'var(--volt-yellow)', fontWeight: 'normal' }}>{t.cart_shipping_confirm}</small>}
                     </span>
                   </div>
                 </div>
@@ -407,14 +409,14 @@ function CartDrawer() {
                     }}
                     style={{ width: '100%', marginTop: '1rem' }}
                   >
-                    Log in to Checkout
+                    {t.cart_login_checkout}
                   </button>
                 ) : (
                   <>
                     <div className="checkout-form">
                       <input 
                         type="text" 
-                        placeholder="Your Full Name" 
+                        placeholder={t.cart_name_placeholder} 
                         className="form-input" 
                         value={customerName}
                         onChange={handleNameChange}
@@ -422,7 +424,7 @@ function CartDrawer() {
                       />
                       <input 
                         type="tel" 
-                        placeholder="Phone Number (11-12 digits)" 
+                        placeholder={t.cart_phone_placeholder} 
                         className="form-input" 
                         value={customerPhone}
                         onChange={handlePhoneChange}
@@ -438,7 +440,7 @@ function CartDrawer() {
                             checked={!isDelivery} 
                             onChange={() => setIsDelivery(false)} 
                           />
-                          Store Pickup
+                          {t.cart_store_pickup}
                         </label>
                         <label className="delivery-option">
                           <input 
@@ -447,13 +449,13 @@ function CartDrawer() {
                             checked={isDelivery} 
                             onChange={() => setIsDelivery(true)} 
                           />
-                          Home Delivery
+                          {t.cart_home_delivery}
                         </label>
                       </div>
 
                       {isDelivery && (
                         <div className="delivery-zone-box animate-fade-in-up">
-                          <label className="delivery-zone-label">Select Delivery Location:</label>
+                          <label className="delivery-zone-label">{t.cart_select_location}</label>
                           <div className="delivery-zone-options">
                             <label className={`delivery-zone-card ${deliveryType === 'damietta' ? 'active' : ''}`}>
                               <input 
@@ -463,8 +465,8 @@ function CartDrawer() {
                                 onChange={() => setDeliveryType('damietta')} 
                               />
                               <div className="zone-info">
-                                <strong>📍 New Damietta</strong>
-                                <span>Shipping: EGP {safeDamiettaFee}</span>
+                                <strong>{t.cart_new_damietta}</strong>
+                                <span>{t.cart_shipping_label} {t.egp} {safeDamiettaFee}</span>
                               </div>
                             </label>
 
@@ -476,8 +478,8 @@ function CartDrawer() {
                                 onChange={() => setDeliveryType('outside')} 
                               />
                               <div className="zone-info">
-                                <strong>🚚 Outside New Damietta / Cities</strong>
-                                <span>Shipping fee determined soon</span>
+                                <strong>{t.cart_outside_damietta}</strong>
+                                <span>{t.cart_shipping_soon}</span>
                               </div>
                             </label>
                           </div>
@@ -485,7 +487,7 @@ function CartDrawer() {
                           <div className="form-group" style={{ marginTop: '12px' }}>
                             <input 
                               type="text" 
-                              placeholder={deliveryType === 'damietta' ? "Detailed address in New Damietta" : "City & Detailed Address"} 
+                              placeholder={deliveryType === 'damietta' ? t.cart_address_damietta : t.cart_address_outside} 
                               className="form-input" 
                               value={deliveryLocation}
                               onChange={(e) => setDeliveryLocation(e.target.value)}
@@ -493,7 +495,7 @@ function CartDrawer() {
                             />
                             {deliveryType === 'outside' && (
                               <small className="delivery-note" style={{ color: 'var(--volt-yellow)', display: 'block', marginTop: '6px' }}>
-                                * Upon placing order, we will calculate the shipping amount for your city and contact you to confirm!
+                                {t.cart_outside_note}
                               </small>
                             )}
                           </div>
@@ -503,7 +505,7 @@ function CartDrawer() {
 
                     {/* Payment Method Selection */}
                     <div className="payment-method-section">
-                      <label className="payment-method-label">Payment Method</label>
+                      <label className="payment-method-label">{t.cart_payment_method}</label>
                       <div className="payment-method-options">
                         <label className={`payment-method-card ${paymentMethod === 'cash' ? 'active' : ''}`}>
                           <input 
@@ -514,7 +516,7 @@ function CartDrawer() {
                           />
                           <div className="pm-content">
                             <span className="pm-emoji">💵</span>
-                            <span className="pm-name">Cash</span>
+                            <span className="pm-name">{t.cart_cash}</span>
                           </div>
                         </label>
 
@@ -527,7 +529,7 @@ function CartDrawer() {
                           />
                           <div className="pm-content">
                             <img src={vodafoneLogo} alt="Vodafone Cash" className="pm-logo" />
-                            <span className="pm-name">Vodafone Cash</span>
+                            <span className="pm-name">{t.cart_vodafone_cash}</span>
                           </div>
                         </label>
 
@@ -540,7 +542,7 @@ function CartDrawer() {
                           />
                           <div className="pm-content">
                             <img src={instapayLogo} alt="InstaPay" className="pm-logo" />
-                            <span className="pm-name">InstaPay</span>
+                            <span className="pm-name">{t.cart_instapay}</span>
                           </div>
                         </label>
                       </div>
@@ -552,10 +554,10 @@ function CartDrawer() {
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? <Loader size={18} className="spin" /> : <Send size={18} />}
-                      {isSubmitting ? 'Processing...' : 'Confirm & Place Order'}
+                      {isSubmitting ? t.cart_processing : t.cart_confirm_order}
                     </button>
                     <p className="checkout-hint">
-                      Your order will be submitted directly and our team will contact you to confirm.
+                      {t.cart_hint}
                     </p>
                   </>
                 )}

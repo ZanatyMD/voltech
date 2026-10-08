@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AuthModal from './AuthModal';
 import './Hero.css';
+import { useLanguage } from '../context/LanguageContext';
 
 function Hero() {
   const { products } = useProducts();
@@ -14,6 +15,7 @@ function Hero() {
   const [scrollY, setScrollY] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const canvasRef = useRef(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -89,7 +91,7 @@ function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Zap size={16} /> SYSTEM ONLINE
+            <Zap size={16} /> {t.hero_badge}
           </motion.div>
 
           <motion.h1 
@@ -98,12 +100,12 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="text-stroke">NEXT-GEN</span>
+            <span className="text-stroke">{t.hero_nextgen}</span>
             <span className="hero-brand-logo">
               <span className="hero-vol">VOL</span><span className="hero-tech">TECH</span>
               <Zap className="hero-bolt" />
             </span>
-            <span className="hero-store-subtitle">Electronics Store</span>
+            <span className="hero-store-subtitle">{t.hero_subtitle}</span>
           </motion.h1>
 
           <motion.p 
@@ -112,7 +114,7 @@ function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Tired of the same options ...... Yeah us too .
+            {t.hero_desc}
           </motion.p>
 
           <motion.div 
@@ -123,13 +125,13 @@ function Hero() {
           >
             <button className="btn-cyber" onClick={() => navigate('/shop')}>
               <ShoppingBag size={20} className="btn-cyber-icon" />
-              Browse Shop
+              {t.hero_browse}
             </button>
             
             {!user && (
               <button className="btn-cyber-outline" onClick={() => setIsAuthModalOpen(true)}>
                 <LogIn size={20} className="btn-cyber-icon" />
-                Login / Sign Up
+                {t.hero_login}
               </button>
             )}
           </motion.div>

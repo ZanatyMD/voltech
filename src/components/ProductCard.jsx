@@ -1,5 +1,6 @@
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { showToast } from './Toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,6 +8,7 @@ import './ProductCard.css';
 
 function ProductCard({ product, index = 0 }) {
   const { addToCart, cartItems } = useCart();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   
   if (!product) return null;
@@ -31,11 +33,11 @@ function ProductCard({ product, index = 0 }) {
     const currentQty = existingItem ? existingItem.quantity : 0;
     
     if (currentQty >= stock) {
-      showToast(`Sorry, maximum available quantity reached for this item.`, 'error');
+      showToast(t.prod_max_qty, 'error');
       return;
     }
     addToCart(product);
-    showToast(`${name} added to cart!`, 'success', 2000);
+    showToast(`${name} ${t.prod_added_to_cart}`, 'success', 2000);
   };
 
   return (
@@ -54,7 +56,7 @@ function ProductCard({ product, index = 0 }) {
         <img src={imageUrl} alt={name} className="hologram-image" loading="lazy" />
         {!isInStock && (
           <div className="hologram-overlay">
-            <span>Out of Stock</span>
+            <span>{t.prod_out_of_stock}</span>
           </div>
         )}
       </Link>
@@ -73,9 +75,9 @@ function ProductCard({ product, index = 0 }) {
           </Link>
           
           <div className="cyber-pricing">
-            <span className="cyber-price">EGP {Number(currentPrice || 0).toFixed(0)}</span>
+            <span className="cyber-price">{t.egp} {Number(currentPrice || 0).toFixed(0)}</span>
             {discountPercent > 0 && (
-              <span className="cyber-price-original">EGP {Number(originalPrice || 0).toFixed(0)}</span>
+              <span className="cyber-price-original">{t.egp} {Number(originalPrice || 0).toFixed(0)}</span>
             )}
           </div>
 
@@ -85,7 +87,7 @@ function ProductCard({ product, index = 0 }) {
             onClick={handleAddToCart}
           >
             <ShoppingCart size={16} />
-            {!isInStock ? 'Sold Out' : (hasVariants || requiresSpec) ? 'Choose Option' : 'Add to Cart'}
+            {!isInStock ? t.prod_sold_out : (hasVariants || requiresSpec) ? t.prod_choose_option : t.prod_add_to_cart}
           </button>
         </div>
       </div>

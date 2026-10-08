@@ -8,6 +8,7 @@ import { CategoryProvider } from './context/CategoryContext.jsx'
 import { ProductProvider } from './context/ProductContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import { OrderProvider } from './context/OrderContext.jsx'
+import { LanguageProvider } from './context/LanguageContext.jsx'
 import './index.css'
 
 class ErrorBoundary extends React.Component {
@@ -92,6 +93,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
+        <LanguageProvider>
         <ThemeProvider>
           <AuthProvider>
             <CategoryProvider>
@@ -105,6 +107,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </CategoryProvider>
           </AuthProvider>
         </ThemeProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </ErrorBoundary>
   </React.StrictMode>,

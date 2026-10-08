@@ -4,6 +4,7 @@ import { useProducts } from '../context/ProductContext';
 import ProductCard from './ProductCard';
 import { Filter, Search, Loader, Package, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import { smartSearch } from '../utils/search';
 import './ProductGrid.css';
 
@@ -26,6 +27,7 @@ function SkeletonCard() {
 
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('All');
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const gridRef = useRef(null);
@@ -145,7 +147,7 @@ function ProductGrid() {
                         setIsCategoryMenuOpen(false);
                       }}
                     >
-                      <span>All Categories</span>
+                      <span>{t.grid_all_categories}</span>
                       {activeCategory === 'All' && <Check size={16} className="check-icon" />}
                     </button>
 
@@ -202,18 +204,18 @@ function ProductGrid() {
             transition={{ duration: 0.4 }}
           >
             <Filter size={48} className="no-products-icon" />
-            <h3>No products found</h3>
+            <h3>{t.grid_no_products}</h3>
             <p>We couldn't find any products matching your current filters.</p>
             
             <div className="grid-no-results-whatsapp">
-              <span>No results found? </span>
+              <span>{t.search_no_results} </span>
               <a 
                 href={`https://wa.me/201503476600?text=${encodeURIComponent(`مرحباً فولتك! أبحث عن القطعة التالية ولم أجدها في المتجر: ${searchQuery || 'قطع إلكترونية'}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="grid-whatsapp-order-link"
               >
-                Click here to order it via WhatsApp!
+                {t.search_whatsapp_order}
               </a>
             </div>
 

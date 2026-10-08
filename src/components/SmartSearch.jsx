@@ -4,9 +4,11 @@ import { useProducts } from '../context/ProductContext';
 import { Search, X } from 'lucide-react';
 import { smartSearch } from '../utils/search';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import './SmartSearch.css';
 
 export default function SmartSearch() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState([]);
@@ -49,7 +51,7 @@ export default function SmartSearch() {
         <input
           type="text"
           className="smart-search-input"
-          placeholder="Search products..."
+          placeholder={t.search_placeholder}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -103,14 +105,14 @@ export default function SmartSearch() {
               ))
             ) : (
               <div className="search-no-results">
-                <p className="no-res-query">No results found for "{query}"?</p>
+                <p className="no-res-query">{t.search_no_results}</p>
                 <a 
                   href={`https://wa.me/201503476600?text=${encodeURIComponent(`مرحباً فولتك! أبحث عن القطعة التالية ولم أجدها في المتجر: ${query.trim()}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="search-whatsapp-order-link"
                 >
-                  Click here to order it via WhatsApp!
+                  {t.search_whatsapp_order}
                 </a>
               </div>
             )}

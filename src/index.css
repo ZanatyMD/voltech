@@ -891,3 +891,47 @@ main {
     font-size: 14px;
   }
 }
+
+/* ===== RTL & ARABIC LANGUAGE SUPPORT ===== */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Segoe UI', 'Cairo', 'Tahoma', -apple-system, sans-serif;
+}
+
+[dir="rtl"] .cart-drawer {
+  right: auto;
+  left: -420px;
+  border-left: none;
+  border-right: 1px solid var(--border-color);
+  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[dir="rtl"] .cart-drawer.open {
+  left: 0;
+  right: auto;
+}
+
+[dir="rtl"] .pd-breadcrumb {
+  direction: rtl;
+}
+
+[dir="rtl"] .search-icon {
+  left: auto;
+  right: 14px;
+}
+
+[dir="rtl"] .smart-search-input {
+  padding-left: 14px;
+  padding-right: 40px;
+}
+
+[dir="rtl"] .chat-actions-right {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .item-qty {
+  margin-right: 0;
+  margin-left: 8px;
+}
