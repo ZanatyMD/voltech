@@ -81,6 +81,18 @@ export default function UserDashboard() {
                 <div className="order-id-date">
                   <span className="order-id">Order #{order.orderNumber || order.id.slice(-6).toUpperCase()}</span>
                   <span className="order-date">{new Date(order.orderDate).toLocaleString()}</span>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: 'var(--text-secondary)',
+                    marginTop: '4px',
+                    display: 'inline-block',
+                    width: 'fit-content'
+                  }}>
+                    Payment: {order.paymentMethod === 'vodafone_cash' ? '📱 Vodafone Cash' : order.paymentMethod === 'instapay' ? '💳 InstaPay' : '💵 Cash'}
+                  </span>
                 </div>
                 <div className="order-total-price">
                   EGP {order.total.toFixed(2)}

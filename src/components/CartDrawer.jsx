@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { showToast } from './Toast';
 import { X, Minus, Plus, Trash2, Send, Loader, CheckCircle } from 'lucide-react';
 import AuthModal from './AuthModal';
+import vodafoneLogo from '../assets/vodafone-cash-logo.png';
+import instapayLogo from '../assets/instapay-logo.png';
 import './CartDrawer.css';
 
 function CartDrawer() {
@@ -17,6 +19,7 @@ function CartDrawer() {
   const [isDelivery, setIsDelivery] = useState(false);
   const [deliveryType, setDeliveryType] = useState('damietta'); // 'damietta' or 'outside'
   const [deliveryLocation, setDeliveryLocation] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [thankYouMessage, setThankYouMessage] = useState('');
@@ -104,6 +107,7 @@ function CartDrawer() {
         deliveryLocation: isDelivery ? deliveryLocation : 'Store Pickup',
         deliveryFee: currentDeliveryFee,
         shippingPending: isOutside,
+        paymentMethod,
         items: cartItems.map(item => ({
           id: item.id,
           sku: item.sku || 'N/A',
@@ -117,10 +121,16 @@ function CartDrawer() {
       
       await addOrder(orderData);
 
-      if (isOutside) {
-        setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you directly on your phone to confirm delivery.");
+      if (paymentMethod === 'vodafone_cash') {
+        setThankYouMessage("vcash");
+      } else if (paymentMethod === 'instapay') {
+        setThankYouMessage("instapay");
       } else {
-        setThankYouMessage("Your order has been placed successfully! Our team will review your order from the dashboard and contact you on your phone to confirm delivery.");
+        if (isOutside) {
+          setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you directly on your phone to confirm delivery.");
+        } else {
+          setThankYouMessage("Your order has been placed successfully! Our team will review your order and contact you on your phone to confirm. Payment will be collected on delivery.");
+        }
       }
 
       setShowThankYou(true);
@@ -131,6 +141,7 @@ function CartDrawer() {
       setCustomerPhone('');
       setDeliveryLocation('');
       setIsDelivery(false);
+      setPaymentMethod('cash');
 
     } catch (error) {
       console.error("Failed to submit order:", error);
@@ -165,14 +176,95 @@ function CartDrawer() {
       {/* Thank You Modal */}
       {showThankYou && (
         <div className="thankyou-overlay" onClick={handleCloseThankYou}>
-          <div className="thankyou-modal" onClick={e => e.stopPropagation()}>
+          <div className="thankyou-modal thankyou-modal-payment" onClick={e => e.stopPropagation()}>
             <div className="thankyou-icon">
               <CheckCircle size={40} />
             </div>
             <h2 className="thankyou-title">Thank You!</h2>
-            <p className="thankyou-message">
-              {thankYouMessage || "Your order has been placed successfully! Our team will review your order from the dashboard and contact you soon."}
-            </p>
+
+            {thankYouMessage === 'vcash' ? (
+              <div className="payment-instructions-box">
+                <img src={vodafoneLogo} alt="Vodafone Cash" className="payment-logo" />
+                <p className="payment-inst-title">Please send <strong>EGP {finalOrderTotal.toFixed(2)}</strong> via Vodafone Cash to:</p>
+                <div 
+                  className="payment-number-box" 
+                  onClick={() => {
+                    navigator.clipboard?.writeText('01041703311');
+                    showToast('Vodafone Cash number copied: 01041703311', 'success');
+                  }}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to copy"
+                >
+                  <span className="payment-number">01041703311</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>📋 Click to copy number</span>
+                </div>
+                <div className="payment-steps">
+                  <p>1. Open your Vodafone Cash app:</p>
+                  <div className="payment-app-links">
+                    <a href="https://play.google.com/store/apps/details?id=com.emeint.android.myservices&hl=en" target="_blank" rel="noopener noreferrer" className="app-link-btn android">
+                      📱 Android
+                    </a>
+                    <a href="https://apps.apple.com/eg/app/ana-vodafone/id437564823" target="_blank" rel="noopener noreferrer" className="app-link-btn ios">
+                      🍎 iPhone
+                    </a>
+                  </div>
+                  <p>2. Send the total amount to the number above</p>
+                  <p>3. <strong>Take a screenshot</strong> of the successful transfer</p>
+                  <p>4. Send the screenshot to our WhatsApp to confirm:</p>
+                  <a
+                    href={`https://wa.me/201503476600?text=${encodeURIComponent('مرحباً فولتك! تم إرسال المبلغ عبر فودافون كاش، وأرفق لكم صورة التحويل لتأكيد الطلب.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-whatsapp-confirm"
+                  >
+                    📩 Send Screenshot via WhatsApp
+                  </a>
+                </div>
+              </div>
+            ) : thankYouMessage === 'instapay' ? (
+              <div className="payment-instructions-box">
+                <img src={instapayLogo} alt="InstaPay" className="payment-logo" />
+                <p className="payment-inst-title">Please send <strong>EGP {finalOrderTotal.toFixed(2)}</strong> via InstaPay:</p>
+                <div 
+                  className="payment-number-box"
+                  onClick={() => {
+                    navigator.clipboard?.writeText('kamar.elkhouli@instapay');
+                    showToast('InstaPay username copied!', 'success');
+                  }}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to copy"
+                >
+                  <span className="payment-number instapay-id">kamar.elkhouli@instapay</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>📋 Click to copy address</span>
+                </div>
+                <div className="payment-steps">
+                  <p>1. Click the link below to send money:</p>
+                  <a
+                    href="https://ipn.eg/S/kamar.elkhouli/instapay/83ROzy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-instapay-link"
+                  >
+                    💳 Open InstaPay Link
+                  </a>
+                  <p style={{ marginTop: '12px' }}>2. After sending, <strong>take a screenshot</strong></p>
+                  <p>3. Send the screenshot to our WhatsApp to confirm:</p>
+                  <a
+                    href={`https://wa.me/201503476600?text=${encodeURIComponent('مرحباً فولتك! تم إرسال المبلغ عبر InstaPay، وأرفق لكم صورة التحويل لتأكيد الطلب.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-whatsapp-confirm"
+                  >
+                    📩 Send Screenshot via WhatsApp
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <p className="thankyou-message">
+                {thankYouMessage || "Your order has been placed successfully! Our team will review your order and contact you soon."}
+              </p>
+            )}
+
             <button className="btn btn-primary" style={{ marginTop: '20px', width: '100%' }} onClick={handleCloseThankYou}>
               Continue Shopping
             </button>
@@ -407,6 +499,51 @@ function CartDrawer() {
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    {/* Payment Method Selection */}
+                    <div className="payment-method-section">
+                      <label className="payment-method-label">Payment Method</label>
+                      <div className="payment-method-options">
+                        <label className={`payment-method-card ${paymentMethod === 'cash' ? 'active' : ''}`}>
+                          <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            checked={paymentMethod === 'cash'} 
+                            onChange={() => setPaymentMethod('cash')} 
+                          />
+                          <div className="pm-content">
+                            <span className="pm-emoji">💵</span>
+                            <span className="pm-name">Cash</span>
+                          </div>
+                        </label>
+
+                        <label className={`payment-method-card ${paymentMethod === 'vodafone_cash' ? 'active' : ''}`}>
+                          <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            checked={paymentMethod === 'vodafone_cash'} 
+                            onChange={() => setPaymentMethod('vodafone_cash')} 
+                          />
+                          <div className="pm-content">
+                            <img src={vodafoneLogo} alt="Vodafone Cash" className="pm-logo" />
+                            <span className="pm-name">Vodafone Cash</span>
+                          </div>
+                        </label>
+
+                        <label className={`payment-method-card ${paymentMethod === 'instapay' ? 'active' : ''}`}>
+                          <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            checked={paymentMethod === 'instapay'} 
+                            onChange={() => setPaymentMethod('instapay')} 
+                          />
+                          <div className="pm-content">
+                            <img src={instapayLogo} alt="InstaPay" className="pm-logo" />
+                            <span className="pm-name">InstaPay</span>
+                          </div>
+                        </label>
+                      </div>
                     </div>
 
                     <button 

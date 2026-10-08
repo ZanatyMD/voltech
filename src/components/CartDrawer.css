@@ -334,3 +334,241 @@
     height: 56px;
   }
 }
+
+/* ===== PAYMENT METHOD SELECTION ===== */
+.payment-method-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.payment-method-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.payment-method-options {
+  display: flex;
+  gap: 10px;
+}
+
+.payment-method-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.payment-method-card input {
+  display: none;
+}
+
+.payment-method-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.payment-method-card.active {
+  border-color: var(--volt-green);
+  background: rgba(126, 200, 67, 0.1);
+  box-shadow: 0 0 16px rgba(126, 200, 67, 0.2);
+}
+
+.pm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.pm-emoji {
+  font-size: 1.5rem;
+}
+
+.pm-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.pm-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-method-card.active .pm-name {
+  color: var(--volt-green);
+}
+
+/* ===== PAYMENT INSTRUCTIONS (Thank You Modal) ===== */
+.thankyou-modal-payment {
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.payment-instructions-box {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.payment-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.payment-inst-title {
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.payment-number-box {
+  background: rgba(126, 200, 67, 0.08);
+  border: 2px dashed rgba(126, 200, 67, 0.4);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 16px;
+}
+
+.payment-number {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--volt-green);
+  letter-spacing: 3px;
+}
+
+.payment-number.instapay-id {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.payment-steps {
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.payment-steps p {
+  margin: 6px 0;
+}
+
+.payment-steps strong {
+  color: var(--volt-yellow);
+}
+
+.payment-app-links {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+
+.app-link-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.app-link-btn.android {
+  background: rgba(60, 179, 113, 0.2);
+  border: 1px solid rgba(60, 179, 113, 0.5);
+}
+
+.app-link-btn.android:hover {
+  background: rgba(60, 179, 113, 0.35);
+}
+
+.app-link-btn.ios {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.app-link-btn.ios:hover {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+.btn-whatsapp-confirm {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 20px;
+  background: rgba(37, 211, 102, 0.15);
+  border: 2px solid rgba(37, 211, 102, 0.5);
+  border-radius: 14px;
+  color: #25d366;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.btn-whatsapp-confirm:hover {
+  background: rgba(37, 211, 102, 0.3);
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-instapay-link {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 20px;
+  background: rgba(128, 90, 213, 0.15);
+  border: 2px solid rgba(128, 90, 213, 0.5);
+  border-radius: 14px;
+  color: #805ad5;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.btn-instapay-link:hover {
+  background: rgba(128, 90, 213, 0.3);
+  box-shadow: 0 0 20px rgba(128, 90, 213, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 400px) {
+  .payment-method-options {
+    gap: 6px;
+  }
+  .payment-method-card {
+    padding: 10px 6px;
+  }
+  .pm-logo {
+    width: 28px;
+    height: 28px;
+  }
+  .pm-name {
+    font-size: 0.65rem;
+  }
+}

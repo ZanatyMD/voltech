@@ -852,6 +852,38 @@ function AdminDashboard() {
                       ) : 'Store Pickup'}
                     </span>
                   </div>
+                  <div className="order-card-customer-row" style={{ marginTop: '4px' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '3px 10px',
+                      borderRadius: '8px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      background: order.paymentMethod === 'vodafone_cash' 
+                        ? 'rgba(230, 0, 0, 0.15)' 
+                        : order.paymentMethod === 'instapay' 
+                          ? 'rgba(128, 90, 213, 0.15)' 
+                          : 'rgba(255, 255, 255, 0.08)',
+                      color: order.paymentMethod === 'vodafone_cash'
+                        ? '#ff4d4d'
+                        : order.paymentMethod === 'instapay'
+                          ? '#a78bfa'
+                          : 'var(--text-secondary)',
+                      border: `1px solid ${
+                        order.paymentMethod === 'vodafone_cash'
+                          ? 'rgba(230, 0, 0, 0.3)'
+                          : order.paymentMethod === 'instapay'
+                            ? 'rgba(128, 90, 213, 0.3)'
+                            : 'rgba(255, 255, 255, 0.12)'
+                      }`
+                    }}>
+                      {order.paymentMethod === 'vodafone_cash' && '📱 Vodafone Cash'}
+                      {order.paymentMethod === 'instapay' && '💳 InstaPay'}
+                      {(!order.paymentMethod || order.paymentMethod === 'cash') && '💵 Cash'}
+                    </span>
+                  </div>
                   {order.shippingPending && (
                     <div style={{ marginTop: '6px' }}>
                       <span style={{ 
