@@ -146,6 +146,22 @@
   box-shadow: 0 0 15px rgba(245, 200, 66, 0.3) !important;
 }
 
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-color: rgba(126, 200, 67, 0.3) !important;
+  color: var(--volt-green) !important;
+  background: rgba(126, 200, 67, 0.08) !important;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(126, 200, 67, 0.2) !important;
+  box-shadow: 0 0 15px rgba(126, 200, 67, 0.3) !important;
+  transform: rotate(15deg);
+}
+
 /* Cart Button */
 .cart-btn-pill {
   position: relative;

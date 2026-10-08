@@ -2,7 +2,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Zap, Shield, LogOut, ShoppingCart, Home, LogIn, ListOrdered, Package, Info } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Zap, Shield, LogOut, ShoppingCart, Home, LogIn, ListOrdered, Package, Info, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SmartSearch from './SmartSearch';
@@ -13,6 +14,7 @@ function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();
   const { t, toggleLanguage } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -91,9 +93,20 @@ function Navbar() {
 
           <div className="navbar-actions">
             {!isAdmin && (
-              <button className="nav-btn-pill lang-toggle-btn" onClick={toggleLanguage} style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                {t.lang_toggle}
-              </button>
+              <>
+                <button 
+                  className="nav-btn-pill theme-toggle-btn" 
+                  onClick={toggleTheme} 
+                  aria-label="Toggle dark/light mode"
+                  title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  style={{ padding: '8px 10px' }}
+                >
+                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+                <button className="nav-btn-pill lang-toggle-btn" onClick={toggleLanguage} style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                  {t.lang_toggle}
+                </button>
+              </>
             )}
 
             {!isAdmin && (

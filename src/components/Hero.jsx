@@ -45,10 +45,11 @@ function Hero() {
     }));
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(3, 4, 7, 0.2)';
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      ctx.fillStyle = isDark ? 'rgba(3, 4, 7, 0.2)' : 'rgba(244, 246, 249, 0.3)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      ctx.fillStyle = '#7EC843';
+      ctx.fillStyle = isDark ? '#7EC843' : '#2E7D32';
       particles.forEach(p => {
         p.y += p.speed;
         if (p.y > canvas.height) {
