@@ -254,6 +254,31 @@
   letter-spacing: 2px;
 }
 
+.grid-no-results-whatsapp {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 12px 20px;
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.grid-whatsapp-order-link {
+  color: #38bdf8;
+  font-weight: 700;
+  text-decoration: underline;
+  transition: all 0.2s ease;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.grid-whatsapp-order-link:hover {
+  color: var(--volt-green);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .product-controls {
     flex-direction: column;

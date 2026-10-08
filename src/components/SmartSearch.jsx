@@ -60,12 +60,9 @@ export default function SmartSearch() {
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && query.trim()) {
-              navigate(`/?search=${encodeURIComponent(query.trim())}`);
+              navigate(`/shop?search=${encodeURIComponent(query.trim())}`);
               setIsOpen(false);
               setQuery('');
-              setTimeout(() => {
-                document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
-              }, 100);
             }
           }}
         />
@@ -106,7 +103,15 @@ export default function SmartSearch() {
               ))
             ) : (
               <div className="search-no-results">
-                No products found for "{query}"
+                <p className="no-res-query">No results found for "{query}"?</p>
+                <a 
+                  href={`https://wa.me/201503476600?text=${encodeURIComponent(`مرحباً فولتك! أبحث عن القطعة التالية ولم أجدها في المتجر: ${query.trim()}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="search-whatsapp-order-link"
+                >
+                  Click here to order it via WhatsApp!
+                </a>
               </div>
             )}
           </motion.div>

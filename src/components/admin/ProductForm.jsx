@@ -24,7 +24,8 @@ function ProductForm({ product, onClose }) {
     imageUrl: '',
     galleryImages: [],
     description: '',
-    variants: []
+    variants: [],
+    requiresSpecification: false
   });
 
   useEffect(() => {
@@ -38,7 +39,8 @@ function ProductForm({ product, onClose }) {
         imageUrl: product.imageUrl || '',
         galleryImages: product.galleryImages || [],
         description: product.description || '',
-        variants: product.variants || []
+        variants: product.variants || [],
+        requiresSpecification: Boolean(product.requiresSpecification)
       });
     }
   }, [product]);
@@ -219,7 +221,8 @@ function ProductForm({ product, onClose }) {
       originalPrice: parseFloat(formData.originalPrice),
       currentPrice: parseFloat(formData.currentPrice),
       stock: parseInt(formData.stock, 10),
-      variants: formattedVariants
+      variants: formattedVariants,
+      requiresSpecification: Boolean(formData.requiresSpecification)
     };
 
     if (product) {
@@ -369,6 +372,29 @@ function ProductForm({ product, onClose }) {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Require Specification / Value Toggle (Resistors, Capacitors, etc.) */}
+          <div className="form-group custom-spec-toggle-admin">
+            <div className="custom-spec-card">
+              <div className="custom-spec-info">
+                <div className="custom-spec-title-row">
+                  <span className="custom-spec-badge">Input Note</span>
+                  <label className="custom-spec-title">Require Specification / Value from Customer</label>
+                </div>
+                <p className="custom-spec-desc">
+                  Enable this for products like <strong>Resistors</strong> or <strong>Capacitors</strong> where the customer must type their desired value/number (e.g., <code>10kΩ</code>, <code>100uF</code>) before checkout.
+                </p>
+              </div>
+              <label className="spec-switch">
+                <input
+                  type="checkbox"
+                  checked={!!formData.requiresSpecification}
+                  onChange={(e) => setFormData(prev => ({ ...prev, requiresSpecification: e.target.checked }))}
+                />
+                <span className="spec-slider"></span>
+              </label>
+            </div>
           </div>
 
           {/* Main Product Image */}

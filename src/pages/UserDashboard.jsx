@@ -130,6 +130,11 @@ export default function UserDashboard() {
                     <div className="item-qty-name">
                       <span className="item-qty">{item.quantity}x</span>
                       <span>{item.name}</span>
+                      {item.customSpecification && (
+                        <span style={{ color: 'var(--volt-green)', fontSize: '0.8rem', marginLeft: '6px' }}>
+                          [{item.customSpecification}]
+                        </span>
+                      )}
                     </div>
                     <span className="item-price">EGP {(item.price * item.quantity).toFixed(2)}</span>
                   </div>

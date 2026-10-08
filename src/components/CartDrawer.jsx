@@ -8,7 +8,7 @@ import AuthModal from './AuthModal';
 import './CartDrawer.css';
 
 function CartDrawer() {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, updateCustomSpecification, cartTotal, clearCart } = useCart();
   const { addOrder, damiettaShippingFee } = useOrders();
   const { user } = useAuth();
   
@@ -20,8 +20,6 @@ function CartDrawer() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [thankYouMessage, setThankYouMessage] = useState('');
-  const [countdown, setCountdown] = useState(3);
-  const [pendingWhatsAppUrl, setPendingWhatsAppUrl] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingCheckout, setPendingCheckout] = useState(false);
 
@@ -45,18 +43,6 @@ function CartDrawer() {
       setCustomerPhone(value);
     }
   };
-
-  // Countdown timer for thank-you modal
-  useEffect(() => {
-    if (!showThankYou) return;
-    if (countdown <= 0) {
-      window.location.href = pendingWhatsAppUrl;
-      setShowThankYou(false);
-      return;
-    }
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [showThankYou, countdown, pendingWhatsAppUrl]);
 
   if (!isCartOpen && !showThankYou && !isAuthModalOpen) return null;
 
@@ -96,6 +82,15 @@ function CartDrawer() {
       return;
     }
 
+    // Validate custom specification for items that require it (e.g. resistors, capacitors)
+    const missingSpecItem = cartItems.find(
+      item => item.requiresSpecification && (!item.customSpecification || !item.customSpecification.trim())
+    );
+    if (missingSpecItem) {
+      showToast(`Please specify the value/number (e.g. resistor or capacitor rating) for "${missingSpecItem.name}" before checking out.`, 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const isOutside = isDelivery && deliveryType === 'outside';
@@ -113,6 +108,7 @@ function CartDrawer() {
           id: item.id,
           sku: item.sku || 'N/A',
           name: item.selectedVariant ? `${item.name} (${item.selectedVariant})` : item.name,
+          customSpecification: item.customSpecification ? item.customSpecification.trim() : null,
           price: item.currentPrice,
           quantity: item.quantity
         })),
@@ -121,47 +117,13 @@ function CartDrawer() {
       
       await addOrder(orderData);
 
-      // Build WhatsApp URL
-      const phoneNumber = '201503476600';
-      let message = `مرحباً فولتك! أود طلب العناصر التالية:\nالاسم: ${customerName}\nرقم الهاتف: ${customerPhone}\n`;
-      
-      if (isDelivery) {
-        if (deliveryType === 'damietta') {
-          message += `طريقة الاستلام: توصيل (دمياط الجديدة)\nمصاريف الشحن: EGP ${damiettaShippingFee}\nالعنوان: ${deliveryLocation}\n\n`;
-        } else {
-          message += `طريقة الاستلام: توصيل (خارج دمياط الجديدة / المحافظات)\nمصاريف الشحن: سيتم تحديدها وتأكيدها قريباً\nالعنوان: ${deliveryLocation}\n\n`;
-        }
-      } else {
-        message += `طريقة الاستلام: استلام من الفرع\n\n`;
-      }
-      
-      cartItems.forEach((item) => {
-        const titleStr = item.selectedVariant ? `${item.name} (${item.selectedVariant})` : item.name;
-        message += `${item.quantity}x ${titleStr} - EGP ${(item.currentPrice * item.quantity).toFixed(2)}\n`;
-      });
-
-      if (isDelivery && deliveryType === 'damietta') {
-        message += `الشحن (دمياط الجديدة): EGP ${damiettaShippingFee}\n`;
-        message += `\n*إجمالي الطلب: EGP ${finalOrderTotal.toFixed(2)}*\n`;
-      } else if (isOutside) {
-        message += `الشحن: سيتم تحديده لاحقاً\n`;
-        message += `\n*المجموع الفرعي للقطع: EGP ${cartTotal.toFixed(2)} (الشحن يحدد لاحقاً)*\n`;
-      } else {
-        message += `\n*إجمالي الطلب: EGP ${cartTotal.toFixed(2)}*\n`;
-      }
-
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-      
       if (isOutside) {
-        setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you shortly.");
+        setThankYouMessage("Your order has been placed! Since your location is outside New Damietta, our team will calculate the shipping fee for your city and contact you directly on your phone to confirm delivery.");
       } else {
-        setThankYouMessage("Your order has been placed successfully! You'll be redirected to WhatsApp to confirm your order details.");
+        setThankYouMessage("Your order has been placed successfully! Our team will review your order from the dashboard and contact you on your phone to confirm delivery.");
       }
 
-      setPendingWhatsAppUrl(whatsappUrl);
       setShowThankYou(true);
-      setCountdown(3);
       setIsCartOpen(false);
       
       clearCart();
@@ -179,7 +141,6 @@ function CartDrawer() {
   };
 
   const handleCloseThankYou = () => {
-    window.location.href = pendingWhatsAppUrl;
     setShowThankYou(false);
   };
 
@@ -210,15 +171,10 @@ function CartDrawer() {
             </div>
             <h2 className="thankyou-title">Thank You!</h2>
             <p className="thankyou-message">
-              Your order has been placed successfully! You'll be redirected to WhatsApp to confirm your order details.
+              {thankYouMessage || "Your order has been placed successfully! Our team will review your order from the dashboard and contact you soon."}
             </p>
-            <div className="thankyou-redirect">
-              <span>Redirecting in</span>
-              <span className="countdown">{countdown}</span>
-              <span>seconds...</span>
-            </div>
             <button className="btn btn-primary" style={{ marginTop: '20px', width: '100%' }} onClick={handleCloseThankYou}>
-              Go to WhatsApp Now
+              Continue Shopping
             </button>
           </div>
         </div>
@@ -265,6 +221,34 @@ function CartDrawer() {
                             marginBottom: '4px'
                           }}>
                             Option: {item.selectedVariant}
+                          </span>
+                        )}
+                        {item.requiresSpecification && (
+                          <div className="cart-item-spec-box" style={{ marginTop: '4px', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--volt-yellow)', fontWeight: 600, display: 'block', marginBottom: '2px' }}>
+                              Required Value / Spec: *
+                            </span>
+                            <input
+                              type="text"
+                              placeholder="e.g. 10kΩ, 100uF..."
+                              value={item.customSpecification || ''}
+                              onChange={(e) => updateCustomSpecification(itemIdKey, e.target.value)}
+                              style={{
+                                width: '100%',
+                                fontSize: '0.78rem',
+                                padding: '4px 8px',
+                                background: 'rgba(0,0,0,0.4)',
+                                border: !item.customSpecification ? '1px solid rgba(245, 200, 66, 0.6)' : '1px solid rgba(126, 200, 67, 0.3)',
+                                borderRadius: '6px',
+                                color: '#fff',
+                                outline: 'none'
+                              }}
+                            />
+                          </div>
+                        )}
+                        {!item.requiresSpecification && item.customSpecification && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--volt-green)', display: 'block', marginBottom: '4px' }}>
+                            Spec: {item.customSpecification}
                           </span>
                         )}
                         <p className="cart-item-price">EGP {item.currentPrice.toFixed(2)}</p>
@@ -431,10 +415,10 @@ function CartDrawer() {
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? <Loader size={18} className="spin" /> : <Send size={18} />}
-                      {isSubmitting ? 'Processing...' : 'Checkout via WhatsApp'}
+                      {isSubmitting ? 'Processing...' : 'Confirm & Place Order'}
                     </button>
                     <p className="checkout-hint">
-                      Your order will be saved and you will be redirected to WhatsApp.
+                      Your order will be submitted directly and our team will contact you to confirm.
                     </p>
                   </>
                 )}

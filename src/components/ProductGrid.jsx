@@ -204,6 +204,19 @@ function ProductGrid() {
             <Filter size={48} className="no-products-icon" />
             <h3>No products found</h3>
             <p>We couldn't find any products matching your current filters.</p>
+            
+            <div className="grid-no-results-whatsapp">
+              <span>No results found? </span>
+              <a 
+                href={`https://wa.me/201503476600?text=${encodeURIComponent(`مرحباً فولتك! أبحث عن القطعة التالية ولم أجدها في المتجر: ${searchQuery || 'قطع إلكترونية'}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="grid-whatsapp-order-link"
+              >
+                Click here to order it via WhatsApp!
+              </a>
+            </div>
+
             <button 
               className="btn btn-secondary mt-4" 
               onClick={() => { 

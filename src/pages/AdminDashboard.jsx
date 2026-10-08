@@ -368,7 +368,7 @@ function AdminDashboard() {
     // ===== ITEMS TABLE =====
     const tableData = order.items.map((item, idx) => [
       (idx + 1).toString(),
-      doc.processArabic(item.name || ''),
+      doc.processArabic(item.customSpecification ? `${item.name} [${item.customSpecification}]` : (item.name || '')),
       item.quantity.toString(),
       `EGP ${item.price.toFixed(2)}`,
       `EGP ${(item.price * item.quantity).toFixed(2)}`
@@ -495,7 +495,8 @@ function AdminDashboard() {
 
       doc.setFontSize(12);
       doc.setFont('Amiri', 'bold');
-      doc.text(`${item.quantity}x ${doc.processArabic(item.name || '')}`, 14, yPos);
+      const itemTitleText = item.customSpecification ? `${item.name} [${item.customSpecification}]` : (item.name || '');
+      doc.text(`${item.quantity}x ${doc.processArabic(itemTitleText)}`, 14, yPos);
       yPos += 8;
 
       if (item.sku && item.sku !== 'N/A') {
@@ -906,6 +907,11 @@ function AdminDashboard() {
                       <div className="order-item-row" key={idx} style={{ flexWrap: 'wrap' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                           <span className="order-item-name">{item.name}</span>
+                          {item.customSpecification && (
+                            <span style={{ fontSize: '0.82rem', color: 'var(--volt-green)', fontWeight: 600, marginTop: '2px', background: 'rgba(126, 200, 67, 0.1)', padding: '2px 8px', borderRadius: '4px', width: 'fit-content' }}>
+                              ⚡ Spec / Value: {item.customSpecification}
+                            </span>
+                          )}
                           {item.sku && item.sku !== 'N/A' && (
                             <div style={{ transform: 'scale(0.7)', transformOrigin: 'left top', marginTop: '4px', marginBottom: '-10px' }}>
                               <Barcode value={item.sku} format="CODE128" height={25} displayValue={true} fontSize={14} width={1.2} />

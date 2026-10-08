@@ -13,6 +13,7 @@ function ProductCard({ product, index = 0 }) {
   
   const { name = '', originalPrice = 0, currentPrice = 0, stock = 0, imageUrl = '', category = '' } = product;
   const hasVariants = product.variants && product.variants.length > 0;
+  const requiresSpec = Boolean(product.requiresSpecification);
   
   const discountPercent = (originalPrice && originalPrice > currentPrice)
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) 
@@ -20,8 +21,8 @@ function ProductCard({ product, index = 0 }) {
   const isInStock = (Number(stock) || 0) > 0;
 
   const handleAddToCart = () => {
-    // If product has variants, send to product page to choose
-    if (hasVariants) {
+    // If product has variants or requires custom specification, send to product page
+    if (hasVariants || requiresSpec) {
       navigate(`/product/${product.id}`);
       return;
     }
@@ -84,7 +85,7 @@ function ProductCard({ product, index = 0 }) {
             onClick={handleAddToCart}
           >
             <ShoppingCart size={16} />
-            {!isInStock ? 'Sold Out' : hasVariants ? 'Choose Option' : 'Add to Cart'}
+            {!isInStock ? 'Sold Out' : (hasVariants || requiresSpec) ? 'Choose Option' : 'Add to Cart'}
           </button>
         </div>
       </div>

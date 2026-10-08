@@ -13,11 +13,15 @@ export function CartProvider({ children }) {
     localStorage.setItem('voltech-cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product, selectedVariant = null) => {
+  const addToCart = (product, selectedVariant = null, customSpecification = '') => {
     const variantName = selectedVariant ? selectedVariant.name : (product.selectedVariant || null);
     const itemPrice = selectedVariant ? selectedVariant.currentPrice : product.currentPrice;
     const itemStock = selectedVariant && selectedVariant.stock !== undefined ? selectedVariant.stock : product.stock;
-    const cartItemId = variantName ? `${product.id}-${variantName}` : product.id;
+    const specText = customSpecification ? customSpecification.trim() : (product.customSpecification || '');
+    
+    let cartItemId = product.id;
+    if (variantName) cartItemId += `-${variantName}`;
+    if (specText) cartItemId += `-${specText}`;
 
     setCartItems(prev => {
       const existing = prev.find(item => (item.cartItemId || item.id) === cartItemId);
@@ -33,12 +37,23 @@ export function CartProvider({ children }) {
         ...product, 
         cartItemId,
         selectedVariant: variantName,
+        customSpecification: specText,
+        requiresSpecification: Boolean(product.requiresSpecification),
         currentPrice: itemPrice,
         stock: itemStock,
         quantity: 1 
       }];
     });
     setIsCartOpen(true);
+  };
+
+  const updateCustomSpecification = (id, specification) => {
+    setCartItems(prev => prev.map(item => {
+      if ((item.cartItemId || item.id) === id) {
+        return { ...item, customSpecification: specification };
+      }
+      return item;
+    }));
   };
 
   const removeFromCart = (id) => {
@@ -64,7 +79,7 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider value={{ 
-      cartItems, addToCart, removeFromCart, updateQuantity, clearCart, 
+      cartItems, addToCart, removeFromCart, updateQuantity, updateCustomSpecification, clearCart, 
       cartTotal, cartCount, isCartOpen, setIsCartOpen 
     }}>
       {children}

@@ -15,6 +15,7 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const [customSpecification, setCustomSpecification] = useState('');
 
   const product = getProduct(id);
 
@@ -23,6 +24,7 @@ function ProductDetail() {
     setSelectedImage(0);
     setQuantity(1);
     setSelectedVariantIndex(0);
+    setCustomSpecification('');
   }, [id]);
 
   if (!product) {
@@ -58,15 +60,29 @@ function ProductDetail() {
     .filter(p => p.category === category && p.id !== id)
     .slice(0, 4);
 
+  const requiresSpec = Boolean(product.requiresSpecification);
+
   const handleAddToCart = () => {
+    if (requiresSpec && !customSpecification.trim()) {
+      showToast('Please type the required value/specification (e.g., resistor or capacitor value) before adding to cart.', 'error');
+      return;
+    }
+
     const productToAdd = {
       ...product,
       currentPrice: displayPrice,
-      selectedVariant: activeVariant ? activeVariant.name : null
+      selectedVariant: activeVariant ? activeVariant.name : null,
+      customSpecification: customSpecification.trim(),
+      requiresSpecification: requiresSpec
     };
 
+    const variantName = activeVariant ? activeVariant.name : null;
+    let expectedCartId = product.id;
+    if (variantName) expectedCartId += `-${variantName}`;
+    if (customSpecification.trim()) expectedCartId += `-${customSpecification.trim()}`;
+
     const existingItem = cartItems.find(item => 
-      item.id === product.id && item.selectedVariant === (activeVariant ? activeVariant.name : null)
+      (item.cartItemId || item.id) === expectedCartId
     );
     const currentQty = existingItem ? existingItem.quantity : 0;
     
@@ -81,10 +97,11 @@ function ProductDetail() {
     }
 
     for (let i = 0; i < quantity; i++) {
-      addToCart(productToAdd, activeVariant);
+      addToCart(productToAdd, activeVariant, customSpecification.trim());
     }
     const variantStr = activeVariant ? ` (${activeVariant.name})` : '';
-    showToast(`${quantity}x ${name}${variantStr} added to cart!`, 'success', 2000);
+    const specStr = customSpecification.trim() ? ` [${customSpecification.trim()}]` : '';
+    showToast(`${quantity}x ${name}${variantStr}${specStr} added to cart!`, 'success', 2000);
   };
 
   const handleQuantityChange = (newQty) => {
@@ -191,6 +208,25 @@ function ProductDetail() {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {requiresSpec && (
+              <div className="pd-custom-spec-box">
+                <div className="pd-custom-spec-header">
+                  <label className="pd-custom-spec-title">
+                    Specify Value / Number <span className="req-star">*</span>
+                  </label>
+                  <span className="pd-custom-spec-hint">e.g. 10kΩ, 220Ω, 100uF, 0.1uF</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Type the exact value/number you want..."
+                  className="form-input pd-custom-spec-input"
+                  value={customSpecification}
+                  onChange={(e) => setCustomSpecification(e.target.value)}
+                  required
+                />
               </div>
             )}
 

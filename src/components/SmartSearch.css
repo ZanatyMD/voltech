@@ -130,10 +130,35 @@
 }
 
 .search-no-results {
-  padding: 20px;
+  padding: 24px 20px;
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.no-res-query {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.search-whatsapp-order-link {
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+  padding: 4px 8px;
+}
+
+.search-whatsapp-order-link:hover {
+  color: var(--volt-green);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
