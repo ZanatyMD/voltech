@@ -58,17 +58,29 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--volt-yellow);
+  pointer-events: none;
+  z-index: 2;
+}
+
+[dir="rtl"] .search-icon {
+  left: auto;
+  right: 18px;
 }
 
 .search-input {
   width: 100%;
-  padding: 14px 16px 14px 46px !important;
+  padding: 14px 16px 14px 46px;
   border-radius: 30px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(245, 200, 66, 0.3);
   color: #fff;
   font-size: 1rem;
   transition: all 0.3s ease;
+}
+
+[dir="rtl"] .search-input {
+  padding: 14px 50px 14px 18px !important;
+  text-align: right;
 }
 
 .search-input:focus {

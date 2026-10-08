@@ -90,9 +90,11 @@ function Navbar() {
           {!isAdmin && location.pathname !== '/my-orders' && <SmartSearch />}
 
           <div className="navbar-actions">
-            <button className="nav-btn-pill lang-toggle-btn" onClick={toggleLanguage} style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-              {t.lang_toggle}
-            </button>
+            {!isAdmin && (
+              <button className="nav-btn-pill lang-toggle-btn" onClick={toggleLanguage} style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                {t.lang_toggle}
+              </button>
+            )}
 
             {!isAdmin && (
               <motion.button

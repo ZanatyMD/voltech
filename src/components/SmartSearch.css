@@ -40,6 +40,16 @@
   transition: color 0.3s ease;
 }
 
+[dir="rtl"] .smart-search-icon {
+  left: auto;
+  right: 14px;
+}
+
+[dir="rtl"] .smart-search-input {
+  padding: 10px 42px 10px 16px !important;
+  text-align: right;
+}
+
 .smart-search-input:focus + .smart-search-icon {
   color: var(--volt-green);
 }
