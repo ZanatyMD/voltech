@@ -87,6 +87,8 @@ const ar = {
   cart_payment_method: 'طريقة الدفع',
   cart_cash: 'كاش',
   cart_vodafone_cash: 'فودافون كاش',
+  cart_vcash_fee: 'رسوم فودافون كاش (1%):',
+  cart_vcash_badge: '(+1% رسوم)',
   cart_instapay: 'انستاباي',
   cart_confirm_order: 'تأكيد وإرسال الطلب',
   cart_processing: 'جاري المعالجة...',

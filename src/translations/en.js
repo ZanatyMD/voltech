@@ -87,6 +87,8 @@ const en = {
   cart_payment_method: 'Payment Method',
   cart_cash: 'Cash',
   cart_vodafone_cash: 'Vodafone Cash',
+  cart_vcash_fee: 'Vodafone Cash Fee (1%):',
+  cart_vcash_badge: '(+1% fee)',
   cart_instapay: 'InstaPay',
   cart_confirm_order: 'Confirm & Place Order',
   cart_processing: 'Processing...',

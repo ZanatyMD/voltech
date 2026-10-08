@@ -59,7 +59,9 @@ function CartDrawer() {
     ? (deliveryType === 'damietta' ? safeDamiettaFee : 0) 
     : 0;
   
-  const finalOrderTotal = (Number(cartTotal) || 0) + currentDeliveryFee;
+  const baseOrderTotal = (Number(cartTotal) || 0) + currentDeliveryFee;
+  const vodafoneFee = paymentMethod === 'vodafone_cash' ? Math.round(baseOrderTotal * 0.01 * 100) / 100 : 0;
+  const finalOrderTotal = baseOrderTotal + vodafoneFee;
 
   const handleCheckout = async () => {
     if (!user || user.role === 'admin') {
@@ -108,6 +110,7 @@ function CartDrawer() {
         deliveryZone: isDelivery ? (deliveryType === 'damietta' ? 'New Damietta' : 'Outside New Damietta') : 'Store Pickup',
         deliveryLocation: isDelivery ? deliveryLocation : 'Store Pickup',
         deliveryFee: currentDeliveryFee,
+        paymentFee: vodafoneFee,
         shippingPending: isOutside,
         paymentMethod,
         items: cartItems.map(item => ({
@@ -390,6 +393,14 @@ function CartDrawer() {
                       )}
                     </div>
                   )}
+                  {paymentMethod === 'vodafone_cash' && vodafoneFee > 0 && (
+                    <div className="summary-row vcash-fee-row" style={{ color: '#ff4d4d' }}>
+                      <span>{t.cart_vcash_fee}</span>
+                      <span className="shipping-badge" style={{ background: 'rgba(230, 0, 0, 0.15)', color: '#ff4d4d', border: '1px solid rgba(230, 0, 0, 0.3)' }}>
+                        +{t.egp} {vodafoneFee.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                   <div className="summary-row total-row">
                     <span>{t.cart_total}</span>
                     <span className="total-amount">
@@ -529,7 +540,9 @@ function CartDrawer() {
                           />
                           <div className="pm-content">
                             <img src={vodafoneLogo} alt="Vodafone Cash" className="pm-logo" />
-                            <span className="pm-name">{t.cart_vodafone_cash}</span>
+                            <span className="pm-name">
+                              {t.cart_vodafone_cash} <small style={{ fontSize: '0.72rem', color: '#ff4d4d', fontWeight: 700, marginLeft: '4px', marginRight: '4px' }}>{t.cart_vcash_badge}</small>
+                            </span>
                           </div>
                         </label>
 

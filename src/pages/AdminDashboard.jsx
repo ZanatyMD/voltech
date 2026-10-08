@@ -879,7 +879,7 @@ function AdminDashboard() {
                             : 'rgba(255, 255, 255, 0.12)'
                       }`
                     }}>
-                      {order.paymentMethod === 'vodafone_cash' && '📱 Vodafone Cash'}
+                      {order.paymentMethod === 'vodafone_cash' && `📱 Vodafone Cash${order.paymentFee ? ` (+EGP ${order.paymentFee.toFixed(2)} fee)` : ''}`}
                       {order.paymentMethod === 'instapay' && '💳 InstaPay'}
                       {(!order.paymentMethod || order.paymentMethod === 'cash') && '💵 Cash'}
                     </span>
