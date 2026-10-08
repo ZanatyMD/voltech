@@ -44,6 +44,9 @@
 /* Nav Brand Logo — Pro Style */
 .nav-brand-logo {
   display: inline-flex;
+  flex-direction: row !important;
+  direction: ltr !important;
+  unicode-bidi: isolate;
   align-items: center;
   gap: 0;
   font-family: var(--font-heading);

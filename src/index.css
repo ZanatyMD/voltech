@@ -918,7 +918,12 @@ main {
 
 [dir="rtl"] .search-icon {
   left: auto;
-  right: 14px;
+  right: 16px;
+}
+
+[dir="rtl"] .search-input {
+  padding-left: 16px;
+  padding-right: 45px;
 }
 
 [dir="rtl"] .smart-search-input {
@@ -934,4 +939,12 @@ main {
 [dir="rtl"] .item-qty {
   margin-right: 0;
   margin-left: 8px;
+}
+
+[dir="rtl"] .hero-brand-logo,
+[dir="rtl"] .nav-brand-logo,
+[dir="rtl"] .footer-logo,
+[dir="rtl"] .navbar-brand {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
 }

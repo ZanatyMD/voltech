@@ -27,8 +27,13 @@ function SkeletonCard() {
 
 function ProductGrid() {
   const { products, stats, loading } = useProducts();
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('All');
+
+  const getCategoryName = (cat) => {
+    if (!cat || cat === 'All') return t.grid_category_all || 'All';
+    return (t.categories && t.categories[cat]) || cat;
+  };
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const gridRef = useRef(null);
   const categoryMenuRef = useRef(null);
@@ -64,9 +69,9 @@ function ProductGrid() {
         >
           <div>
             <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
-              PRODUCTS <Package size={32} color="var(--volt-green)" />
+              {t.grid_title} <Package size={32} color="var(--volt-green)" />
             </h2>
-            <p className="section-subtitle">Discover our cutting-edge selection</p>
+            <p className="section-subtitle">{t.grid_subtitle}</p>
           </div>
         </motion.div>
 
@@ -81,7 +86,7 @@ function ProductGrid() {
             <Search size={18} className="search-icon" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder={t.grid_search_placeholder}
               className="form-input search-input"
               value={searchQuery}
               onChange={(e) => {
@@ -106,7 +111,7 @@ function ProductGrid() {
             >
               <SlidersHorizontal size={18} className="category-icon-dash" />
               <span className="category-btn-text">
-                Category: <strong>{activeCategory}</strong>
+                {t.grid_category_label} <strong>{getCategoryName(activeCategory)}</strong>
               </span>
               <ChevronDown 
                 size={16} 
@@ -124,7 +129,7 @@ function ProductGrid() {
                   transition={{ duration: 0.2 }}
                 >
                   <div className="category-menu-header">
-                    <span>Filter by Category</span>
+                    <span>{t.grid_filter_by_category}</span>
                     {activeCategory !== 'All' && (
                       <button 
                         type="button"
@@ -134,7 +139,7 @@ function ProductGrid() {
                           setIsCategoryMenuOpen(false);
                         }}
                       >
-                        Reset (All)
+                        {t.grid_reset_category}
                       </button>
                     )}
                   </div>
@@ -161,7 +166,7 @@ function ProductGrid() {
                           setIsCategoryMenuOpen(false);
                         }}
                       >
-                        <span>{category}</span>
+                        <span>{getCategoryName(category)}</span>
                         {activeCategory === category && <Check size={16} className="check-icon" />}
                       </button>
                     ))}
@@ -176,7 +181,7 @@ function ProductGrid() {
           <>
             <div className="loading-banner">
               <Loader size={20} className="loading-spinner" />
-              <span>Loading products...</span>
+              <span>{t.grid_loading}</span>
             </div>
             <div className="product-grid">
               {[...Array(6)].map((_, i) => (
@@ -205,7 +210,7 @@ function ProductGrid() {
           >
             <Filter size={48} className="no-products-icon" />
             <h3>{t.grid_no_products}</h3>
-            <p>We couldn't find any products matching your current filters.</p>
+            <p>{t.grid_no_matching}</p>
             
             <div className="grid-no-results-whatsapp">
               <span>{t.search_no_results} </span>
@@ -227,7 +232,7 @@ function ProductGrid() {
                 setSearchParams(searchParams, { replace: true });
               }}
             >
-              Clear Filters
+              {t.grid_reset_filters}
             </button>
           </motion.div>
         )}

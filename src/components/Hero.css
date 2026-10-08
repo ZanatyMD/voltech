@@ -113,6 +113,9 @@
 /* Hero Brand Logo — Pro Style */
 .hero-brand-logo {
   display: inline-flex;
+  flex-direction: row !important;
+  direction: ltr !important;
+  unicode-bidi: isolate;
   align-items: center;
   justify-content: center;
   position: relative;
