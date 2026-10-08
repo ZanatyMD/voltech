@@ -69,7 +69,10 @@
 
 .search-input {
   width: 100%;
-  padding: 14px 16px 14px 46px;
+  padding-left: 48px !important;
+  padding-right: 18px !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
   border-radius: 30px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(245, 200, 66, 0.3);
@@ -79,7 +82,8 @@
 }
 
 [dir="rtl"] .search-input {
-  padding: 14px 50px 14px 18px !important;
+  padding-right: 48px !important;
+  padding-left: 18px !important;
   text-align: right;
 }
 

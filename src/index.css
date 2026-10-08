@@ -949,12 +949,12 @@ main {
 
 [dir="rtl"] .search-icon {
   left: auto;
-  right: 16px;
+  right: 18px;
 }
 
 [dir="rtl"] .search-input {
-  padding-left: 16px;
-  padding-right: 45px;
+  padding-left: 18px !important;
+  padding-right: 48px !important;
 }
 
 [dir="rtl"] .smart-search-input {

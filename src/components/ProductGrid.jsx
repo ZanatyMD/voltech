@@ -87,7 +87,7 @@ function ProductGrid() {
             <input
               type="text"
               placeholder={t.grid_search_placeholder}
-              className="form-input search-input"
+              className="search-input"
               value={searchQuery}
               onChange={(e) => {
                 const val = e.target.value;
